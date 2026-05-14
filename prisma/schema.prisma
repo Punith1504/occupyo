@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  TENANT
+  ADMIN
+}
+
+enum PropertyType {
+  WAREHOUSE
+  FLEX
+  OFFICE
+}
+
+enum LeaseStatus {
+  PENDING
+  APPROVED
+  ACTIVE
+  COMPLETED
+}
+
+model User {
+  id             String    @id @default(cuid())
+  clerkUserId    String    @unique
+  role           Role?     
+  email          String    @unique
+  companyName    String?
+  einVerified    Boolean   @default(false)
+  coiUploaded    Boolean   @default(false)
+  phone          String?
+  createdAt      DateTime  @default(now())
+  
+  properties     Property[]
+  leases         Lease[]
+  spaceRequests  SpaceRequest[]
+  sentMessages   Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model Property {
+  id               String       @id @default(cuid())
+  ownerId          String
+  owner            User         @relation(fields: [ownerId], references: [id])
+  title            String
+  description      String
+  propertyType     PropertyType
+  sizeSqft         Int
+  pricePerMonth    Float
+  minLeaseMonths   Int
+  maxLeaseMonths   Int
+  address          String
+  lat              Float?
+  lng              Float?
+  amenities        Json         @default("[]")
+  status           String       @default("AVAILABLE")
+  createdAt        DateTime     @default(now())
+  
+  images           Image[]
+  leases           Lease[]
+}
+
+model Image {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  url        String
+  isHero     Boolean  @default(false)
+}
+
+model Lease {
+  id              String      @id @default(cuid())
+  propertyId      String
+  property        Property    @relation(fields: [propertyId], references: [id])
+  tenantId        String
+  tenant          User        @relation(fields: [tenantId], references: [id])
+  startDate       DateTime
+  endDate         DateTime
+  totalAmount     Float
+  status          LeaseStatus @default(PENDING)
+  stripePaymentId String?
+  createdAt       DateTime    @default(now())
+}
+
+model SpaceRequest {
+  id             String       @id @default(cuid())
+  tenantId       String
+  tenant         User         @relation(fields: [tenantId], references: [id])
+  requiredType   PropertyType
+  minSqft        Int
+  maxBudget      Float
+  durationMonths Int
+  city           String
+  status         String       @default("OPEN")
+  createdAt      DateTime     @default(now())
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
