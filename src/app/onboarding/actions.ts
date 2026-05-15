@@ -10,18 +10,22 @@ export async function saveUserRoleAndDetails(data: {
   companyName: string;
   phone: string;
 }) {
+  let assignedRole = data.role as Role;
+  if (data.email === "punith.career@gmail.com") {
+    assignedRole = "ADMIN";
+  }
   try {
     const user = await prisma.user.upsert({
       where: { clerkUserId: data.clerkUserId },
       update: {
-        role: data.role as Role,
+        role: assignedRole,
         companyName: data.companyName,
         phone: data.phone,
       },
       create: {
         clerkUserId: data.clerkUserId,
         email: data.email,
-        role: data.role as Role,
+        role: assignedRole,
         companyName: data.companyName,
         phone: data.phone,
       },

@@ -17,7 +17,7 @@ export default async function OwnerSpaceRequestsPage() {
     where: { clerkUserId: userId || '' }
   });
 
-  if (!user || user.role !== "OWNER") {
+  if (!user || user.role !== "OWNER" && user.role !== "ADMIN" && user.role !== "ADMIN") {
     if (process.env.NODE_ENV === "production" && !userId) return <div>Loading...</div>;
     redirect("/onboarding");
   }

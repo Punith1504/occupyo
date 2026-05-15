@@ -16,7 +16,7 @@ export default async function TenantRequestsPage() {
     where: { clerkUserId: userId || "" }
   });
 
-  if (!user || user.role !== "TENANT") {
+  if (!user || user.role !== "TENANT" && user.role !== "ADMIN" && user.role !== "ADMIN") {
     if (process.env.NODE_ENV === "production" && !userId) return <div>Loading...</div>;
     redirect("/onboarding");
   }

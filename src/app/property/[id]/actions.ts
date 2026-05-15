@@ -17,7 +17,7 @@ export async function createLeaseRequest(data: {
     where: { clerkUserId: userId }
   });
 
-  if (!user || user.role !== "TENANT") {
+  if (!user || user.role !== "TENANT" && user.role !== "ADMIN") {
     return { success: false, error: "Only registered tenants can request bookings." };
   }
 

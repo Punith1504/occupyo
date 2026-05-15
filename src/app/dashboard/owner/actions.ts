@@ -28,7 +28,7 @@ export async function createPropertyAction(data: {
     where: { clerkUserId: userId }
   });
 
-  if (!user || user.role !== "OWNER") {
+  if (!user || user.role !== "OWNER" && user.role !== "ADMIN" && user.role !== "ADMIN") {
     return { success: false, error: "Unauthorized. Must be an owner." };
   }
 

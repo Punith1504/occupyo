@@ -20,7 +20,7 @@ export default async function TenantLeasesPage() {
     }
   });
 
-  if (!user || user.role !== "TENANT") redirect("/onboarding");
+  if (!user || user.role !== "TENANT" && user.role !== "ADMIN" && user.role !== "ADMIN") redirect("/onboarding");
 
   const leases = user.leases;
 

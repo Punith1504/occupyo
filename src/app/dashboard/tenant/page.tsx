@@ -33,7 +33,7 @@ export default async function TenantDashboardOverview() {
     console.error("Database connection failed, likely during build:", error);
   }
 
-  if (!user || user.role !== "TENANT") {
+  if (!user || user.role !== "TENANT" && user.role !== "ADMIN" && user.role !== "ADMIN") {
     if (process.env.NODE_ENV === "production" && !userId) {
        return <div>Loading...</div>; // Bypass build-time redirect
     }
