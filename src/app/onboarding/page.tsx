@@ -49,7 +49,7 @@ export default function OnboardingPage() {
         if (values.role === "OWNER") {
           router.push("/dashboard/owner");
         } else {
-          router.push("/search");
+          router.push("/dashboard/tenant");
         }
       } else {
         setError(result?.error || "Failed to save details");
