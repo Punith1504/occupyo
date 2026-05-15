@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Occupio - B2B Flex Occupancy",
-  description: "B2B Flex Occupancy Marketplace",
+  description: "B2B Flex Occupancy Marketplace for Commercial Real Estate",
 };
 
 export default function RootLayout({
