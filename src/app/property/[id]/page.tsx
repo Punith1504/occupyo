@@ -39,7 +39,7 @@ export default async function PropertyPage(
       {/* Header / Nav */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-gray-900 tracking-tight">Occupio</Link>
+          <Link href="/" className="text-xl font-bold text-gray-900 tracking-tight">Occupyo</Link>
           <div className="flex gap-4">
             <Link href="/dashboard" className="text-sm font-medium text-gray-600 hover:text-black">Dashboard</Link>
           </div>

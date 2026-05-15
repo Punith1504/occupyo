@@ -392,7 +392,7 @@ export default function CreateListingPage() {
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
                 <FileText className="w-8 h-8 text-black mb-4" />
-                <h4 className="font-semibold text-gray-900 mb-2">Occupio Standard</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Occupyo Standard</h4>
                 <p className="text-sm text-gray-500">Use our vetted, flexible occupancy agreement template. Recommended for fast onboarding.</p>
               </label>
               

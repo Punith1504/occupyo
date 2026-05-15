@@ -9,7 +9,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Building2 className="h-6 w-6 text-black" />
-            <span className="text-xl font-bold text-gray-900 tracking-tight">Occupio</span>
+            <span className="text-xl font-bold text-gray-900 tracking-tight">Occupyo</span>
           </div>
           <div className="flex items-center gap-6">
             <Link href="/onboarding" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
@@ -79,7 +79,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Built for modern businesses</h2>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              Whether you own flex space or need it, Occupio streamlines the entire lifecycle.
+              Whether you own flex space or need it, Occupyo streamlines the entire lifecycle.
             </p>
           </div>
 
@@ -120,7 +120,7 @@ export default function Home() {
       <section className="py-24 px-6 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How Occupio works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How Occupyo works</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
@@ -170,7 +170,7 @@ export default function Home() {
             Ready to transform your commercial real estate experience?
           </h2>
           <p className="text-lg text-gray-500 mb-10">
-            Join hundreds of property owners and businesses already using Occupio.
+            Join hundreds of property owners and businesses already using Occupyo.
           </p>
           <Link
             href="/onboarding"
@@ -187,9 +187,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-gray-400" />
-            <span className="text-sm font-semibold text-gray-500">Occupio</span>
+            <span className="text-sm font-semibold text-gray-500">Occupyo</span>
           </div>
-          <p className="text-sm text-gray-400">© 2026 Occupio. All rights reserved.</p>
+          <p className="text-sm text-gray-400">© 2026 Occupyo. All rights reserved.</p>
         </div>
       </footer>
     </div>

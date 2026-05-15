@@ -40,7 +40,7 @@ export default async function CheckoutPage(
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6">
         <Link href="/dashboard/tenant/leases" className="text-xl font-bold text-gray-900 tracking-tight">
-          Occupio <span className="font-normal text-gray-400">| Secure Checkout</span>
+          Occupyo <span className="font-normal text-gray-400">| Secure Checkout</span>
         </Link>
       </header>
 
