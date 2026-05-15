@@ -35,7 +35,7 @@ export default function OwnerDashboardLayout({
             <MessageSquare className="h-5 w-5 text-gray-400" />
             Messages
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 transition-colors">
+          <Link href="/dashboard/owner/settings" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 transition-colors">
             <Settings className="h-5 w-5 text-gray-400" />
             Settings
           </Link>
