@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Search, Sparkles } from "lucide-react";
+import { hapticTap, hapticMedium } from "@/lib/haptics";
 
 export default function Home() {
   const router = useRouter();
@@ -117,10 +118,17 @@ export default function Home() {
           
           {/* POST BUTTON */}
           <button
-            onClick={() => router.push("/dashboard/owner")}
-            onMouseEnter={() => setHoveredCard("post")}
+            onClick={() => {
+              hapticMedium();
+              router.push("/dashboard/owner");
+            }}
+            onPointerDown={hapticTap}
+            onMouseEnter={() => {
+              hapticTap();
+              setHoveredCard("post");
+            }}
             onMouseLeave={() => setHoveredCard(null)}
-            className="flex-1 group relative rounded-[2rem] p-1 text-left transition-all duration-500"
+            className="flex-1 group relative rounded-[2rem] p-1 text-left transition-all duration-300 active:scale-[0.98]"
             style={{
               transform: hoveredCard === "post" ? "translateY(-4px)" : "translateY(0)"
             }}
@@ -144,10 +152,17 @@ export default function Home() {
 
           {/* RENT BUTTON */}
           <button
-            onClick={() => router.push("/dashboard/tenant")}
-            onMouseEnter={() => setHoveredCard("rent")}
+            onClick={() => {
+              hapticMedium();
+              router.push("/dashboard/tenant");
+            }}
+            onPointerDown={hapticTap}
+            onMouseEnter={() => {
+              hapticTap();
+              setHoveredCard("rent");
+            }}
             onMouseLeave={() => setHoveredCard(null)}
-            className="flex-1 group relative rounded-[2rem] p-1 text-left transition-all duration-500"
+            className="flex-1 group relative rounded-[2rem] p-1 text-left transition-all duration-300 active:scale-[0.98]"
             style={{
               transform: hoveredCard === "rent" ? "translateY(-4px)" : "translateY(0)"
             }}

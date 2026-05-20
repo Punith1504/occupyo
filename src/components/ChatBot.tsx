@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MessageSquare, X, Send } from "lucide-react";
+import { hapticTap, hapticMedium } from "@/lib/haptics";
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,8 +44,12 @@ export default function ChatBot() {
       {/* Chat Button */}
       {!isOpen && (
         <button 
-          onClick={() => setIsOpen(true)}
-          className="bg-black text-white p-4 rounded-full shadow-[var(--neon-glow)] hover:scale-110 transition-transform duration-300 flex items-center justify-center group"
+          onClick={() => {
+            hapticMedium();
+            setIsOpen(true);
+          }}
+          onPointerDown={hapticTap}
+          className="bg-black text-white p-4 rounded-full shadow-[var(--neon-glow)] hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center group"
         >
           <MessageSquare className="w-6 h-6 group-hover:text-[var(--accent)] transition-colors" />
         </button>
@@ -59,7 +64,14 @@ export default function ChatBot() {
               <div className="w-2 h-2 bg-[var(--success)] rounded-full animate-pulse"></div>
               <h3 className="font-bold text-[var(--accent)]">Occupyo Assistant</h3>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+            <button 
+              onClick={() => {
+                hapticTap();
+                setIsOpen(false);
+              }} 
+              onPointerDown={hapticTap}
+              className="text-gray-400 hover:text-white active:scale-90 transition-all"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -91,7 +103,8 @@ export default function ChatBot() {
               />
               <button 
                 type="submit"
-                className="bg-black text-[var(--accent)] p-2 rounded-xl hover:bg-gray-800 transition-colors"
+                onPointerDown={hapticTap}
+                className="bg-black text-[var(--accent)] p-2 rounded-xl hover:bg-gray-800 active:scale-90 transition-all"
               >
                 <Send className="w-5 h-5" />
               </button>
