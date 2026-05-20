@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation } from "lucide-react";
 import { createPropertyAction } from "../../actions";
+import Autocomplete from "react-google-autocomplete";
 
 const STEPS = [
   { id: "details", title: "Details", icon: Building2 },
@@ -18,6 +19,7 @@ export default function CreateListingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [userCoords, setUserCoords] = useState<{lat: number, lng: number} | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -36,36 +38,7 @@ export default function CreateListingPage() {
     amenities: [] as string[],
   });
 
-  const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
-
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (formData.address && showSuggestions) {
-        setAddressLoading(true);
-        let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}&limit=5`;
-        if (userCoords) {
-          const v = 0.5;
-          url += `&viewbox=${userCoords.lng - v},${userCoords.lat + v},${userCoords.lng + v},${userCoords.lat - v}&bounded=0`;
-        }
-        fetch(url)
-          .then(res => res.json())
-          .then(data => {
-            setAddressSuggestions(data);
-            setAddressLoading(false);
-          })
-          .catch(err => {
-            console.error("Geocoding error:", err);
-            setAddressLoading(false);
-          });
-      } else {
-        setAddressSuggestions([]);
-      }
-    }, 150);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [formData.address, showSuggestions, userCoords]);
 
   useEffect(() => {
     // Automatically try to get location on step 2 (Location step)
@@ -403,37 +376,31 @@ export default function CreateListingPage() {
                 </button>
               </div>
               <div className="relative">
-                <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-                <input 
-                  type="text"
-                  value={formData.address}
-                  onChange={(e) => {
-                    setFormData({...formData, address: e.target.value});
-                    setShowSuggestions(true);
+                <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-gray-400 z-10" />
+                <Autocomplete
+                  apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+                  onPlaceSelected={(place: any) => {
+                    if (place && place.geometry && place.geometry.location) {
+                      setFormData({
+                        ...formData,
+                        address: place.formatted_address,
+                        lat: place.geometry.location.lat(),
+                        lng: place.geometry.location.lng(),
+                      });
+                    }
                   }}
-                  onFocus={() => setShowSuggestions(true)}
+                  options={{
+                    types: ["address"],
+                  }}
+                  defaultValue={formData.address}
+                  onChange={(e: any) => setFormData({...formData, address: e.target.value})}
                   placeholder="Start typing your address..."
-                  className="w-full pl-10 p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                  className="w-full pl-10 p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none relative bg-white"
                   style={{ color: '#000000' }}
                 />
                 {addressLoading && (
                   <div className="absolute right-3 top-3.5">
                     <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
-                  </div>
-                )}
-                
-                {showSuggestions && addressSuggestions.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {addressSuggestions.map((suggestion, idx) => (
-                      <div 
-                        key={idx}
-                        onClick={() => handleAddressSelect(suggestion)}
-                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b last:border-0 border-gray-100 flex items-start gap-3"
-                      >
-                        <MapPin className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
-                        <span className="text-sm text-gray-700">{suggestion.display_name}</span>
-                      </div>
-                    ))}
                   </div>
                 )}
               </div>
@@ -510,8 +477,12 @@ export default function CreateListingPage() {
             {imageUrls.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                 {imageUrls.map((url, idx) => (
-                  <div key={idx} className="aspect-square bg-gray-100 rounded-lg border border-gray-200 relative group overflow-hidden">
-                    <img src={url} alt={`Upload ${idx}`} className="w-full h-full object-cover" />
+                  <div 
+                    key={idx} 
+                    className="aspect-square bg-gray-100 rounded-lg border border-gray-200 relative group overflow-hidden cursor-pointer"
+                    onClick={() => setPreviewImage(url)}
+                  >
+                    <img src={url} alt={`Upload ${idx}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <button 
                       onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
                       className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700 hover:bg-red-50"
@@ -597,6 +568,27 @@ export default function CreateListingPage() {
           {currentStep === STEPS.length - 1 ? "Publish Listing" : "Continue"}
         </button>
       </div>
+
+      {/* HQ Photo Preview Modal */}
+      {previewImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setPreviewImage(null)}
+        >
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-gray-300 bg-black/50 rounded-full p-2"
+            onClick={() => setPreviewImage(null)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img 
+            src={previewImage} 
+            alt="HQ Preview" 
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
