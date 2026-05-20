@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation } from "lucide-react";
 import { createPropertyAction } from "../../actions";
-import Autocomplete from "react-google-autocomplete";
+import PredictiveAddressInput from "@/components/PredictiveAddressInput";
 
 const STEPS = [
   { id: "details", title: "Details", icon: Building2 },
@@ -376,33 +376,18 @@ export default function CreateListingPage() {
                 </button>
               </div>
               <div className="relative">
-                <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-gray-400 z-10" />
-                <Autocomplete
-                  apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-                  onPlaceSelected={(place: any) => {
-                    if (place && place.geometry && place.geometry.location) {
-                      setFormData({
-                        ...formData,
-                        address: place.formatted_address,
-                        lat: place.geometry.location.lat(),
-                        lng: place.geometry.location.lng(),
-                      });
-                    }
+                <PredictiveAddressInput 
+                  initialValue={formData.address}
+                  onSelect={(address, lat, lng) => {
+                    setFormData({
+                      ...formData,
+                      address,
+                      lat,
+                      lng
+                    });
                   }}
-                  options={{
-                    types: ["address"],
-                  }}
-                  defaultValue={formData.address}
-                  onChange={(e: any) => setFormData({...formData, address: e.target.value})}
-                  placeholder="Start typing your address..."
-                  className="w-full pl-10 p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none relative bg-white"
-                  style={{ color: '#000000' }}
+                  className="w-full pl-12 p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none relative bg-white"
                 />
-                {addressLoading && (
-                  <div className="absolute right-3 top-3.5">
-                    <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
-                  </div>
-                )}
               </div>
               <p className="text-xs text-gray-500 mt-2">
                 Select an address from the dropdown to verify its location.
