@@ -5,6 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Occupyo - B2B Flex Occupancy",
   description: "B2B Flex Occupancy Marketplace for Commercial Real Estate",
+  metadataBase: new URL("https://occupyo.com"),
 };
 
 export default function RootLayout({

@@ -32,7 +32,6 @@ export default async function PropertyPage(
   }
 
   const amenities = property.amenities as string[] || [];
-  const heroImage = property.images.length > 0 ? property.images[0].url : null;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -46,20 +45,36 @@ export default async function PropertyPage(
         </div>
       </header>
 
-      {/* Hero Image Section */}
+      {/* Image Gallery Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div className="h-[400px] md:h-[500px] bg-gray-200 rounded-3xl overflow-hidden relative flex items-center justify-center">
-           {heroImage ? (
-             <img src={heroImage} alt={property.title} className="w-full h-full object-cover" />
-           ) : (
-             <>
-               <Building2 className="h-20 w-20 text-gray-400 opacity-30" />
-               <div className="absolute bottom-6 left-6 bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium">
-                 No Images Available
-               </div>
-             </>
-           )}
-        </div>
+        {property.images.length === 0 ? (
+          <div className="h-[400px] md:h-[500px] bg-gray-200 rounded-3xl overflow-hidden relative flex flex-col items-center justify-center">
+             <Building2 className="h-20 w-20 text-gray-400 opacity-30 mb-4" />
+             <div className="bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium">
+               No Images Available
+             </div>
+          </div>
+        ) : property.images.length === 1 ? (
+          <div className="h-[400px] md:h-[500px] rounded-3xl overflow-hidden relative">
+             <img src={property.images[0].url} alt={property.title} className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[400px] md:h-[500px]">
+            <div className="md:col-span-2 md:row-span-2 rounded-3xl overflow-hidden relative cursor-pointer group">
+              <img src={property.images[0].url} alt={property.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            </div>
+            {property.images.slice(1, 5).map((img, idx) => (
+              <div key={img.id} className="hidden md:block rounded-3xl overflow-hidden relative cursor-pointer group">
+                <img src={img.url} alt={`${property.title} ${idx + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {idx === 3 && property.images.length > 5 && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px] transition-colors group-hover:bg-black/50">
+                    <span className="text-white font-semibold text-lg">+{property.images.length - 5} More</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">

@@ -17,24 +17,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     const uploadedUrls: string[] = [];
 
     for (const file of files) {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Create a unique filename
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-      const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-      const filePath = path.join(uploadDir, filename);
-
-      await fs.writeFile(filePath, buffer);
+      // Convert image to Base64 Data URI so it can be stored directly
+      // in the database without needing a cloud storage provider or 
+      // relying on Vercel's read-only file system.
+      const mimeType = file.type || 'image/jpeg';
+      const base64Data = buffer.toString('base64');
+      const dataUri = `data:${mimeType};base64,${base64Data}`;
       
-      // The public URL path (served statically by Next.js)
-      uploadedUrls.push(`/uploads/${filename}`);
+      uploadedUrls.push(dataUri);
     }
 
     return NextResponse.json({ urls: uploadedUrls });

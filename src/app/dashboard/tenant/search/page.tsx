@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Search, MapPin, Building2, Filter } from "lucide-react";
+import LocationSearchInput from "./LocationSearchInput";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,9 @@ export default async function PropertySearchPage(props: {
   }
 
   const searchParams = await props.searchParams;
-  const { type, location } = searchParams;
+  const { type, location, lat, lng } = searchParams;
+  const userLat = lat ? parseFloat(lat) : null;
+  const userLng = lng ? parseFloat(lng) : null;
 
   const whereClause: any = {
     status: "AVAILABLE",
@@ -27,14 +30,14 @@ export default async function PropertySearchPage(props: {
   
   // Note: Prisma 'contains' search is basic for MVP. 
   // In a real app, use PostGIS or full-text search.
-  if (location) {
+  if (location && location !== "Current Location" && !userLat) {
     whereClause.address = {
       contains: location,
       mode: "insensitive",
     };
   }
 
-  let properties = [];
+  let properties: any[] = [];
   try {
     properties = await prisma.property.findMany({
       where: whereClause,
@@ -49,6 +52,28 @@ export default async function PropertySearchPage(props: {
         }
       }
     });
+
+    if (userLat !== null && userLng !== null) {
+      function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+        const R = 3958.8; // Radius of the earth in miles
+        const dLat = (lat2 - lat1) * Math.PI / 180;  
+        const dLon = (lon2 - lon1) * Math.PI / 180; 
+        const a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2)
+          ; 
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        return R * c; 
+      }
+
+      properties = properties.map(p => {
+        const distance = (p.lat !== null && p.lng !== null) 
+          ? getDistance(userLat, userLng, p.lat, p.lng) 
+          : Infinity;
+        return { ...p, distance };
+      }).sort((a, b) => a.distance - b.distance);
+    }
   } catch (error) {
     console.error("Database connection failed during search:", error);
   }
@@ -62,14 +87,7 @@ export default async function PropertySearchPage(props: {
         {/* Simple Search Form */}
         <form className="flex flex-col md:flex-row gap-4 max-w-4xl">
           <div className="flex-1 relative">
-            <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input 
-              type="text"
-              name="location"
-              defaultValue={location || ""}
-              placeholder="Search by city or address..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none"
-            />
+            <LocationSearchInput />
           </div>
           
           <div className="w-full md:w-64 relative">
@@ -130,6 +148,12 @@ export default async function PropertySearchPage(props: {
                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wide text-gray-800">
                       {property.propertyType}
                     </div>
+                    {property.distance !== undefined && property.distance !== Infinity && (
+                      <div className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-sm text-white px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 shadow-sm">
+                        <MapPin className="h-3 w-3" />
+                        {property.distance.toFixed(1)} mi away
+                      </div>
+                    )}
                   </div>
                   
                   {/* Content */}

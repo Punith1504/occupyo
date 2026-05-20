@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X } from "lucide-react";
+import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation } from "lucide-react";
 import { createPropertyAction } from "../../actions";
 
 const STEPS = [
@@ -17,6 +17,7 @@ export default function CreateListingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [userCoords, setUserCoords] = useState<{lat: number, lng: number} | null>(null);
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -30,8 +31,127 @@ export default function CreateListingPage() {
     pricePerMonth: "",
     leaseTerm: "3-6", // 0-3, 3-6, 6-12
     address: "",
+    lat: null as number | null,
+    lng: null as number | null,
     amenities: [] as string[],
   });
+
+  const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [addressLoading, setAddressLoading] = useState(false);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (formData.address && showSuggestions) {
+        setAddressLoading(true);
+        let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}&limit=5`;
+        if (userCoords) {
+          const v = 0.5;
+          url += `&viewbox=${userCoords.lng - v},${userCoords.lat + v},${userCoords.lng + v},${userCoords.lat - v}&bounded=0`;
+        }
+        fetch(url)
+          .then(res => res.json())
+          .then(data => {
+            setAddressSuggestions(data);
+            setAddressLoading(false);
+          })
+          .catch(err => {
+            console.error("Geocoding error:", err);
+            setAddressLoading(false);
+          });
+      } else {
+        setAddressSuggestions([]);
+      }
+    }, 150);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [formData.address, showSuggestions, userCoords]);
+
+  useEffect(() => {
+    // Automatically try to get location on step 2 (Location step)
+    if (currentStep === 1) {
+      if (navigator.geolocation) {
+        if (!formData.address && !formData.lat) {
+          setAddressLoading(true);
+        }
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserCoords({ lat: latitude, lng: longitude });
+            
+            if (!formData.address && !formData.lat) {
+              fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                .then(res => res.json())
+                .then(data => {
+                  setFormData(prev => ({
+                    ...prev,
+                    address: data.display_name,
+                    lat: latitude,
+                    lng: longitude,
+                  }));
+                  setAddressLoading(false);
+                })
+                .catch(err => {
+                  console.error("Reverse geocoding error:", err);
+                  setAddressLoading(false);
+                });
+            }
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            setAddressLoading(false);
+          }
+        );
+      }
+    }
+  }, [currentStep]); // Exclude formData to prevent infinite loops
+
+  const handleAddressSelect = (suggestion: any) => {
+    setFormData({
+      ...formData,
+      address: suggestion.display_name,
+      lat: parseFloat(suggestion.lat),
+      lng: parseFloat(suggestion.lon),
+    });
+    setShowSuggestions(false);
+  };
+
+  const handleCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setAddressLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        // Reverse geocoding using Nominatim
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+          .then(res => res.json())
+          .then(data => {
+            setFormData({
+              ...formData,
+              address: data.display_name,
+              lat: latitude,
+              lng: longitude,
+            });
+            setAddressLoading(false);
+          })
+          .catch(err => {
+            console.error("Reverse geocoding error:", err);
+            setAddressLoading(false);
+            alert("Failed to get address for current location");
+          });
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setAddressLoading(false);
+        alert("Failed to get current location. Please allow location access.");
+      }
+    );
+  };
 
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
@@ -102,8 +222,8 @@ export default function CreateListingPage() {
       minLeaseMonths: minMonths,
       maxLeaseMonths: maxMonths,
       address: formData.address,
-      lat: null, // Mock location for MVP
-      lng: null,
+      lat: formData.lat,
+      lng: formData.lng,
       amenities: formData.amenities,
       imageUrls: imageUrls,
     });
@@ -172,7 +292,8 @@ export default function CreateListingPage() {
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
                 placeholder="e.g. Premium Flex Space in Downtown"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none"
+                className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black focus:border-black outline-none"
+                style={{ color: '#000000' }}
               />
             </div>
             
@@ -182,7 +303,8 @@ export default function CreateListingPage() {
                 <select 
                   value={formData.propertyType}
                   onChange={(e) => setFormData({...formData, propertyType: e.target.value})}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none bg-white"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none bg-white"
+                  style={{ color: '#000000' }}
                 >
                   <option value="WAREHOUSE">Warehouse</option>
                   <option value="FLEX">Flex Industrial</option>
@@ -196,7 +318,8 @@ export default function CreateListingPage() {
                   value={formData.sizeSqft}
                   onChange={(e) => setFormData({...formData, sizeSqft: e.target.value})}
                   placeholder="5000"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                  style={{ color: '#000000' }}
                 />
               </div>
             </div>
@@ -209,7 +332,8 @@ export default function CreateListingPage() {
                   value={formData.pricePerMonth}
                   onChange={(e) => setFormData({...formData, pricePerMonth: e.target.value})}
                   placeholder="2500"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                  style={{ color: '#000000' }}
                 />
               </div>
               <div>
@@ -217,7 +341,8 @@ export default function CreateListingPage() {
                 <select 
                   value={formData.leaseTerm}
                   onChange={(e) => setFormData({...formData, leaseTerm: e.target.value})}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none bg-white"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none bg-white"
+                  style={{ color: '#000000' }}
                 >
                   <option value="0-3">0-3 Months (Short Term)</option>
                   <option value="3-6">3-6 Months</option>
@@ -233,7 +358,8 @@ export default function CreateListingPage() {
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={4}
                 placeholder="Describe the space, access hours, and suitability..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none resize-none"
+                className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none resize-none"
+                style={{ color: '#000000' }}
               ></textarea>
             </div>
 
@@ -266,19 +392,53 @@ export default function CreateListingPage() {
         {currentStep === 1 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Property Address</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">Property Address</label>
+                <button 
+                  type="button" 
+                  onClick={handleCurrentLocation}
+                  className="text-xs flex items-center gap-1 text-blue-600 font-medium hover:underline bg-blue-50 px-2 py-1 rounded-md"
+                >
+                  <Navigation className="w-3 h-3" /> Use Current Location
+                </button>
+              </div>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                 <input 
                   type="text"
                   value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  onChange={(e) => {
+                    setFormData({...formData, address: e.target.value});
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
                   placeholder="Start typing your address..."
-                  className="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none"
+                  className="w-full pl-10 p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                  style={{ color: '#000000' }}
                 />
+                {addressLoading && (
+                  <div className="absolute right-3 top-3.5">
+                    <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                  </div>
+                )}
+                
+                {showSuggestions && addressSuggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {addressSuggestions.map((suggestion, idx) => (
+                      <div 
+                        key={idx}
+                        onClick={() => handleAddressSelect(suggestion)}
+                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b last:border-0 border-gray-100 flex items-start gap-3"
+                      >
+                        <MapPin className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
+                        <span className="text-sm text-gray-700">{suggestion.display_name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                We'll drop a pin on the map automatically. (Google Maps Autocomplete Mock)
+                Select an address from the dropdown to verify its location.
               </p>
             </div>
             

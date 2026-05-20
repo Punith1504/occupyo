@@ -27,10 +27,10 @@ export async function createStripeCheckoutSession(leaseId: string) {
     if (lease.status !== "APPROVED") return { success: false, error: "Lease is not approved yet" };
 
     const headersList = await headers();
-    // Use x-forwarded-proto and x-forwarded-host if available, otherwise fallback to localhost
-    const protocol = headersList.get("x-forwarded-proto") || "http";
-    const host = headersList.get("x-forwarded-host") || headersList.get("host") || "localhost:3000";
-    const origin = `${protocol}://${host}`;
+    // Use x-forwarded-proto and x-forwarded-host if available, otherwise fallback to the new domain
+    const protocol = headersList.get("x-forwarded-proto") || "https";
+    const host = headersList.get("x-forwarded-host") || headersList.get("host") || "occupyo.com";
+    const origin = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
 
     // 2% platform fee
     const amount = lease.property.pricePerMonth;
