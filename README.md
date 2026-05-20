@@ -32,13 +32,14 @@ Engineered with a focus on modern **Liquid Glass UI**, enterprise-grade scalabil
   - Integrated **Stripe Connect** for multi-currency, cross-border international transactions.
   - Integrated **Razorpay** SDK with automated Webhook listeners to handle localized Indian payment methods (UPI, RuPay, Netbanking).
 
-- **Geospatial & Unbound Search**
-  - Implemented dynamic global address resolution using **Google Maps Places API**.
-  - Utilizes debounced querying and dynamic location-based distance sorting (Haversine formula) to calculate proximity between users and properties in real-time.
+- **Geospatial & Predictive Global Search**
+  - Engineered a custom, debounced predictive autocomplete service interacting directly with the **Google Maps Places API**.
+  - Features real-time substring highlighting, cognitive load balancing, and dynamic location-based distance sorting (Haversine formula) to calculate proximity between users and properties.
 
-- **Liquid Glassmorphism UX**
-  - Designed a custom CSS token system bypassing standard utility frameworks to deliver an **iOS-native "Liquid Glass"** aesthetic.
-  - Features real-time blur, neon accents, highly responsive fluid animations, and a floating AI-driven FAQ chatbot.
+- **Liquid Glassmorphism UX & Haptic Micro-interactions**
+  - Bypassed standard utility frameworks to deliver a custom **iOS-native "Liquid Glass"** aesthetic with hardware-accelerated CSS physics.
+  - Interfaced with the `navigator.vibrate` Web API to inject real physical **haptic feedback** on interactive elements, delivering a tactile, native-app feel on mobile devices.
+  - Features real-time blur, neon accents, floating AI chatbots, and elastic, squishy component animations (`active:scale-95`).
 
 - **Automated CI/CD Pipeline**
   - Configured robust **GitHub Actions** pipelines for automated linting, Prisma type generation, and staging/production deployments directly to **Vercel**.
