@@ -110,3 +110,11 @@ model Message {
   read       Boolean  @default(false)
   createdAt  DateTime @default(now())
 }
+
+model UserEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  eventType String   // e.g., 'SEARCH', 'VIEW_PROPERTY', 'CLICK'
+  eventData Json     @default("{}") // Store query, propertyId, etc.
+  createdAt DateTime @default(now())
+}
