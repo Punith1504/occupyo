@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from '@clerk/nextjs'
 import TelemetryTracker from "@/components/TelemetryTracker";
+import ChatBot from "@/components/ChatBot";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default function RootLayout({
         <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]">
           <TelemetryTracker />
           {children}
+          <ChatBot />
         </body>
       </html>
     </ClerkProvider>
