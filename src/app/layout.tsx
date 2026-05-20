@@ -1,8 +1,15 @@
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import TelemetryTracker from "@/components/TelemetryTracker";
 import ChatBot from "@/components/ChatBot";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   title: "Occupyo - Global Flex Occupancy Marketplace",
@@ -24,10 +31,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f2f7" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-  ],
+  themeColor: "#f2f2f7",
 };
 
 export default function RootLayout({
@@ -39,17 +43,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
-        className="h-full antialiased"
+        className={`h-full antialiased ${inter.variable}`}
       >
-        <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-            rel="stylesheet"
-          />
-        </head>
-        <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+        <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] font-[var(--font-inter)]">
           <TelemetryTracker />
           {children}
           <ChatBot />

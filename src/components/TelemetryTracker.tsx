@@ -9,26 +9,25 @@ export default function TelemetryTracker() {
   const { user } = useUser();
 
   useEffect(() => {
-    // Track page views
-    const trackPageView = async () => {
-      try {
-        await fetch("/api/telemetry", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: user?.id || "anonymous",
-            eventType: "PAGE_VIEW",
-            eventData: { path: pathname, timestamp: new Date().toISOString() },
-          }),
-        });
-      } catch (err) {
-        // Silently fail for telemetry
-      }
+    // Use requestIdleCallback so telemetry never blocks UI rendering
+    const track = () => {
+      fetch("/api/telemetry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true, // survives page navigations
+        body: JSON.stringify({
+          userId: user?.id || "anonymous",
+          eventType: "PAGE_VIEW",
+          eventData: { path: pathname, timestamp: new Date().toISOString() },
+        }),
+      }).catch(() => {}); // silently fail
     };
 
-    trackPageView();
+    if ("requestIdleCallback" in window) {
+      (window as any).requestIdleCallback(track);
+    } else {
+      setTimeout(track, 200);
+    }
   }, [pathname, user]);
 
   return null;
