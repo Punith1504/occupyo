@@ -4,16 +4,17 @@
 :root {
   --background: #f2f2f7;
   --foreground: #1c1c1e;
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-bg-heavy: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-  --glass-blur: 20px;
-  --accent: #007aff;
-  --accent-hover: #0056cc;
-  --destructive: #ff3b30;
-  --success: #34c759;
-  --warning: #ff9500;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.90);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --glass-blur: 24px;
+  --accent: #00f3ff;
+  --accent-hover: #00d2ff;
+  --neon-glow: 0 0 15px rgba(0, 243, 255, 0.5), 0 0 30px rgba(0, 243, 255, 0.3);
+  --destructive: #ff2a5f;
+  --success: #39ff14;
+  --warning: #ffea00;
   --separator: rgba(60, 60, 67, 0.12);
   --secondary-bg: rgba(118, 118, 128, 0.12);
   --tertiary-label: rgba(60, 60, 67, 0.3);
@@ -31,10 +32,11 @@
   :root {
     --background: #000000;
     --foreground: #f5f5f7;
-    --glass-bg: rgba(28, 28, 30, 0.72);
-    --glass-bg-heavy: rgba(28, 28, 30, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --glass-bg: rgba(20, 20, 25, 0.75);
+    --glass-bg-heavy: rgba(20, 20, 25, 0.90);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --neon-glow: 0 0 20px rgba(0, 243, 255, 0.6), 0 0 40px rgba(0, 243, 255, 0.4);
     --separator: rgba(84, 84, 88, 0.65);
     --secondary-bg: rgba(118, 118, 128, 0.24);
     --tertiary-label: rgba(235, 235, 245, 0.3);
@@ -58,9 +60,30 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.47059;
-  letter-spacing: -0.022em;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+  font-weight: 500;
   overscroll-behavior-y: none;
+}
+
+/* ====== NEON TYPOGRAPHY ====== */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.text-poppy {
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--foreground) 0%, #888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.neon-text {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3);
+  font-weight: 800;
 }
 
 /* ====== GLASSMORPHISM UTILITIES ====== */
@@ -126,15 +149,16 @@ body {
 
 .glass-button {
   background: var(--accent);
-  color: #fff;
+  color: #000; /* High contrast text on neon backgrounds */
   border: none;
-  border-radius: 14px;
-  padding: 14px 28px;
-  font-weight: 600;
-  font-size: 17px;
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-weight: 800;
+  font-size: 18px;
   letter-spacing: -0.01em;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: var(--neon-glow);
   position: relative;
   overflow: hidden;
 }
