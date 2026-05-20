@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="public/favicon.ico" alt="Occupyo Logo" width="80" height="80">
+  <h3 align="center">Occupyo</h3>
+  <p align="center">
+    A Global B2B Flex Occupancy Marketplace built with Next.js, FastAPI, and Capacitor.
+    <br />
+    <a href="https://occupyo.com"><strong>View Live Demo »</strong></a>
+    <br />
+    <br />
+  </p>
+</div>
 
-## Getting Started
+---
 
-First, run the development server:
+## 🚀 Overview
+
+**Occupyo** is a hyper-premium, globally scalable B2B marketplace designed to connect commercial real estate owners with tenants looking for flexible warehouse, office, and industrial spaces. 
+
+Engineered with a focus on modern **Liquid Glass UI**, enterprise-grade scalability, and cross-platform native delivery, Occupyo serves as a comprehensive case study in modern full-stack development, machine learning integration, and CI/CD automation.
+
+## ✨ Key Features & Technical Achievements
+
+- **Omnichannel Delivery (Web, iOS, Android)**
+  - Built natively for the web as a PWA and wrapped into fully functional **iOS and Android** applications using **Capacitor**.
+  - Maintains a single unified codebase (`Next.js`) for all platforms with instant OTA (Over-The-Air) deployment capability via native web views.
+
+- **AI/ML Recommendation Engine (FastAPI)**
+  - Engineered a standalone microservice using **Python, FastAPI, and Scikit-Learn**.
+  - Collects silent user telemetry (clicks, dwell time, searches) into a PostgreSQL database and utilizes **TF-IDF Vectorization & Cosine Similarity** to power a content-based collaborative filtering recommendation engine.
+
+- **Global Payment Infrastructure**
+  - Integrated **Stripe Connect** for multi-currency, cross-border international transactions.
+  - Integrated **Razorpay** SDK with automated Webhook listeners to handle localized Indian payment methods (UPI, RuPay, Netbanking).
+
+- **Geospatial & Unbound Search**
+  - Implemented dynamic global address resolution using **Google Maps Places API**.
+  - Utilizes debounced querying and dynamic location-based distance sorting (Haversine formula) to calculate proximity between users and properties in real-time.
+
+- **Liquid Glassmorphism UX**
+  - Designed a custom CSS token system bypassing standard utility frameworks to deliver an **iOS-native "Liquid Glass"** aesthetic.
+  - Features real-time blur, neon accents, highly responsive fluid animations, and a floating AI-driven FAQ chatbot.
+
+- **Automated CI/CD Pipeline**
+  - Configured robust **GitHub Actions** pipelines for automated linting, Prisma type generation, and staging/production deployments directly to **Vercel**.
+
+## 🛠️ Technology Stack
+
+| Domain | Technologies Used |
+| :--- | :--- |
+| **Frontend Core** | Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS |
+| **Backend API** | Next.js Route Handlers, Python (FastAPI, Pandas, Scikit-Learn) |
+| **Database & ORM** | PostgreSQL (Neon), Prisma ORM |
+| **Authentication** | Clerk Auth (B2B OAuth & JWT) |
+| **Payments** | Stripe Connect, Razorpay |
+| **Mobile Native** | Ionic Capacitor (iOS/Android) |
+| **DevOps & CI/CD** | GitHub Actions, Vercel |
+
+## 📐 Architecture Breakdown
+
+### 1. Database Schema (Prisma)
+- Utilizes relational modeling for `Users` (Owners vs. Tenants), `Properties`, `Leases`, and `SpaceRequests`.
+- Implements a specialized `UserEvent` table to act as the primary data lake for the ML telemetry pipeline.
+
+### 2. Machine Learning Pipeline
+- A Next.js tracking component silently POSTs telemetry to a Node.js route handler.
+- The Python FastAPI backend ingests this telemetry, vectorizes property attributes, and returns an array of personalized `propertyIds` mapped to the user profile.
+
+### 3. Payment State Machine
+- Transactions trigger a `PENDING` state in the database.
+- Asynchronous webhook endpoints (for both Stripe and Razorpay) listen for cryptographically verified success payloads to update the lease state to `ACTIVE`, ensuring zero data loss during network interruptions.
+
+## 💻 Local Development Setup
+
+To run Occupyo locally on your machine:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Punith1504/occupyo.git
+   cd occupyo
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory and populate the required keys:
+   ```env
+   # Database
+   DATABASE_URL="your_postgresql_connection_string"
+   
+   # Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="..."
+   CLERK_SECRET_KEY="..."
+   
+   # Payments
+   STRIPE_SECRET_KEY="..."
+   STRIPE_WEBHOOK_SECRET="..."
+   RAZORPAY_KEY_ID="..."
+   RAZORPAY_KEY_SECRET="..."
+   RAZORPAY_WEBHOOK_SECRET="..."
+   
+   # Maps
+   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="..."
+   ```
+
+4. **Initialize Database:**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+5. **Start Development Server:**
+   ```bash
+   npm run dev
+   ```
+
+## 📱 Compiling Mobile Apps
+To compile the native shells, you must have Android Studio (for Android) or Xcode (for iOS) installed.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# For Android
+npx cap open android
+
+# For iOS (Requires macOS)
+npx cap open ios
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+<div align="center">
+  <i>Developed and engineered by <a href="https://github.com/Punith1504">Punith</a></i>
+</div>
