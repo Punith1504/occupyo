@@ -8,8 +8,11 @@ import { Loader2 } from "lucide-react";
 interface BookingFormProps {
   propertyId: string;
   pricePerMonth: number;
-  minLeaseMonths: number;
-  maxLeaseMonths: number;
+  minDuration: number;
+  maxDuration: number;
+  durationUnit: string;
+  pricePerHour: number | null;
+  pricePerDay: number | null;
   ownerName: string;
   ownerId: string;
 }
@@ -17,18 +20,31 @@ interface BookingFormProps {
 export function BookingForm({
   propertyId,
   pricePerMonth,
-  minLeaseMonths,
-  maxLeaseMonths,
+  minDuration,
+  maxDuration,
+  durationUnit,
+  pricePerHour,
+  pricePerDay,
   ownerName,
   ownerId,
 }: BookingFormProps) {
   const router = useRouter();
-  const [months, setMonths] = useState<number>(minLeaseMonths);
+  const [duration, setDuration] = useState<number>(minDuration);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const totalAmount = pricePerMonth * months;
+  let unitPrice = pricePerMonth;
+  let unitLabel = "month";
+  if (durationUnit === "HOURS" && pricePerHour) {
+    unitPrice = pricePerHour;
+    unitLabel = "hour";
+  } else if (durationUnit === "DAYS" && pricePerDay) {
+    unitPrice = pricePerDay;
+    unitLabel = "day";
+  }
+
+  const totalAmount = unitPrice * duration;
 
   const handleBooking = async () => {
     setLoading(true);
@@ -36,7 +52,9 @@ export function BookingForm({
     
     const result = await createLeaseRequest({
       propertyId,
-      durationMonths: months,
+      duration: duration,
+      durationUnit: durationUnit,
+      bookingType: durationUnit === "HOURS" ? "HOURLY" : (durationUnit === "DAYS" ? "DAILY" : "MONTHLY")
     });
 
     setLoading(false);
@@ -54,7 +72,7 @@ export function BookingForm({
 
   if (success) {
     return (
-      <div className="bg-white rounded-3xl p-8 border border-green-200 shadow-xl sticky top-24 text-center">
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-green-200 shadow-xl sticky top-24 text-center">
         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
         </div>
@@ -71,10 +89,10 @@ export function BookingForm({
   }
 
   return (
-    <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl sticky top-24">
+    <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-200 shadow-xl sticky top-24">
       <div className="mb-6">
-        <span className="text-3xl font-bold text-gray-900">${pricePerMonth.toLocaleString()}</span>
-        <span className="text-gray-500"> / month</span>
+        <span className="text-2xl md:text-3xl font-bold text-gray-900">${unitPrice.toLocaleString()}</span>
+        <span className="text-gray-500 text-sm md:text-base"> / {unitLabel}</span>
       </div>
       
       {error && (
@@ -95,32 +113,32 @@ export function BookingForm({
       </div>
 
       <div className="mb-6 border-t border-gray-100 pt-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Lease Duration (Months)</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Lease Duration ({durationUnit})</label>
         <div className="flex items-center">
           <input 
             type="range" 
-            min={minLeaseMonths} 
-            max={maxLeaseMonths} 
-            value={months} 
-            onChange={(e) => setMonths(parseInt(e.target.value))}
+            min={minDuration} 
+            max={maxDuration} 
+            value={duration} 
+            onChange={(e) => setDuration(parseInt(e.target.value))}
             className="w-full accent-black"
           />
-          <span className="ml-4 w-12 text-center font-bold text-gray-900">{months}</span>
+          <span className="ml-4 w-12 text-center font-bold text-gray-900">{duration}</span>
         </div>
         <div className="flex justify-between text-xs text-gray-500 mt-2">
-          <span>Min: {minLeaseMonths}</span>
-          <span>Max: {maxLeaseMonths}</span>
+          <span>Min: {minDuration}</span>
+          <span>Max: {maxDuration}</span>
         </div>
       </div>
 
       <div className="mb-6 bg-gray-50 p-4 rounded-xl">
         <div className="flex justify-between mb-2">
-          <span className="text-gray-600">Monthly Rent</span>
-          <span className="font-medium text-gray-900">${pricePerMonth.toLocaleString()}</span>
+          <span className="text-gray-600">Rate ({unitLabel})</span>
+          <span className="font-medium text-gray-900">${unitPrice.toLocaleString()}</span>
         </div>
         <div className="flex justify-between mb-2">
           <span className="text-gray-600">Duration</span>
-          <span className="font-medium text-gray-900">{months} months</span>
+          <span className="font-medium text-gray-900">{duration} {unitLabel}s</span>
         </div>
         <div className="border-t border-gray-200 mt-3 pt-3 flex justify-between font-bold">
           <span className="text-gray-900">Total Commitment</span>
@@ -132,7 +150,7 @@ export function BookingForm({
         <button 
           onClick={handleBooking}
           disabled={loading}
-          className="w-full bg-black text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors shadow-lg shadow-black/20 flex items-center justify-center gap-2 disabled:opacity-70"
+          className="w-full bg-black text-white py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg hover:bg-gray-800 transition-colors shadow-lg shadow-black/20 flex items-center justify-center gap-2 disabled:opacity-70"
         >
           {loading && <Loader2 className="w-5 h-5 animate-spin" />}
           {loading ? "Processing..." : "Request to Book"}

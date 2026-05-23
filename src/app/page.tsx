@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Search, Sparkles } from "lucide-react";
+import { Building2, Search, Sparkles, MapPin } from "lucide-react";
 import { hapticTap, hapticMedium } from "@/lib/haptics";
+import { TrustSignals } from "@/components/home/TrustSignals";
+import { Testimonials } from "@/components/home/Testimonials";
 
 export default function Home() {
   const router = useRouter();
@@ -103,13 +105,13 @@ export default function Home() {
         <div className="mb-16 text-center flex flex-col items-center">
           <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6">
             <Sparkles className="w-4 h-4 text-cyan-400" />
-            <span className="text-sm font-medium text-white/80">B2B Flex Occupancy</span>
+            <span className="text-sm font-medium text-white/80">Next-Gen CRE Platform</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-4">
-            Occupyo
+            Friction-Free Space
           </h1>
-          <p className="text-lg text-white/40 max-w-md mx-auto">
-            Select your path to enter the marketplace.
+          <p className="text-xl text-white/50 max-w-2xl mx-auto font-medium">
+            The intelligent marketplace for commercial real estate. Discover, book, and manage your perfect workspace with transparent pricing and zero hidden fees.
           </p>
         </div>
 
@@ -185,7 +187,12 @@ export default function Home() {
           </button>
 
         </div>
-
+      </div>
+      
+      {/* ===== TRUST SIGNALS & TESTIMONIALS ===== */}
+      <div className="relative z-10">
+        <TrustSignals />
+        <Testimonials />
       </div>
 
       <style jsx>{`

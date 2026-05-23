@@ -8,7 +8,7 @@ import LocationSearchInput from "./LocationSearchInput";
 export const dynamic = "force-dynamic";
 
 export default async function PropertySearchPage(props: {
-  searchParams: Promise<{ type?: string; location?: string }>;
+  searchParams: Promise<{ type?: string; location?: string; niche?: string }>;
 }) {
   const { userId } = await auth();
   if (!userId) {
@@ -16,7 +16,7 @@ export default async function PropertySearchPage(props: {
   }
 
   const searchParams = await props.searchParams;
-  const { type, location, lat, lng } = searchParams;
+  const { type, location, lat, lng, niche } = searchParams;
   const userLat = lat ? parseFloat(lat) : null;
   const userLng = lng ? parseFloat(lng) : null;
 
@@ -35,6 +35,15 @@ export default async function PropertySearchPage(props: {
       contains: location,
       mode: "insensitive",
     };
+  }
+
+  // Basic implementation of niche filtering using amenities JSON field or title description
+  // In a robust implementation this would use a dedicated 'tags' field or PostGIS
+  if (niche) {
+    whereClause.OR = [
+      { title: { contains: niche, mode: "insensitive" } },
+      { description: { contains: niche, mode: "insensitive" } },
+    ];
   }
 
   let properties: any[] = [];
@@ -109,6 +118,28 @@ export default async function PropertySearchPage(props: {
             Search
           </button>
         </form>
+        
+        {/* Niche Filtering Tags */}
+        <div className="mt-6 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          <span className="text-sm font-medium text-gray-500 whitespace-nowrap mr-2">Popular Niches:</span>
+          {['Premium Co-working', 'Medical', 'Industrial', 'Creative Studio', 'Retail Pop-up'].map(tag => (
+            <Link 
+              key={tag}
+              href={`/dashboard/tenant/search?${new URLSearchParams({...searchParams as any, niche: tag}).toString()}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${niche === tag ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            >
+              {tag}
+            </Link>
+          ))}
+          {niche && (
+            <Link 
+              href={`/dashboard/tenant/search`}
+              className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors ml-2"
+            >
+              Clear Filter
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Results Section */}

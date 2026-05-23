@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Search, Building2, Calendar, FileText } from "lucide-react";
+import { AiMatcher } from "@/components/tenant/AiMatcher";
+import { CommunityCard } from "@/components/dashboard/CommunityCard";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +49,10 @@ export default async function TenantDashboardOverview() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Welcome back, {user.companyName || 'Tenant'}</h1>
         <p className="text-gray-500 mt-1">Manage your flexible workspaces and leases</p>
+      </div>
+
+      <div className="mb-10">
+        <AiMatcher />
       </div>
 
       {leases.length === 0 ? (
@@ -126,6 +132,8 @@ export default async function TenantDashboardOverview() {
           </Link>
         </div>
       </div>
+
+      <CommunityCard />
     </div>
   );
 }

@@ -34,6 +34,8 @@ model User {
   einVerified    Boolean   @default(false)
   coiUploaded    Boolean   @default(false)
   phone          String?
+  referralCode   String?   @unique
+  referredBy     String?
   createdAt      DateTime  @default(now())
   
   properties     Property[]
@@ -51,9 +53,12 @@ model Property {
   description      String
   propertyType     PropertyType
   sizeSqft         Int
+  pricePerHour     Float?
+  pricePerDay      Float?
   pricePerMonth    Float
-  minLeaseMonths   Int
-  maxLeaseMonths   Int
+  minDuration      Int      @default(1)
+  maxDuration      Int      @default(12)
+  durationUnit     String   @default("MONTHS") // "HOURS", "DAYS", "MONTHS"
   address          String
   lat              Float?
   lng              Float?
@@ -82,6 +87,7 @@ model Lease {
   startDate       DateTime
   endDate         DateTime
   totalAmount     Float
+  bookingType     String      @default("MONTHLY") // "HOURLY", "DAILY", "MONTHLY"
   status          LeaseStatus @default(PENDING)
   stripePaymentId String?
   createdAt       DateTime    @default(now())

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { MapPin, Building2, Calendar, DollarSign, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { BookingForm } from "./BookingForm";
+import { PricingBreakdown } from "@/components/property/PricingBreakdown";
 
 export const dynamic = "force-dynamic";
 
@@ -108,12 +109,12 @@ export default async function PropertyPage(
                 <p className="font-semibold text-xl text-gray-900">${property.pricePerMonth.toLocaleString()}/mo</p>
               </div>
               <div>
-                <p className="text-gray-500 text-sm mb-1">Min Term</p>
-                <p className="font-semibold text-xl text-gray-900">{property.minLeaseMonths} mos</p>
+                <p className="text-gray-500 text-sm mb-1">Min Duration</p>
+                <p className="font-semibold text-xl text-gray-900">{property.minDuration} {property.durationUnit.toLowerCase()}</p>
               </div>
               <div>
-                <p className="text-gray-500 text-sm mb-1">Max Term</p>
-                <p className="font-semibold text-xl text-gray-900">{property.maxLeaseMonths} mos</p>
+                <p className="text-gray-500 text-sm mb-1">Max Duration</p>
+                <p className="font-semibold text-xl text-gray-900">{property.maxDuration} {property.durationUnit.toLowerCase()}</p>
               </div>
             </div>
 
@@ -138,6 +139,8 @@ export default async function PropertyPage(
               </div>
             )}
             
+            <PricingBreakdown baseRent={property.pricePerMonth} />
+            
             <div>
                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Location</h2>
                <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative bg-gray-100">
@@ -159,8 +162,11 @@ export default async function PropertyPage(
              <BookingForm 
                propertyId={property.id}
                pricePerMonth={property.pricePerMonth}
-               minLeaseMonths={property.minLeaseMonths}
-               maxLeaseMonths={property.maxLeaseMonths}
+               minDuration={property.minDuration}
+               maxDuration={property.maxDuration}
+               durationUnit={property.durationUnit}
+               pricePerHour={property.pricePerHour}
+               pricePerDay={property.pricePerDay}
                ownerName={property.owner?.companyName || 'Verified Owner'}
                ownerId={property.ownerId}
              />

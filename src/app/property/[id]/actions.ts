@@ -5,7 +5,9 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function createLeaseRequest(data: {
   propertyId: string;
-  durationMonths: number;
+  duration: number;
+  durationUnit: string;
+  bookingType: string;
 }) {
   const { userId } = await auth();
 
@@ -29,12 +31,12 @@ export async function createLeaseRequest(data: {
     return { success: false, error: "Property not found." };
   }
 
-  if (data.durationMonths < property.minLeaseMonths) {
-    return { success: false, error: `Minimum lease term is ${property.minLeaseMonths} months.` };
+  if (data.duration < property.minDuration) {
+    return { success: false, error: `Minimum term is ${property.minDuration} ${property.durationUnit.toLowerCase()}.` };
   }
 
-  if (data.durationMonths > property.maxLeaseMonths) {
-    return { success: false, error: `Maximum lease term is ${property.maxLeaseMonths} months.` };
+  if (data.duration > property.maxDuration) {
+    return { success: false, error: `Maximum term is ${property.maxDuration} ${property.durationUnit.toLowerCase()}.` };
   }
 
   const startDate = new Date();
@@ -42,9 +44,20 @@ export async function createLeaseRequest(data: {
   startDate.setDate(startDate.getDate() + 1);
   
   const endDate = new Date(startDate);
-  endDate.setMonth(endDate.getMonth() + data.durationMonths);
+  if (data.bookingType === "HOURLY") {
+    endDate.setHours(endDate.getHours() + data.duration);
+  } else if (data.bookingType === "DAILY") {
+    endDate.setDate(endDate.getDate() + data.duration);
+  } else {
+    endDate.setMonth(endDate.getMonth() + data.duration);
+  }
 
-  const totalAmount = property.pricePerMonth * data.durationMonths;
+  let totalAmount = property.pricePerMonth * data.duration;
+  if (data.bookingType === "HOURLY" && property.pricePerHour) {
+    totalAmount = property.pricePerHour * data.duration;
+  } else if (data.bookingType === "DAILY" && property.pricePerDay) {
+    totalAmount = property.pricePerDay * data.duration;
+  }
 
   try {
     const lease = await prisma.lease.create({
@@ -54,6 +67,7 @@ export async function createLeaseRequest(data: {
         startDate: startDate,
         endDate: endDate,
         totalAmount: totalAmount,
+        bookingType: data.bookingType,
         status: "PENDING",
       }
     });

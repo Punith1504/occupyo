@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { PlusCircle, Building } from "lucide-react";
 import { redirect } from "next/navigation";
+import { CommunityCard } from "@/components/dashboard/CommunityCard";
 
 export const dynamic = "force-dynamic";
 
@@ -110,6 +111,8 @@ export default async function OwnerDashboardOverview() {
           ))}
         </div>
       )}
+
+      <CommunityCard />
     </div>
   );
 }

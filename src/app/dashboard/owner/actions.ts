@@ -10,8 +10,11 @@ export async function createPropertyAction(data: {
   propertyType: PropertyType;
   sizeSqft: number;
   pricePerMonth: number;
-  minLeaseMonths: number;
-  maxLeaseMonths: number;
+  pricePerHour?: number;
+  pricePerDay?: number;
+  minDuration: number;
+  maxDuration: number;
+  durationUnit?: string;
   address: string;
   lat: number | null;
   lng: number | null;
@@ -41,8 +44,11 @@ export async function createPropertyAction(data: {
         propertyType: data.propertyType,
         sizeSqft: data.sizeSqft,
         pricePerMonth: data.pricePerMonth,
-        minLeaseMonths: data.minLeaseMonths,
-        maxLeaseMonths: data.maxLeaseMonths,
+        pricePerHour: data.pricePerHour,
+        pricePerDay: data.pricePerDay,
+        minDuration: data.minDuration,
+        maxDuration: data.maxDuration,
+        durationUnit: data.durationUnit || "MONTHS",
         address: data.address,
         lat: data.lat,
         lng: data.lng,

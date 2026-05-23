@@ -30,8 +30,12 @@ export default function CreateListingPage() {
     description: "",
     propertyType: "WAREHOUSE",
     sizeSqft: "",
+    pricePerHour: "",
+    pricePerDay: "",
     pricePerMonth: "",
-    leaseTerm: "3-6", // 0-3, 3-6, 6-12
+    minDuration: "1",
+    maxDuration: "12",
+    durationUnit: "MONTHS",
     address: "",
     lat: null as number | null,
     lng: null as number | null,
@@ -179,21 +183,17 @@ export default function CreateListingPage() {
     setLoading(true);
     setError("");
     
-    // Parse lease terms
-    let minMonths = 1;
-    let maxMonths = 12;
-    if (formData.leaseTerm === "0-3") { minMonths = 1; maxMonths = 3; }
-    else if (formData.leaseTerm === "3-6") { minMonths = 3; maxMonths = 6; }
-    else if (formData.leaseTerm === "6-12") { minMonths = 6; maxMonths = 12; }
-
     const result = await createPropertyAction({
       title: formData.title,
       description: formData.description,
       propertyType: formData.propertyType as "WAREHOUSE" | "FLEX" | "OFFICE",
       sizeSqft: parseInt(formData.sizeSqft) || 0,
+      pricePerHour: parseFloat(formData.pricePerHour) || undefined,
+      pricePerDay: parseFloat(formData.pricePerDay) || undefined,
       pricePerMonth: parseFloat(formData.pricePerMonth) || 0,
-      minLeaseMonths: minMonths,
-      maxLeaseMonths: maxMonths,
+      minDuration: parseInt(formData.minDuration) || 1,
+      maxDuration: parseInt(formData.maxDuration) || 12,
+      durationUnit: formData.durationUnit,
       address: formData.address,
       lat: formData.lat,
       lng: formData.lng,
@@ -299,7 +299,69 @@ export default function CreateListingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Price per Month ($)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Duration Unit</label>
+                <select 
+                  value={formData.durationUnit}
+                  onChange={(e) => setFormData({...formData, durationUnit: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none bg-white"
+                  style={{ color: '#000000' }}
+                >
+                  <option value="HOURS">Hours (Hourly)</option>
+                  <option value="DAYS">Days (Daily)</option>
+                  <option value="MONTHS">Months (Monthly)</option>
+                </select>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Min {formData.durationUnit.toLowerCase()}</label>
+                  <input 
+                    type="number"
+                    value={formData.minDuration}
+                    onChange={(e) => setFormData({...formData, minDuration: e.target.value})}
+                    placeholder="1"
+                    className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                    style={{ color: '#000000' }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Max {formData.durationUnit.toLowerCase()}</label>
+                  <input 
+                    type="number"
+                    value={formData.maxDuration}
+                    onChange={(e) => setFormData({...formData, maxDuration: e.target.value})}
+                    placeholder="12"
+                    className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                    style={{ color: '#000000' }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Price / Hour ($)</label>
+                <input 
+                  type="number"
+                  value={formData.pricePerHour}
+                  onChange={(e) => setFormData({...formData, pricePerHour: e.target.value})}
+                  placeholder="Optional"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                  style={{ color: '#000000' }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Price / Day ($)</label>
+                <input 
+                  type="number"
+                  value={formData.pricePerDay}
+                  onChange={(e) => setFormData({...formData, pricePerDay: e.target.value})}
+                  placeholder="Optional"
+                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
+                  style={{ color: '#000000' }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Price / Month ($)</label>
                 <input 
                   type="number"
                   value={formData.pricePerMonth}
@@ -308,19 +370,6 @@ export default function CreateListingPage() {
                   className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none"
                   style={{ color: '#000000' }}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ideal Lease Term</label>
-                <select 
-                  value={formData.leaseTerm}
-                  onChange={(e) => setFormData({...formData, leaseTerm: e.target.value})}
-                  className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black outline-none bg-white"
-                  style={{ color: '#000000' }}
-                >
-                  <option value="0-3">0-3 Months (Short Term)</option>
-                  <option value="3-6">3-6 Months</option>
-                  <option value="6-12">6-12 Months (Standard)</option>
-                </select>
               </div>
             </div>
 
