@@ -86,11 +86,12 @@ export default function Home() {
         </>
       )}
 
-      {/* ===== MINIMALIST BACKGROUND ===== */}
+      {/* ===== CINEMATIC BACKGROUND ===== */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Dynamic mesh gradient */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '6s' }} />
+        {/* Dynamic mesh gradient with pastel colors */}
+        <div className="absolute top-1/4 left-1/4 w-[40rem] h-[40rem] bg-[#cbb4ff] opacity-15 rounded-full blur-[140px] mix-blend-screen animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-[40rem] h-[40rem] bg-[#a1ebd6] opacity-15 rounded-full blur-[140px] mix-blend-screen animate-float" style={{ animationDelay: '-4s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50rem] h-[50rem] bg-[#b4e6ff] opacity-10 rounded-full blur-[160px] mix-blend-screen animate-float" style={{ animationDelay: '-2s' }} />
       </div>
 
       {/* ===== CONTENT ===== */}
@@ -130,23 +131,22 @@ export default function Home() {
               setHoveredCard("post");
             }}
             onMouseLeave={() => setHoveredCard(null)}
-            className="flex-1 group relative rounded-[2rem] p-1 text-left transition-all duration-300 active:scale-[0.98]"
+            className="flex-1 group relative p-1 text-left transition-all duration-300 active:scale-[0.98]"
             style={{
               transform: hoveredCard === "post" ? "translateY(-4px)" : "translateY(0)"
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/50 to-purple-600/50 rounded-[2rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
-            <div className="relative h-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 overflow-hidden">
+            <div className="pure-glass h-full p-8 overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
-              <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-indigo-500/30">
-                <Building2 className="w-7 h-7 text-indigo-400" />
+              <div className="w-14 h-14 rounded-2xl bg-[#cbb4ff]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-[#cbb4ff]/20">
+                <Building2 className="w-7 h-7 text-[#cbb4ff]" />
               </div>
               
               <h2 className="text-3xl font-semibold text-white mb-2">Post a space</h2>
               <p className="text-white/50 mb-8">List your flex property for businesses to find.</p>
               
-              <div className="flex items-center text-indigo-400 font-medium">
+              <div className="flex items-center text-[#cbb4ff] font-medium">
                 Enter as Owner <span className="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
               </div>
             </div>
@@ -164,23 +164,22 @@ export default function Home() {
               setHoveredCard("rent");
             }}
             onMouseLeave={() => setHoveredCard(null)}
-            className="flex-1 group relative rounded-[2rem] p-1 text-left transition-all duration-300 active:scale-[0.98]"
+            className="flex-1 group relative p-1 text-left transition-all duration-300 active:scale-[0.98]"
             style={{
               transform: hoveredCard === "rent" ? "translateY(-4px)" : "translateY(0)"
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/50 to-blue-600/50 rounded-[2rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
-            <div className="relative h-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 overflow-hidden">
+            <div className="pure-glass h-full p-8 overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
-              <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-cyan-500/30">
-                <Search className="w-7 h-7 text-cyan-400" />
+              <div className="w-14 h-14 rounded-2xl bg-[#a1ebd6]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-[#a1ebd6]/20">
+                <Search className="w-7 h-7 text-[#a1ebd6]" />
               </div>
               
               <h2 className="text-3xl font-semibold text-white mb-2">Rent a space</h2>
               <p className="text-white/50 mb-8">Find the perfect warehouse or office space.</p>
               
-              <div className="flex items-center text-cyan-400 font-medium">
+              <div className="flex items-center text-[#a1ebd6] font-medium">
                 Enter as Tenant <span className="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
               </div>
             </div>

@@ -2,33 +2,45 @@
 /* Google Fonts loaded via next/font in layout.tsx for zero render-blocking */
 
 :root {
-  --background: #f2f2f7;
-  --foreground: #1c1c1e;
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-bg-heavy: rgba(255, 255, 255, 0.90);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --glass-blur: 24px;
-  --accent: #00f3ff;
-  --accent-hover: #00d2ff;
-  --neon-glow: 0 0 15px rgba(0, 243, 255, 0.5), 0 0 30px rgba(0, 243, 255, 0.3);
-  --destructive: #ff2a5f;
-  --success: #39ff14;
-  --warning: #ffea00;
-  --separator: rgba(60, 60, 67, 0.12);
-  --secondary-bg: rgba(118, 118, 128, 0.12);
-  --tertiary-label: rgba(60, 60, 67, 0.3);
+  /* Cinematic Dark Theme */
+  --background: #060608;
+  --foreground: #f4f4f5;
+  
+  /* Liquid Glass (iOS 16 style) */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-highlight: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
+  --glass-blur: 40px;
+  --glass-saturation: 200%;
+  
+  /* Pastel Accents */
+  --accent: #b4e6ff;
+  --accent-hover: #c8edff;
+  --pastel-pink: #fbc2eb;
+  --pastel-mint: #a1ebd6;
+  --pastel-purple: #cbb4ff;
+  
+  --neon-glow: 0 0 15px rgba(180, 230, 255, 0.3), 0 0 30px rgba(180, 230, 255, 0.15);
+  --destructive: #ff5b7b;
+  --success: #60ff8e;
+  --warning: #ffe45e;
+  --separator: rgba(255, 255, 255, 0.08);
+  --secondary-bg: rgba(255, 255, 255, 0.05);
+  --tertiary-label: rgba(255, 255, 255, 0.4);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
+  --color-pastel-pink: var(--pastel-pink);
+  --color-pastel-mint: var(--pastel-mint);
+  --color-pastel-purple: var(--pastel-purple);
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
-
-/* Removed dark theme to enforce light mode only */
 
 /* ====== BASE RESET ====== */
 * {
@@ -54,7 +66,7 @@ body {
   overscroll-behavior-y: none;
 }
 
-/* ====== NEON TYPOGRAPHY ====== */
+/* ====== CINEMATIC TYPOGRAPHY ====== */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -63,73 +75,87 @@ h1, h2, h3, h4, h5, h6 {
 .text-poppy {
   font-weight: 900;
   letter-spacing: -0.04em;
-  background: linear-gradient(135deg, var(--foreground) 0%, #888 100%);
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .neon-text {
   color: var(--accent);
-  text-shadow: 0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3);
+  text-shadow: 0 0 10px rgba(180, 230, 255, 0.5), 0 0 20px rgba(180, 230, 255, 0.3);
   font-weight: 800;
 }
 
-/* ====== GLASSMORPHISM UTILITIES ====== */
+/* ====== LIQUID GLASSMORPHISM UTILITIES ====== */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
+  /* Inner highlight for iOS liquid feel */
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), var(--glass-shadow);
+}
+
+.pure-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(40px) saturate(220%);
+  -webkit-backdrop-filter: blur(40px) saturate(220%);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15), var(--glass-shadow);
+  border-radius: 24px;
 }
 
 .glass-heavy {
   background: var(--glass-bg-heavy);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(60px) saturate(250%);
+  -webkit-backdrop-filter: blur(60px) saturate(250%);
+  border: 1px solid var(--glass-border-highlight);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2), var(--glass-shadow);
 }
 
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: 16px;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), var(--glass-shadow);
+  border-radius: 20px;
   will-change: transform;
   contain: layout style;
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.2s, box-shadow 0.2s;
 }
 
 .glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  border-color: var(--glass-border-highlight);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 20px 40px -10px rgba(0, 0, 0, 0.6);
 }
 
 .glass-navbar {
-  background: var(--glass-bg-heavy);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(6, 6, 8, 0.4);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   border-bottom: 0.5px solid var(--separator);
 }
 
 .glass-input {
-  background: var(--secondary-bg);
-  border: 1px solid transparent;
-  border-radius: 12px;
-  padding: 12px 16px;
-  color: var(--foreground);
-  font-size: 17px;
-  transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: #fff !important;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .glass-input:focus {
-  background: var(--glass-bg-heavy);
+  background: rgba(255, 255, 255, 0.05);
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 0 0 3px rgba(180, 230, 255, 0.15);
 }
 
 .glass-input::placeholder {
@@ -137,25 +163,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-button {
-  background: var(--accent);
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
   color: #000;
-  border: none;
-  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 18px;
   padding: 16px 32px;
-  font-weight: 800;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 16px;
   letter-spacing: -0.01em;
   cursor: pointer;
   will-change: transform;
-  transition: transform 0.1s ease-out, background 0.15s ease;
-  box-shadow: var(--neon-glow);
-  position: relative;
-  overflow: hidden;
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 15px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,1);
 }
 
 .glass-button:hover {
-  background: var(--accent-hover);
-  transform: scale(1.02);
+  background: #ffffff;
+  transform: scale(1.02) translateY(-1px);
+  box-shadow: 0 8px 25px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,1);
 }
 
 .glass-button:active {
@@ -163,24 +188,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-button-secondary {
-  background: var(--secondary-bg);
-  color: var(--accent);
-  border: none;
-  border-radius: 14px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
   padding: 14px 28px;
   font-weight: 600;
-  font-size: 17px;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
 .glass-button-secondary:hover {
-  background: rgba(0, 122, 255, 0.12);
+  background: rgba(255,255,255,0.12);
+  border-color: var(--glass-border-highlight);
 }
 
 /* ====== iOS-STYLE ANIMATIONS ====== */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -199,28 +227,37 @@ h1, h2, h3, h4, h5, h6 {
   100% { background-position: 200% 0; }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
 .animate-slideUp {
-  animation: slideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.4s ease both;
+  animation: fadeIn 0.5s ease both;
 }
 
 .animate-scaleIn {
-  animation: scaleIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: scaleIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.4) 50%, transparent 75%);
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.2) 50%, transparent 75%);
   background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+  animation: shimmer 2.5s infinite;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
 }
 
 /* ====== iOS-STYLE SEPARATORS ====== */
 .ios-separator {
-  height: 0.5px;
-  background: var(--separator);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
 }
 
 /* ====== SCROLLBAR (MINIMAL LIKE iOS) ====== */
@@ -234,64 +271,36 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.3);
 }
 
-/* ====== GOOGLE AUTOCOMPLETE DROPDOWN STYLING ====== */
-.pac-container {
-  background: var(--glass-bg-heavy) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12) !important;
-  margin-top: 8px !important;
-  padding: 4px 0 !important;
-  font-family: 'Inter', -apple-system, sans-serif !important;
-  z-index: 10000 !important;
-}
-
-.pac-item {
-  padding: 12px 16px !important;
-  border-bottom: 0.5px solid var(--separator) !important;
-  cursor: pointer !important;
-  font-size: 15px !important;
-  color: var(--foreground) !important;
-  transition: background 0.15s ease !important;
-}
-
-.pac-item:hover {
-  background: rgba(0, 122, 255, 0.08) !important;
-}
-
-.pac-item-query {
-  font-size: 15px !important;
-  color: var(--foreground) !important;
-  font-weight: 500 !important;
-}
-
-.pac-icon {
-  display: none !important;
-}
-
-.pac-item::before {
-  content: '📍';
-  margin-right: 10px;
-  font-size: 14px;
-}
-
-/* Form inputs always use black text in light theme */
+/* Form inputs always use white text in this dark theme */
 input, select, textarea {
-  color: #000000 !important;
+  color: #fff !important;
+}
+
+select option {
+  background: #1c1c1e; /* Dark background for dropdown options */
+  color: #fff;
 }
 
 /* ====== SELECTION ====== */
 ::selection {
-  background: rgba(0, 122, 255, 0.3);
-  color: inherit;
+  background: rgba(180, 230, 255, 0.3);
+  color: #fff;
+}
+
+/* MAP MARKERS FOR DARK THEME */
+.dark-map-marker {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
