@@ -68,3 +68,92 @@ export async function createPropertyAction(data: {
     return { success: false, error: "Failed to create property" };
   }
 }
+
+export async function updatePropertyAction(
+  propertyId: string,
+  data: {
+    title: string;
+    description: string;
+    propertyType: PropertyType;
+    sizeSqft: number;
+    pricePerMonth: number;
+    pricePerHour?: number;
+    pricePerDay?: number;
+    minDuration: number;
+    maxDuration: number;
+    durationUnit?: string;
+    address: string;
+    lat: number | null;
+    lng: number | null;
+    amenities: string[];
+    imageUrls?: string[];
+  }
+) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user || (user.role !== "OWNER" && user.role !== "ADMIN")) {
+    return { success: false, error: "Unauthorized. Must be an owner." };
+  }
+
+  try {
+    const existingProperty = await prisma.property.findUnique({
+      where: { id: propertyId },
+    });
+
+    if (!existingProperty || existingProperty.ownerId !== user.id) {
+      return { success: false, error: "Property not found or unauthorized" };
+    }
+
+    const updatedProperty = await prisma.property.update({
+      where: { id: propertyId },
+      data: {
+        title: data.title,
+        description: data.description,
+        propertyType: data.propertyType,
+        sizeSqft: data.sizeSqft,
+        pricePerMonth: data.pricePerMonth,
+        pricePerHour: data.pricePerHour,
+        pricePerDay: data.pricePerDay,
+        minDuration: data.minDuration,
+        maxDuration: data.maxDuration,
+        durationUnit: data.durationUnit || "MONTHS",
+        address: data.address,
+        lat: data.lat,
+        lng: data.lng,
+        amenities: data.amenities, // Json field
+      },
+    });
+
+    // Handle images if provided
+    if (data.imageUrls) {
+      // Delete existing images
+      await prisma.image.deleteMany({
+        where: { propertyId: propertyId },
+      });
+
+      // Create new images
+      if (data.imageUrls.length > 0) {
+        await prisma.image.createMany({
+          data: data.imageUrls.map((url, index) => ({
+            url,
+            propertyId: propertyId,
+            isHero: index === 0, // First image is hero
+          })),
+        });
+      }
+    }
+
+    return { success: true, propertyId: updatedProperty.id };
+  } catch (error) {
+    console.error("Error updating property:", error);
+    return { success: false, error: "Failed to update property" };
+  }
+}
