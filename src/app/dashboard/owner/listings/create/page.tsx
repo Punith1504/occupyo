@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation } from "lucide-react";
+import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation, Star, ChevronLeft, ChevronRight, GripVertical, Image as ImageIcon } from "lucide-react";
 import { createPropertyAction } from "../../actions";
 import PredictiveAddressInput from "@/components/PredictiveAddressInput";
 import InteractiveMap from "@/components/InteractiveMap";
+import { hapticTap, hapticMedium, hapticSuccess, hapticError } from "@/lib/haptics";
 
 const STEPS = [
   { id: "details", title: "Details", icon: Building2 },
@@ -14,17 +15,22 @@ const STEPS = [
   { id: "legal", title: "Legal", icon: FileText },
 ];
 
+const MAX_IMAGES = 20;
+
 export default function CreateListingPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [userCoords, setUserCoords] = useState<{lat: number, lng: number} | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<number | null>(null);
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -46,7 +52,6 @@ export default function CreateListingPage() {
   const [addressLoading, setAddressLoading] = useState(false);
 
   useEffect(() => {
-    // Automatically try to get location on step 2 (Location step)
     if (currentStep === 1) {
       if (navigator.geolocation) {
         if (!formData.address && !formData.lat) {
@@ -82,17 +87,25 @@ export default function CreateListingPage() {
         );
       }
     }
-  }, [currentStep]); // Exclude formData to prevent infinite loops
+  }, [currentStep]);
 
-  const handleAddressSelect = (suggestion: any) => {
-    setFormData({
-      ...formData,
-      address: suggestion.display_name,
-      lat: parseFloat(suggestion.lat),
-      lng: parseFloat(suggestion.lon),
-    });
-    setShowSuggestions(false);
-  };
+  // Keyboard navigation for photo preview
+  useEffect(() => {
+    if (previewImage === null) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        setPreviewImage(prev => prev !== null && prev > 0 ? prev - 1 : prev);
+      } else if (e.key === "ArrowRight") {
+        setPreviewImage(prev => prev !== null && prev < imageUrls.length - 1 ? prev + 1 : prev);
+      } else if (e.key === "Escape") {
+        setPreviewImage(null);
+      }
+    };
+    
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewImage, imageUrls.length]);
 
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -105,7 +118,6 @@ export default function CreateListingPage() {
       (position) => {
         const { latitude, longitude } = position.coords;
         
-        // Reverse geocoding using Nominatim
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
           .then(res => res.json())
           .then(data => {
@@ -132,6 +144,7 @@ export default function CreateListingPage() {
   };
 
   const handleNext = () => {
+    hapticMedium();
     if (currentStep < STEPS.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
@@ -140,6 +153,7 @@ export default function CreateListingPage() {
   };
 
   const handleBack = () => {
+    hapticTap();
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
     }
@@ -148,6 +162,12 @@ export default function CreateListingPage() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+
+    if (imageUrls.length + files.length > MAX_IMAGES) {
+      hapticError();
+      alert(`Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - imageUrls.length} more.`);
+      return;
+    }
 
     setUploading(true);
     const form = new FormData();
@@ -166,9 +186,11 @@ export default function CreateListingPage() {
       const data = await res.json();
       if (data.urls) {
         setImageUrls(prev => [...prev, ...data.urls]);
+        hapticSuccess();
       }
     } catch (err) {
       console.error(err);
+      hapticError();
       alert("Failed to upload images");
     } finally {
       setUploading(false);
@@ -177,7 +199,52 @@ export default function CreateListingPage() {
   };
 
   const removeImage = (indexToRemove: number) => {
+    hapticTap();
     setImageUrls(prev => prev.filter((_, i) => i !== indexToRemove));
+  };
+
+  const setAsCover = (index: number) => {
+    hapticMedium();
+    setImageUrls(prev => {
+      const newUrls = [...prev];
+      const [moved] = newUrls.splice(index, 1);
+      newUrls.unshift(moved);
+      return newUrls;
+    });
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null) return;
+
+    hapticMedium();
+    setImageUrls(prev => {
+      const newUrls = [...prev];
+      const [moved] = newUrls.splice(draggedIndex, 1);
+      newUrls.splice(dropIndex, 0, moved);
+      return newUrls;
+    });
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
   const submitForm = async () => {
@@ -205,14 +272,25 @@ export default function CreateListingPage() {
     setLoading(false);
 
     if (result.success) {
-      router.push("/dashboard/owner");
+      hapticSuccess();
+      setSaveSuccess(true);
+      setTimeout(() => {
+        router.push("/dashboard/owner");
+      }, 1000);
     } else {
+      hapticError();
       setError(result.error || "Something went wrong.");
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6 lg:p-8">
+      {/* Background artifacts */}
+      <div className="fixed inset-0 pointer-events-none -z-10">
+        <div className="absolute top-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#cbb4ff] opacity-8 rounded-full blur-[140px] mix-blend-screen animate-float" />
+        <div className="absolute bottom-1/4 left-1/3 w-[25rem] h-[25rem] bg-[#b4e6ff] opacity-6 rounded-full blur-[120px] mix-blend-screen animate-float" style={{ animationDelay: '-3s' }} />
+      </div>
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white tracking-tight">List Your Space</h1>
         <p className="text-white/60 mt-1">Reach thousands of flex-occupancy tenants.</p>
@@ -222,7 +300,7 @@ export default function CreateListingPage() {
       <div className="flex items-center justify-between mb-10 relative">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-white/10 rounded-full z-0"></div>
         <div 
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[#b4e6ff] shadow-[0_0_15px_#b4e6ff] rounded-full z-0 transition-all duration-300"
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[#b4e6ff] shadow-[0_0_15px_#b4e6ff] rounded-full z-0 transition-all duration-500"
           style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
         ></div>
         
@@ -234,9 +312,9 @@ export default function CreateListingPage() {
           return (
             <div key={step.id} className="relative z-10 flex flex-col items-center">
               <div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 backdrop-blur-md
-                  ${isActive ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[0_0_15px_rgba(180,230,255,0.5)]" : 
-                    isCompleted ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[0_0_15px_rgba(180,230,255,0.5)]" : "bg-black/50 border-white/20 text-white/40"}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 backdrop-blur-md
+                  ${isActive ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[var(--neon-glow)]" : 
+                    isCompleted ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[var(--neon-glow)]" : "bg-black/50 border-white/20 text-white/40"}`}
               >
                 {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
               </div>
@@ -248,17 +326,22 @@ export default function CreateListingPage() {
         })}
       </div>
 
-      {/* Form Content Container with Glassmorphism subtle effect */}
-      <div className="pure-glass p-6 md:p-10 mb-8 min-h-[400px]">
+      <div className="liquid-glass p-6 md:p-10 mb-8 min-h-[400px]">
         {error && (
-          <div className="bg-red-500/20 text-red-300 p-4 rounded-xl mb-6 text-sm font-medium border border-red-500/30">
+          <div className="bg-red-500/20 text-red-300 p-4 rounded-xl mb-6 text-sm font-medium border border-red-500/30 animate-elasticBounce">
             {error}
+          </div>
+        )}
+
+        {saveSuccess && (
+          <div className="bg-green-500/20 text-green-300 p-4 rounded-xl mb-6 text-sm font-medium border border-green-500/30 flex items-center gap-2 animate-elasticBounce">
+            <CheckCircle2 className="w-5 h-5" /> Property listed successfully! Redirecting...
           </div>
         )}
 
         {/* STEP 1: DETAILS */}
         {currentStep === 0 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="space-y-6 animate-staggerFadeUp">
             <div>
               <label className="block text-sm font-medium text-white/80 mb-2">Listing Title</label>
               <input 
@@ -380,12 +463,13 @@ export default function CreateListingPage() {
               <label className="block text-sm font-medium text-white/80 mb-3">Amenities & Features</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {["Wi-Fi", "Loading Dock", "Forklift", "HVAC", "24/7 Access", "Security Cameras", "Meeting Rooms", "Parking"].map((amenity) => (
-                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-200 active:scale-[0.98]">
                     <input 
                       type="checkbox" 
                       className="accent-[#b4e6ff] w-4 h-4"
                       checked={formData.amenities.includes(amenity)}
                       onChange={(e) => {
+                        hapticTap();
                         if (e.target.checked) {
                           setFormData({ ...formData, amenities: [...formData.amenities, amenity] });
                         } else {
@@ -403,14 +487,14 @@ export default function CreateListingPage() {
 
         {/* STEP 2: LOCATION */}
         {currentStep === 1 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="space-y-6 animate-staggerFadeUp">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-medium text-white/80">Property Address</label>
                 <button 
                   type="button" 
                   onClick={handleCurrentLocation}
-                  className="text-xs flex items-center gap-1 text-[#b4e6ff] font-medium hover:underline bg-[#b4e6ff]/10 px-3 py-1.5 rounded-lg border border-[#b4e6ff]/20"
+                  className="text-xs flex items-center gap-1 text-[#b4e6ff] font-medium hover:underline bg-[#b4e6ff]/10 px-3 py-1.5 rounded-lg border border-[#b4e6ff]/20 active:scale-95 transition-transform"
                 >
                   <Navigation className="w-3 h-3" /> Use Current Location
                 </button>
@@ -453,17 +537,24 @@ export default function CreateListingPage() {
           </div>
         )}
 
-        {/* STEP 3: MEDIA */}
+        {/* STEP 3: MEDIA — Enhanced HQ Photo Management */}
         {currentStep === 2 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="space-y-6 animate-staggerFadeUp">
             <div className="text-center">
               <h3 className="text-xl font-medium text-white">Upload Property Photos</h3>
               <p className="text-sm text-white/60 mt-1">High-quality images increase inquiries by up to 40%.</p>
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <ImageIcon className="w-4 h-4 text-white/40" />
+                <span className={`text-sm font-semibold ${imageUrls.length >= MAX_IMAGES ? 'text-red-400' : 'text-[#b4e6ff]'}`}>
+                  {imageUrls.length}/{MAX_IMAGES} photos
+                </span>
+              </div>
             </div>
             
+            {/* Upload Dropzone */}
             <div 
-              className={`border-2 border-dashed ${uploading ? 'border-white/40 bg-white/5' : 'border-white/20'} rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/10 transition-colors cursor-pointer relative backdrop-blur-sm`}
-              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed ${uploading ? 'border-[#b4e6ff]/50 bg-[#b4e6ff]/5' : 'border-white/20'} rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer relative backdrop-blur-sm group`}
+              onClick={() => imageUrls.length < MAX_IMAGES && fileInputRef.current?.click()}
             >
               <input 
                 type="file" 
@@ -476,69 +567,113 @@ export default function CreateListingPage() {
               
               {uploading ? (
                 <>
-                  <Loader2 className="w-8 h-8 text-[#b4e6ff] animate-spin mb-4" />
-                  <p className="font-medium text-white">Uploading images...</p>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-[#b4e6ff] blur-xl opacity-20 rounded-full"></div>
+                    <Loader2 className="w-10 h-10 text-[#b4e6ff] animate-spin relative z-10" />
+                  </div>
+                  <p className="font-medium text-white mt-4">Uploading images...</p>
+                  <p className="text-sm text-white/50 mt-1">Processing your HQ photos</p>
                 </>
               ) : (
                 <>
-                  <div className="bg-white/10 p-4 rounded-full mb-4 shadow-inner border border-white/20">
+                  <div className="bg-white/10 p-4 rounded-full mb-4 shadow-inner border border-white/20 group-hover:scale-110 group-hover:bg-white/15 transition-all duration-300 pulse-ring">
                     <UploadCloud className="h-8 w-8 text-white/70" />
                   </div>
                   <p className="font-medium text-white mb-1">Click to upload or drag and drop</p>
-                  <p className="text-sm text-white/50 mb-6">SVG, PNG, JPG or GIF (max. 10MB)</p>
-                  <button className="glass-button-secondary !py-2 !text-sm flex items-center gap-2">
+                  <p className="text-sm text-white/50 mb-6">PNG, JPG, or WebP (max. 10MB each)</p>
+                  <button 
+                    className="glass-button-secondary !py-2 !text-sm flex items-center gap-2"
+                    onPointerDown={hapticTap}
+                  >
                     <UploadCloud className="w-4 h-4" /> Browse Files
                   </button>
                 </>
               )}
             </div>
             
+            {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                {imageUrls.map((url, idx) => (
-                  <div 
-                    key={idx} 
-                    className="aspect-square bg-white/5 rounded-xl border border-white/10 relative group overflow-hidden cursor-pointer"
-                    onClick={() => setPreviewImage(url)}
-                  >
-                    <img src={url} alt={`Upload ${idx}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
-                      className="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 border border-white/10"
+              <>
+                <p className="text-xs text-white/50 text-center">
+                  Drag images to reorder • First image is the cover photo • Click to preview
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {imageUrls.map((url, idx) => (
+                    <div 
+                      key={`${url.slice(0, 30)}-${idx}`}
+                      className={`aspect-square bg-white/5 rounded-xl border relative group overflow-hidden cursor-pointer transition-all duration-300
+                        ${dragOverIndex === idx ? 'border-[#b4e6ff] bg-[#b4e6ff]/10 scale-105' : 'border-white/10'}
+                        ${draggedIndex === idx ? 'opacity-40 scale-95' : 'opacity-100'}
+                      `}
+                      draggable
+                      onDragStart={() => handleDragStart(idx)}
+                      onDragOver={(e) => handleDragOver(e, idx)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, idx)}
+                      onDragEnd={handleDragEnd}
+                      onClick={() => setPreviewImage(idx)}
                     >
-                      <X className="w-4 h-4" />
-                    </button>
-                    {idx === 0 && (
-                      <span className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-                        Cover
-                      </span>
-                    )}
-                  </div>
-                ))}
-                
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="aspect-square bg-white/5 rounded-xl border border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:bg-white/10 hover:text-white/80 cursor-pointer transition-colors"
-                >
-                  <PlusCircle className="w-6 h-6 mb-1" />
-                  <span className="text-xs font-medium">Add More</span>
+                      <img src={url} alt={`Property photo ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      
+                      {/* Drag handle */}
+                      <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 cursor-grab active:cursor-grabbing">
+                        <GripVertical className="w-3 h-3 text-white/70" />
+                      </div>
+
+                      {/* Remove button */}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
+                        className="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 border border-white/10 hover:bg-red-500/20"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Set as Cover button */}
+                      {idx !== 0 && (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setAsCover(idx); }}
+                          className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-[#b4e6ff] hover:text-white border border-white/10 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider hover:bg-[#b4e6ff]/20"
+                        >
+                          <Star className="w-3 h-3" /> Cover
+                        </button>
+                      )}
+
+                      {/* Cover badge */}
+                      {idx === 0 && (
+                        <span className="absolute bottom-2 left-2 bg-[#b4e6ff]/90 text-black text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider flex items-center gap-1 shadow-lg">
+                          <Star className="w-3 h-3 fill-current" /> Cover
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {/* Add More button */}
+                  {imageUrls.length < MAX_IMAGES && (
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="aspect-square bg-white/5 rounded-xl border border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:bg-white/10 hover:text-white/80 hover:border-[#b4e6ff]/40 cursor-pointer transition-all duration-300 active:scale-95"
+                    >
+                      <PlusCircle className="w-6 h-6 mb-1" />
+                      <span className="text-xs font-medium">Add More</span>
+                    </div>
+                  )}
                 </div>
-              </div>
+              </>
             )}
           </div>
         )}
 
         {/* STEP 4: LEGAL */}
         {currentStep === 3 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="space-y-6 animate-staggerFadeUp">
             <div className="text-center">
               <h3 className="text-xl font-medium text-white">Occupancy Agreement</h3>
               <p className="text-sm text-white/60 mt-1">Upload your standard agreement or use our digital template.</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <label className="border-2 border-[#b4e6ff] bg-[#b4e6ff]/5 rounded-2xl p-6 cursor-pointer relative">
-                <div className="absolute top-4 right-4 bg-[#b4e6ff] text-black rounded-full p-1 shadow-[0_0_10px_rgba(180,230,255,0.5)]">
+              <label className="border-2 border-[#b4e6ff] bg-[#b4e6ff]/5 rounded-2xl p-6 cursor-pointer relative hover:bg-[#b4e6ff]/10 transition-colors">
+                <div className="absolute top-4 right-4 bg-[#b4e6ff] text-black rounded-full p-1 shadow-[var(--neon-glow)]">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
                 <FileText className="w-8 h-8 text-[#b4e6ff] mb-4" />
@@ -574,36 +709,63 @@ export default function CreateListingPage() {
         <button
           onClick={handleBack}
           disabled={currentStep === 0 || loading}
-          className="glass-button-secondary disabled:opacity-50"
+          className="glass-button-secondary disabled:opacity-50 active:scale-95 transition-transform"
         >
           Back
         </button>
         <button
           onClick={handleNext}
           disabled={loading}
-          className="glass-button flex items-center gap-2 disabled:opacity-70"
+          className="glass-button flex items-center gap-2 disabled:opacity-70 active:scale-95 transition-transform"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           {currentStep === STEPS.length - 1 ? "Publish Listing" : "Continue"}
         </button>
       </div>
 
-      {/* HQ Photo Preview Modal */}
-      {previewImage && (
+      {/* HQ Photo Preview Modal with Navigation */}
+      {previewImage !== null && (
         <div 
-          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setPreviewImage(null)}
         >
+          {/* Close button */}
           <button 
-            className="absolute top-6 right-6 text-white hover:text-gray-300 bg-black/50 rounded-full p-2"
+            className="absolute top-6 right-6 text-white hover:text-gray-300 bg-white/10 backdrop-blur-md rounded-full p-2.5 border border-white/20 hover:bg-white/20 transition-all z-10"
             onClick={() => setPreviewImage(null)}
           >
             <X className="w-6 h-6" />
           </button>
+
+          {/* Image counter */}
+          <div className="absolute top-6 left-6 text-white/70 text-sm font-medium bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 z-10">
+            {previewImage + 1} / {imageUrls.length}
+          </div>
+          
+          {/* Previous button */}
+          {previewImage > 0 && (
+            <button 
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/20 hover:bg-white/20 transition-all z-10"
+              onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage - 1); }}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          )}
+          
+          {/* Next button */}
+          {previewImage < imageUrls.length - 1 && (
+            <button 
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/20 hover:bg-white/20 transition-all z-10"
+              onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage + 1); }}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          )}
+
           <img 
-            src={previewImage} 
-            alt="HQ Preview" 
-            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            src={imageUrls[previewImage]} 
+            alt={`HQ Preview ${previewImage + 1}`} 
+            className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           />
         </div>

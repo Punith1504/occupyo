@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { MessageSquare, X, Send } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { MessageSquare, X, Send, Sparkles } from "lucide-react";
 import { hapticTap, hapticMedium } from "@/lib/haptics";
 
 export default function ChatBot() {
@@ -10,17 +10,25 @@ export default function ChatBot() {
     { sender: "bot", text: "Hi there! 👋 Welcome to Occupyo. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // Add user message
+    hapticMedium();
     const userMsg = input.trim();
     setMessages(prev => [...prev, { sender: "user", text: userMsg }]);
     setInput("");
+    setIsTyping(true);
 
-    // Simulate simple FAQ logic
+    // Simulate bot thinking delay
     setTimeout(() => {
       let botResponse = "I'm still learning! For detailed inquiries, please contact our support team.";
       const lowerInput = userMsg.toLowerCase();
@@ -33,15 +41,18 @@ export default function ChatBot() {
         botResponse = "Listing a property is free! We take a small service fee only when a lease is successfully booked through our secure Razorpay/Stripe checkout.";
       } else if (lowerInput.includes("payment") || lowerInput.includes("pay")) {
         botResponse = "We support seamless global payments! For Indian transactions, we use Razorpay (UPI, Netbanking, Cards). For international bookings, we use Stripe Connect.";
+      } else if (lowerInput.includes("hello") || lowerInput.includes("hi") || lowerInput.includes("hey")) {
+        botResponse = "Hey! 😊 I'm here to help. Ask me about listing properties, pricing, payments, or anything about Occupyo!";
       }
 
+      setIsTyping(false);
       setMessages(prev => [...prev, { sender: "bot", text: botResponse }]);
-    }, 600);
+    }, 1200);
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-[100]">
-      {/* Chat Button */}
+      {/* Floating Chat Button */}
       {!isOpen && (
         <button 
           onClick={() => {
@@ -49,20 +60,30 @@ export default function ChatBot() {
             setIsOpen(true);
           }}
           onPointerDown={hapticTap}
-          className="bg-black text-white p-4 rounded-full shadow-[var(--neon-glow)] hover:scale-110 active:scale-95 transition-transform duration-300 flex items-center justify-center group"
+          className="relative bg-black text-white p-4 rounded-full shadow-[var(--neon-glow)] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group border border-white/10"
         >
-          <MessageSquare className="w-6 h-6 group-hover:text-[var(--accent)] transition-colors" />
+          {/* Pulse ring */}
+          <span className="absolute inset-0 rounded-full border-2 border-[#b4e6ff]/30 animate-[pulseRing_2s_ease-out_infinite]" />
+          <MessageSquare className="w-6 h-6 group-hover:text-[var(--accent)] transition-colors relative z-10" />
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="glass-heavy w-80 sm:w-96 rounded-2xl shadow-[var(--neon-glow)] overflow-hidden flex flex-col animate-slideUp border border-[var(--glass-border)]">
+        <div className="liquid-glass w-80 sm:w-96 !rounded-2xl shadow-[var(--neon-glow-strong)] overflow-hidden flex flex-col animate-elasticBounce !p-0">
           {/* Header */}
-          <div className="bg-black text-white p-4 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-[var(--success)] rounded-full animate-pulse"></div>
-              <h3 className="font-bold text-[var(--accent)]">Occupyo Assistant</h3>
+          <div className="bg-black/80 backdrop-blur-xl text-white p-4 flex justify-between items-center border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#b4e6ff]/30 to-[#cbb4ff]/30 flex items-center justify-center border border-white/20">
+                  <Sparkles className="w-4 h-4 text-[#b4e6ff]" />
+                </div>
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[var(--success)] rounded-full border-2 border-black"></div>
+              </div>
+              <div>
+                <h3 className="font-bold text-sm text-white">Occupyo AI</h3>
+                <p className="text-[10px] text-white/50">Always online</p>
+              </div>
             </div>
             <button 
               onClick={() => {
@@ -70,43 +91,65 @@ export default function ChatBot() {
                 setIsOpen(false);
               }} 
               onPointerDown={hapticTap}
-              className="text-gray-400 hover:text-white active:scale-90 transition-all"
+              className="text-white/40 hover:text-white active:scale-90 transition-all p-1 rounded-lg hover:bg-white/10"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Messages Area */}
-          <div className="p-4 h-80 overflow-y-auto flex flex-col gap-4 bg-[var(--background)]">
+          <div className="p-4 h-80 overflow-y-auto flex flex-col gap-3 bg-[var(--background)]">
             {messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[80%] p-3 rounded-2xl text-sm font-medium ${
+              <div 
+                key={idx} 
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                style={{ 
+                  animation: `staggerFadeUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${Math.min(idx * 0.05, 0.3)}s both` 
+                }}
+              >
+                <div className={`max-w-[80%] p-3 rounded-2xl text-sm font-medium transition-all ${
                   msg.sender === "user" 
-                    ? "bg-[var(--accent)] text-black rounded-br-sm" 
-                    : "glass text-black rounded-bl-sm"
+                    ? "bg-gradient-to-br from-[#b4e6ff] to-[#9dd8ff] text-black rounded-br-sm shadow-md" 
+                    : "bg-white/8 backdrop-blur-md text-white/90 rounded-bl-sm border border-white/10"
                 }`}>
                   {msg.text}
                 </div>
               </div>
             ))}
+            
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex justify-start animate-fadeIn">
+                <div className="bg-white/8 backdrop-blur-md rounded-2xl rounded-bl-sm border border-white/10">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input Area */}
-          <div className="p-3 bg-white border-t border-[var(--separator)]">
+          <div className="p-3 bg-black/40 backdrop-blur-xl border-t border-white/10">
             <form onSubmit={handleSend} className="flex gap-2">
               <input 
                 type="text" 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask something..."
-                className="flex-1 glass-input py-2 px-3 text-sm focus:ring-0 border-none"
+                className="flex-1 bg-white/8 backdrop-blur-md rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/30 border border-white/10 focus:border-[#b4e6ff]/40 focus:bg-white/10 outline-none transition-all"
               />
               <button 
                 type="submit"
                 onPointerDown={hapticTap}
-                className="bg-black text-[var(--accent)] p-2 rounded-xl hover:bg-gray-800 active:scale-90 transition-all"
+                disabled={!input.trim()}
+                className="bg-gradient-to-br from-[#b4e6ff] to-[#9dd8ff] text-black p-2.5 rounded-xl hover:shadow-[var(--neon-glow)] active:scale-90 transition-all disabled:opacity-30 disabled:hover:shadow-none"
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4" />
               </button>
             </form>
           </div>

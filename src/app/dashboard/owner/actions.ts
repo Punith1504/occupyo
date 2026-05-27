@@ -56,7 +56,8 @@ export async function createPropertyAction(data: {
         images: data.imageUrls && data.imageUrls.length > 0 ? {
           create: data.imageUrls.map((url, index) => ({
             url,
-            isHero: index === 0 // First image is hero
+            // The first image in the array is the hero (based on drag-and-drop order)
+            isHero: index === 0
           }))
         } : undefined
       }
@@ -139,13 +140,14 @@ export async function updatePropertyAction(
         where: { propertyId: propertyId },
       });
 
-      // Create new images
+      // Create new images in the updated order
       if (data.imageUrls.length > 0) {
         await prisma.image.createMany({
           data: data.imageUrls.map((url, index) => ({
             url,
             propertyId: propertyId,
-            isHero: index === 0, // First image is hero
+            // The first image in the array is the hero (based on drag-and-drop order)
+            isHero: index === 0, 
           })),
         });
       }
