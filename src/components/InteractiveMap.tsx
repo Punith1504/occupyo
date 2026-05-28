@@ -188,6 +188,8 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
       script.async = true;
       script.defer = true;
+      // Catch Google Maps Auth/Billing failures globally
+      (window as any).gm_authFailure = () => setLoadError(true);
       script.onload = () => initMap();
       script.onerror = () => setLoadError(true);
       document.head.appendChild(script);
@@ -231,10 +233,25 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
     }
   }, [lat, lng, zoom]);
 
-  if (loadError) {
+  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || loadError) {
+    const query = address ? encodeURIComponent(address) : (lat && lng ? `${lat},${lng}` : "");
     return (
-      <div className={`flex items-center justify-center bg-[#0e1626] border border-[var(--glass-border)] rounded-2xl ${className}`}>
-        <p className="text-white/50 text-sm">Failed to load Google Maps.</p>
+      <div className={`relative overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[#0e1626] ${className}`}>
+        {query ? (
+          <iframe 
+            width="100%" 
+            height="100%" 
+            style={{ border: 0 }} 
+            loading="lazy" 
+            allowFullScreen 
+            referrerPolicy="no-referrer-when-downgrade" 
+            src={`https://www.google.com/maps?q=${query}&output=embed`}
+          ></iframe>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#0e1626]">
+            <p className="text-white/50 text-sm font-medium">No location provided.</p>
+          </div>
+        )}
       </div>
     );
   }

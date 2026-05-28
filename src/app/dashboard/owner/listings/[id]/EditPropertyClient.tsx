@@ -263,9 +263,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
     if (result.success) {
       hapticSuccess();
       setSaveSuccess(true);
-      setTimeout(() => {
-        router.push("/dashboard/owner");
-      }, 1000);
+      // Auto-redirect removed to allow user to choose their next action
     } else {
       hapticError();
       setError(result.error || "Something went wrong.");
@@ -323,13 +321,33 @@ export default function EditPropertyClient({ property, initialImages }: { proper
         )}
 
         {saveSuccess && (
-          <div className="bg-green-500/20 text-green-300 p-4 rounded-xl mb-6 text-sm font-medium border border-green-500/30 flex items-center gap-2 animate-elasticBounce">
-            <CheckCircle2 className="w-5 h-5" /> Changes saved successfully! Redirecting...
+          <div className="flex flex-col items-center justify-center py-12 animate-scaleIn min-h-[400px]">
+            <div className="bg-[#b4e6ff]/20 p-4 rounded-full border border-[#b4e6ff]/30 mb-6 shadow-[0_0_30px_#b4e6ff40] pulse-ring">
+              <CheckCircle2 className="w-16 h-16 text-[#b4e6ff]" />
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2">Property Updated</h2>
+            <p className="text-white/60 mb-10 text-center text-lg">Your changes have been saved successfully.</p>
+            <div className="flex gap-4 w-full max-w-sm">
+              <button 
+                onClick={() => { hapticTap(); router.push("/dashboard/owner"); }}
+                className="glass-button flex-1 px-6"
+              >
+                Go to Dashboard
+              </button>
+              <button 
+                onClick={() => { hapticTap(); setSaveSuccess(false); setCurrentStep(0); }}
+                className="glass-button-secondary flex-1 px-6"
+              >
+                Edit More
+              </button>
+            </div>
           </div>
         )}
 
-        {/* STEP 1: DETAILS */}
-        {currentStep === 0 && (
+        {!saveSuccess && (
+          <>
+            {/* STEP 1: DETAILS */}
+            {currentStep === 0 && (
           <div className="space-y-6 animate-staggerFadeUp">
             <div>
               <label className="block text-sm font-medium text-white/80 mb-2">Listing Title</label>
@@ -720,26 +738,30 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             </div>
           </div>
         )}
+          </>
+        )}
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between border-t border-white/10 pt-6">
-        <button
-          onClick={handleBack}
-          disabled={currentStep === 0 || loading}
-          className="glass-button-secondary disabled:opacity-50 active:scale-95 transition-transform"
-        >
-          Back
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={loading}
-          className="glass-button flex items-center gap-2 disabled:opacity-70 active:scale-95 transition-transform"
-        >
-          {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {currentStep === STEPS.length - 1 ? "Save Changes" : "Continue"}
-        </button>
-      </div>
+      {!saveSuccess && (
+        <div className="flex justify-between border-t border-white/10 pt-6">
+          <button
+            onClick={handleBack}
+            disabled={currentStep === 0 || loading}
+            className="glass-button-secondary disabled:opacity-50 active:scale-95 transition-transform"
+          >
+            Back
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={loading}
+            className="glass-button flex items-center gap-2 disabled:opacity-70 active:scale-95 transition-transform"
+          >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {currentStep === STEPS.length - 1 ? "Save Changes" : "Continue"}
+          </button>
+        </div>
+      )}
 
       {/* HQ Photo Preview Modal with Navigation */}
       {previewImage !== null && (
