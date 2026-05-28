@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation, Star, ChevronLeft, ChevronRight, GripVertical, Image as ImageIcon } from "lucide-react";
 import { updatePropertyAction } from "../../actions";
-import { CldUploadWidget } from "next-cloudinary";
+
 import PredictiveAddressInput from "@/components/PredictiveAddressInput";
 import InteractiveMap from "@/components/InteractiveMap";
 import { hapticTap, hapticMedium, hapticSuccess, hapticError } from "@/lib/haptics";
@@ -132,6 +132,70 @@ export default function EditPropertyClient({ property, initialImages }: { proper
   const handleDragEnd = () => {
     setDraggedIndex(null);
     setDragOverIndex(null);
+  };
+
+  // Local File Upload Handlers
+  const [dragActive, setDragActive] = useState(false);
+  const [uploadingLocal, setUploadingLocal] = useState(false);
+
+  const handleLocalDragEnter = (e: React.DragEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    setDragActive(true);
+  };
+  const handleLocalDragLeave = (e: React.DragEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    setDragActive(false);
+  };
+  const handleLocalDragOver = (e: React.DragEvent) => {
+    e.preventDefault(); e.stopPropagation();
+  };
+
+  const uploadFiles = async (files: File[]) => {
+    if (files.length === 0) return;
+    if (imageUrls.length + files.length > MAX_IMAGES) {
+      hapticError();
+      alert(`Maximum ${MAX_IMAGES} media files allowed.`);
+      return;
+    }
+
+    setUploadingLocal(true);
+    const formData = new FormData();
+    files.forEach(f => formData.append("file", f));
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setImageUrls(prev => [...prev, ...data.urls]);
+        hapticSuccess();
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      hapticError();
+      alert("Failed to upload media");
+    } finally {
+      setUploadingLocal(false);
+    }
+  };
+
+  const handleLocalDrop = (e: React.DragEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      uploadFiles(Array.from(e.dataTransfer.files));
+    }
+  };
+
+  const handleLocalFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      uploadFiles(Array.from(e.target.files));
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const submitForm = async () => {
@@ -432,88 +496,41 @@ export default function EditPropertyClient({ property, initialImages }: { proper
               </div>
             </div>
             
-            {/* Upload Dropzone */}
-            {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
-              <CldUploadWidget 
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
-                options={{
-                  multiple: true,
-                  maxFiles: MAX_IMAGES - imageUrls.length,
-                  clientAllowedFormats: ["image", "video"],
-                  sources: ["local", "google_drive", "url", "camera"],
-                  styles: {
-                    palette: {
-                      window: "#0f172a",
-                      sourceBg: "#1e293b",
-                      windowBorder: "#334155",
-                      tabIcon: "#b4e6ff",
-                      inactiveTabIcon: "#64748b",
-                      menuIcons: "#b4e6ff",
-                      link: "#b4e6ff",
-                      action: "#3b82f6",
-                      inProgress: "#3b82f6",
-                      complete: "#22c55e",
-                      error: "#ef4444",
-                      textDark: "#0f172a",
-                      textLight: "#f8fafc"
-                    }
-                  }
-                }}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSuccess={(result: any) => {
-                  if (result.info && result.info.secure_url) {
-                    setImageUrls(prev => [...prev, result.info.secure_url]);
-                    hapticSuccess();
-                  }
-                }}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onError={(error: any) => {
-                  console.error("Cloudinary error:", error);
-                  hapticError();
-                  alert("Failed to upload media");
-                }}
-              >
-                {({ open }) => (
-                  <div 
-                    className={`border-2 border-dashed border-white/20 rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer relative backdrop-blur-sm group`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (imageUrls.length >= MAX_IMAGES) {
-                        hapticError();
-                        alert(`Maximum ${MAX_IMAGES} media files allowed.`);
-                      } else {
-                        open();
-                      }
-                    }}
-                  >
-                    <div className="bg-white/10 p-4 rounded-full mb-4 shadow-inner border border-white/20 group-hover:scale-110 group-hover:bg-white/15 transition-all duration-300 pulse-ring">
-                      <UploadCloud className="h-8 w-8 text-white/70" />
-                    </div>
-                    <p className="font-medium text-white mb-1">Click to upload or connect Google Drive</p>
-                    <p className="text-sm text-white/50 mb-6">High-res Photos & Videos (Local, URL, Drive)</p>
-                    <button 
-                      className="glass-button-secondary !py-2 !text-sm flex items-center gap-2"
-                      onPointerDown={hapticTap}
-                      type="button"
-                    >
-                      <UploadCloud className="w-4 h-4" /> Open Media Library
-                    </button>
-                  </div>
-                )}
-              </CldUploadWidget>
-            ) : (
-              <div className="border-2 border-dashed border-red-500/30 bg-red-500/10 rounded-2xl p-10 flex flex-col items-center justify-center text-center backdrop-blur-sm">
-                <div className="bg-red-500/20 p-4 rounded-full mb-4 border border-red-500/30">
-                  <UploadCloud className="h-8 w-8 text-red-400" />
-                </div>
-                <p className="font-medium text-white mb-2">Uploads Disabled (Configuration Missing)</p>
-                <p className="text-sm text-white/60 max-w-md">
-                  The Cloudinary Cloud Name is missing from your environment variables. 
-                  Please add <code className="bg-black/30 px-2 py-0.5 rounded text-red-300">NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> to your <code className="bg-black/30 px-2 py-0.5 rounded text-white/80">.env</code> file to enable photo uploads.
-                </p>
-                <p className="text-xs text-white/40 mt-4">You can still save your other property details.</p>
+            {/* Native Local Upload Dropzone */}
+            <div 
+              className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all duration-300 relative backdrop-blur-sm group cursor-pointer
+                ${dragActive ? "border-[#b4e6ff] bg-[#b4e6ff]/10 scale-105" : "border-white/20 hover:bg-white/5 hover:border-white/30"}
+                ${uploadingLocal ? "opacity-50 pointer-events-none" : ""}
+              `}
+              onDragEnter={handleLocalDragEnter}
+              onDragOver={handleLocalDragOver}
+              onDragLeave={handleLocalDragLeave}
+              onDrop={handleLocalDrop}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <input 
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleLocalFileSelect}
+              />
+              <div className="bg-white/10 p-4 rounded-full mb-4 shadow-inner border border-white/20 group-hover:scale-110 group-hover:bg-white/15 transition-all duration-300 pulse-ring">
+                {uploadingLocal ? <Loader2 className="h-8 w-8 text-[#b4e6ff] animate-spin" /> : <UploadCloud className="h-8 w-8 text-white/70" />}
               </div>
-            )}
+              <p className="font-medium text-white mb-1">
+                {uploadingLocal ? "Uploading..." : "Click to upload or drag & drop"}
+              </p>
+              <p className="text-sm text-white/50 mb-6">High-res Photos & Videos (Local Files)</p>
+              <button 
+                className="glass-button-secondary !py-2 !text-sm flex items-center gap-2"
+                type="button"
+                disabled={uploadingLocal}
+              >
+                <UploadCloud className="w-4 h-4" /> Browse Local Files
+              </button>
+            </div>
             
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
@@ -571,67 +588,19 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                     </div>
                   ))}
                   
-                  {/* Add More button */}
+                  {/* Local Add More button */}
                   {imageUrls.length < MAX_IMAGES && (
-                    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
-                      <CldUploadWidget 
-                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
-                        options={{
-                          multiple: true,
-                          maxFiles: MAX_IMAGES - imageUrls.length,
-                          clientAllowedFormats: ["image", "video"],
-                          sources: ["local", "google_drive", "url", "camera"],
-                          styles: {
-                            palette: {
-                              window: "#0f172a",
-                              sourceBg: "#1e293b",
-                              windowBorder: "#334155",
-                              tabIcon: "#b4e6ff",
-                              inactiveTabIcon: "#64748b",
-                              menuIcons: "#b4e6ff",
-                              link: "#b4e6ff",
-                              action: "#3b82f6",
-                              inProgress: "#3b82f6",
-                              complete: "#22c55e",
-                              error: "#ef4444",
-                              textDark: "#0f172a",
-                              textLight: "#f8fafc"
-                            }
-                          }
-                        }}
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        onSuccess={(result: any) => {
-                          if (result.info && result.info.secure_url) {
-                            setImageUrls(prev => [...prev, result.info.secure_url]);
-                            hapticSuccess();
-                          }
-                        }}
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        onError={(error: any) => {
-                          console.error("Cloudinary error:", error);
-                          hapticError();
-                          alert("Failed to upload media");
-                        }}
-                      >
-                        {({ open }) => (
-                          <div 
-                            onClick={(e) => { e.preventDefault(); open(); }}
-                            className="aspect-square bg-white/5 rounded-xl border border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:bg-white/10 hover:text-white/80 hover:border-[#b4e6ff]/40 cursor-pointer transition-all duration-300 active:scale-95"
-                          >
-                            <PlusCircle className="w-6 h-6 mb-1" />
-                            <span className="text-xs font-medium">Add More</span>
-                          </div>
-                        )}
-                      </CldUploadWidget>
-                    ) : (
-                      <div 
-                        className="aspect-square bg-white/5 rounded-xl border border-dashed border-red-500/30 flex flex-col items-center justify-center text-red-400/50 cursor-not-allowed"
-                        title="Cloudinary config missing"
-                      >
+                    <div 
+                      onClick={() => !uploadingLocal && fileInputRef.current?.click()}
+                      className={`aspect-square bg-white/5 rounded-xl border border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:bg-white/10 hover:text-white/80 hover:border-[#b4e6ff]/40 cursor-pointer transition-all duration-300 active:scale-95 ${uploadingLocal ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                      {uploadingLocal ? (
+                        <Loader2 className="w-6 h-6 mb-1 animate-spin text-[#b4e6ff]" />
+                      ) : (
                         <PlusCircle className="w-6 h-6 mb-1" />
-                        <span className="text-xs font-medium">Add More</span>
-                      </div>
-                    )
+                      )}
+                      <span className="text-xs font-medium">Add More</span>
+                    </div>
                   )}
                 </div>
               </>
