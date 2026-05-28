@@ -433,73 +433,87 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             </div>
             
             {/* Upload Dropzone */}
-            <CldUploadWidget 
-              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
-              options={{
-                multiple: true,
-                maxFiles: MAX_IMAGES - imageUrls.length,
-                clientAllowedFormats: ["image", "video"],
-                sources: ["local", "google_drive", "url", "camera"],
-                styles: {
-                  palette: {
-                    window: "#0f172a",
-                    sourceBg: "#1e293b",
-                    windowBorder: "#334155",
-                    tabIcon: "#b4e6ff",
-                    inactiveTabIcon: "#64748b",
-                    menuIcons: "#b4e6ff",
-                    link: "#b4e6ff",
-                    action: "#3b82f6",
-                    inProgress: "#3b82f6",
-                    complete: "#22c55e",
-                    error: "#ef4444",
-                    textDark: "#0f172a",
-                    textLight: "#f8fafc"
-                  }
-                }
-              }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onSuccess={(result: any) => {
-                if (result.info && result.info.secure_url) {
-                  setImageUrls(prev => [...prev, result.info.secure_url]);
-                  hapticSuccess();
-                }
-              }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onError={(error: any) => {
-                console.error("Cloudinary error:", error);
-                hapticError();
-                alert("Failed to upload media");
-              }}
-            >
-              {({ open }) => (
-                <div 
-                  className={`border-2 border-dashed border-white/20 rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer relative backdrop-blur-sm group`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (imageUrls.length >= MAX_IMAGES) {
-                      hapticError();
-                      alert(`Maximum ${MAX_IMAGES} media files allowed.`);
-                    } else {
-                      open();
+            {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+              <CldUploadWidget 
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
+                options={{
+                  multiple: true,
+                  maxFiles: MAX_IMAGES - imageUrls.length,
+                  clientAllowedFormats: ["image", "video"],
+                  sources: ["local", "google_drive", "url", "camera"],
+                  styles: {
+                    palette: {
+                      window: "#0f172a",
+                      sourceBg: "#1e293b",
+                      windowBorder: "#334155",
+                      tabIcon: "#b4e6ff",
+                      inactiveTabIcon: "#64748b",
+                      menuIcons: "#b4e6ff",
+                      link: "#b4e6ff",
+                      action: "#3b82f6",
+                      inProgress: "#3b82f6",
+                      complete: "#22c55e",
+                      error: "#ef4444",
+                      textDark: "#0f172a",
+                      textLight: "#f8fafc"
                     }
-                  }}
-                >
-                  <div className="bg-white/10 p-4 rounded-full mb-4 shadow-inner border border-white/20 group-hover:scale-110 group-hover:bg-white/15 transition-all duration-300 pulse-ring">
-                    <UploadCloud className="h-8 w-8 text-white/70" />
-                  </div>
-                  <p className="font-medium text-white mb-1">Click to upload or connect Google Drive</p>
-                  <p className="text-sm text-white/50 mb-6">High-res Photos & Videos (Local, URL, Drive)</p>
-                  <button 
-                    className="glass-button-secondary !py-2 !text-sm flex items-center gap-2"
-                    onPointerDown={hapticTap}
-                    type="button"
+                  }
+                }}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onSuccess={(result: any) => {
+                  if (result.info && result.info.secure_url) {
+                    setImageUrls(prev => [...prev, result.info.secure_url]);
+                    hapticSuccess();
+                  }
+                }}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onError={(error: any) => {
+                  console.error("Cloudinary error:", error);
+                  hapticError();
+                  alert("Failed to upload media");
+                }}
+              >
+                {({ open }) => (
+                  <div 
+                    className={`border-2 border-dashed border-white/20 rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer relative backdrop-blur-sm group`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (imageUrls.length >= MAX_IMAGES) {
+                        hapticError();
+                        alert(`Maximum ${MAX_IMAGES} media files allowed.`);
+                      } else {
+                        open();
+                      }
+                    }}
                   >
-                    <UploadCloud className="w-4 h-4" /> Open Media Library
-                  </button>
+                    <div className="bg-white/10 p-4 rounded-full mb-4 shadow-inner border border-white/20 group-hover:scale-110 group-hover:bg-white/15 transition-all duration-300 pulse-ring">
+                      <UploadCloud className="h-8 w-8 text-white/70" />
+                    </div>
+                    <p className="font-medium text-white mb-1">Click to upload or connect Google Drive</p>
+                    <p className="text-sm text-white/50 mb-6">High-res Photos & Videos (Local, URL, Drive)</p>
+                    <button 
+                      className="glass-button-secondary !py-2 !text-sm flex items-center gap-2"
+                      onPointerDown={hapticTap}
+                      type="button"
+                    >
+                      <UploadCloud className="w-4 h-4" /> Open Media Library
+                    </button>
+                  </div>
+                )}
+              </CldUploadWidget>
+            ) : (
+              <div className="border-2 border-dashed border-red-500/30 bg-red-500/10 rounded-2xl p-10 flex flex-col items-center justify-center text-center backdrop-blur-sm">
+                <div className="bg-red-500/20 p-4 rounded-full mb-4 border border-red-500/30">
+                  <UploadCloud className="h-8 w-8 text-red-400" />
                 </div>
-              )}
-            </CldUploadWidget>
+                <p className="font-medium text-white mb-2">Uploads Disabled (Configuration Missing)</p>
+                <p className="text-sm text-white/60 max-w-md">
+                  The Cloudinary Cloud Name is missing from your environment variables. 
+                  Please add <code className="bg-black/30 px-2 py-0.5 rounded text-red-300">NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> to your <code className="bg-black/30 px-2 py-0.5 rounded text-white/80">.env</code> file to enable photo uploads.
+                </p>
+                <p className="text-xs text-white/40 mt-4">You can still save your other property details.</p>
+              </div>
+            )}
             
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
