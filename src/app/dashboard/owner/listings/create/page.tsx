@@ -217,16 +217,37 @@ export default function CreateListingPage() {
     setLoading(true);
     setError("");
     
+    const size = Math.abs(parseInt(formData.sizeSqft)) || 0;
+    const priceM = Math.abs(parseFloat(formData.pricePerMonth)) || 0;
+    const minD = Math.abs(parseInt(formData.minDuration)) || 1;
+    const maxD = Math.abs(parseInt(formData.maxDuration)) || 12;
+
+    if (size === 0 || priceM === 0) {
+      setError("Size and Price per Month must be greater than 0.");
+      setLoading(false);
+      hapticError();
+      setCurrentStep(0);
+      return;
+    }
+
+    if (minD > maxD) {
+      setError("Minimum duration cannot exceed maximum duration.");
+      setLoading(false);
+      hapticError();
+      setCurrentStep(0);
+      return;
+    }
+
     const result = await createPropertyAction({
       title: formData.title,
       description: formData.description,
       propertyType: formData.propertyType as "WAREHOUSE" | "FLEX" | "OFFICE",
-      sizeSqft: parseInt(formData.sizeSqft) || 0,
-      pricePerHour: parseFloat(formData.pricePerHour) || undefined,
-      pricePerDay: parseFloat(formData.pricePerDay) || undefined,
-      pricePerMonth: parseFloat(formData.pricePerMonth) || 0,
-      minDuration: parseInt(formData.minDuration) || 1,
-      maxDuration: parseInt(formData.maxDuration) || 12,
+      sizeSqft: size,
+      pricePerHour: formData.pricePerHour ? Math.abs(parseFloat(formData.pricePerHour)) : undefined,
+      pricePerDay: formData.pricePerDay ? Math.abs(parseFloat(formData.pricePerDay)) : undefined,
+      pricePerMonth: priceM,
+      minDuration: minD,
+      maxDuration: maxD,
       durationUnit: formData.durationUnit,
       address: formData.address,
       lat: formData.lat,
