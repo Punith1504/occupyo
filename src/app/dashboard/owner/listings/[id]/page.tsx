@@ -5,7 +5,7 @@ import EditPropertyClient from "./EditPropertyClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function EditPropertyPage({ params }: { params: { id: string } }) {
+export default async function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth();
 
   if (!userId) {
@@ -20,7 +20,7 @@ export default async function EditPropertyPage({ params }: { params: { id: strin
     redirect("/dashboard");
   }
 
-  const propertyId = params.id;
+  const { id: propertyId } = await params;
 
   const property = await prisma.property.findUnique({
     where: { id: propertyId },
