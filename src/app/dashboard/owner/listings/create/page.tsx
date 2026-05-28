@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation, Star, ChevronLeft, ChevronRight, GripVertical, Image as ImageIcon } from "lucide-react";
 import { createPropertyAction } from "../../actions";
+import { CldUploadWidget } from "next-cloudinary";
 import PredictiveAddressInput from "@/components/PredictiveAddressInput";
 import InteractiveMap from "@/components/InteractiveMap";
 import { hapticTap, hapticMedium, hapticSuccess, hapticError } from "@/lib/haptics";
@@ -161,44 +162,7 @@ export default function CreateListingPage() {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    if (imageUrls.length + files.length > MAX_IMAGES) {
-      hapticError();
-      alert(`Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - imageUrls.length} more.`);
-      return;
-    }
-
-    setUploading(true);
-    const form = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      form.append("files", files[i]);
-    }
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: form,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
-
-      const data = await res.json();
-      if (data.urls) {
-        setImageUrls(prev => [...prev, ...data.urls]);
-        hapticSuccess();
-      }
-    } catch (err) {
-      console.error(err);
-      hapticError();
-      alert("Failed to upload images");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
+  // Cloudinary handles uploading automatically now.
 
   const removeImage = (indexToRemove: number) => {
     hapticTap();
@@ -554,44 +518,73 @@ export default function CreateListingPage() {
             </div>
             
             {/* Upload Dropzone */}
-            <div 
-              className={`border-2 border-dashed ${uploading ? 'border-[#b4e6ff]/50 bg-[#b4e6ff]/5' : 'border-white/20'} rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer relative backdrop-blur-sm group`}
-              onClick={() => imageUrls.length < MAX_IMAGES && fileInputRef.current?.click()}
+            <CldUploadWidget 
+              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
+              options={{
+                multiple: true,
+                maxFiles: MAX_IMAGES - imageUrls.length,
+                clientAllowedFormats: ["image", "video"],
+                sources: ["local", "google_drive", "url", "camera"],
+                styles: {
+                  palette: {
+                    window: "#0f172a",
+                    sourceBg: "#1e293b",
+                    windowBorder: "#334155",
+                    tabIcon: "#b4e6ff",
+                    inactiveTabIcon: "#64748b",
+                    menuIcons: "#b4e6ff",
+                    link: "#b4e6ff",
+                    action: "#3b82f6",
+                    inProgress: "#3b82f6",
+                    complete: "#22c55e",
+                    error: "#ef4444",
+                    textDark: "#0f172a",
+                    textLight: "#f8fafc"
+                  }
+                }
+              }}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onSuccess={(result: any) => {
+                if (result.info && result.info.secure_url) {
+                  setImageUrls(prev => [...prev, result.info.secure_url]);
+                  hapticSuccess();
+                }
+              }}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onError={(error: any) => {
+                console.error("Cloudinary error:", error);
+                hapticError();
+                alert("Failed to upload media");
+              }}
             >
-              <input 
-                type="file" 
-                multiple 
-                accept="image/*" 
-                className="hidden" 
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-              />
-              
-              {uploading ? (
-                <>
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-[#b4e6ff] blur-xl opacity-20 rounded-full"></div>
-                    <Loader2 className="w-10 h-10 text-[#b4e6ff] animate-spin relative z-10" />
-                  </div>
-                  <p className="font-medium text-white mt-4">Uploading images...</p>
-                  <p className="text-sm text-white/50 mt-1">Processing your HQ photos</p>
-                </>
-              ) : (
-                <>
+              {({ open }) => (
+                <div 
+                  className={`border-2 border-dashed border-white/20 rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer relative backdrop-blur-sm group`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (imageUrls.length >= MAX_IMAGES) {
+                      hapticError();
+                      alert(`Maximum ${MAX_IMAGES} media files allowed.`);
+                    } else {
+                      open();
+                    }
+                  }}
+                >
                   <div className="bg-white/10 p-4 rounded-full mb-4 shadow-inner border border-white/20 group-hover:scale-110 group-hover:bg-white/15 transition-all duration-300 pulse-ring">
                     <UploadCloud className="h-8 w-8 text-white/70" />
                   </div>
-                  <p className="font-medium text-white mb-1">Click to upload or drag and drop</p>
-                  <p className="text-sm text-white/50 mb-6">PNG, JPG, or WebP (max. 10MB each)</p>
+                  <p className="font-medium text-white mb-1">Click to upload or connect Google Drive</p>
+                  <p className="text-sm text-white/50 mb-6">High-res Photos & Videos (Local, URL, Drive)</p>
                   <button 
                     className="glass-button-secondary !py-2 !text-sm flex items-center gap-2"
                     onPointerDown={hapticTap}
+                    type="button"
                   >
-                    <UploadCloud className="w-4 h-4" /> Browse Files
+                    <UploadCloud className="w-4 h-4" /> Open Media Library
                   </button>
-                </>
+                </div>
               )}
-            </div>
+            </CldUploadWidget>
             
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
