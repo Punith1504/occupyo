@@ -571,16 +571,6 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                     </div>
                   ))}
                   
-                  {/* Add More button */}
-                  {imageUrls.length < MAX_IMAGES && (
-                    <div 
-                      onClick={() => fileInputRef.current?.click()}
-                      className="aspect-square bg-white/5 rounded-xl border border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:bg-white/10 hover:text-white/80 hover:border-[#b4e6ff]/40 cursor-pointer transition-all duration-300 active:scale-95"
-                    >
-                      <PlusCircle className="w-6 h-6 mb-1" />
-                      <span className="text-xs font-medium">Add More</span>
-                    </div>
-                  )}
                 </div>
               </>
             )}
