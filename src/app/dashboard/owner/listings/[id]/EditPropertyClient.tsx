@@ -571,6 +571,68 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                     </div>
                   ))}
                   
+                  {/* Add More button */}
+                  {imageUrls.length < MAX_IMAGES && (
+                    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+                      <CldUploadWidget 
+                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
+                        options={{
+                          multiple: true,
+                          maxFiles: MAX_IMAGES - imageUrls.length,
+                          clientAllowedFormats: ["image", "video"],
+                          sources: ["local", "google_drive", "url", "camera"],
+                          styles: {
+                            palette: {
+                              window: "#0f172a",
+                              sourceBg: "#1e293b",
+                              windowBorder: "#334155",
+                              tabIcon: "#b4e6ff",
+                              inactiveTabIcon: "#64748b",
+                              menuIcons: "#b4e6ff",
+                              link: "#b4e6ff",
+                              action: "#3b82f6",
+                              inProgress: "#3b82f6",
+                              complete: "#22c55e",
+                              error: "#ef4444",
+                              textDark: "#0f172a",
+                              textLight: "#f8fafc"
+                            }
+                          }
+                        }}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        onSuccess={(result: any) => {
+                          if (result.info && result.info.secure_url) {
+                            setImageUrls(prev => [...prev, result.info.secure_url]);
+                            hapticSuccess();
+                          }
+                        }}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        onError={(error: any) => {
+                          console.error("Cloudinary error:", error);
+                          hapticError();
+                          alert("Failed to upload media");
+                        }}
+                      >
+                        {({ open }) => (
+                          <div 
+                            onClick={(e) => { e.preventDefault(); open(); }}
+                            className="aspect-square bg-white/5 rounded-xl border border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:bg-white/10 hover:text-white/80 hover:border-[#b4e6ff]/40 cursor-pointer transition-all duration-300 active:scale-95"
+                          >
+                            <PlusCircle className="w-6 h-6 mb-1" />
+                            <span className="text-xs font-medium">Add More</span>
+                          </div>
+                        )}
+                      </CldUploadWidget>
+                    ) : (
+                      <div 
+                        className="aspect-square bg-white/5 rounded-xl border border-dashed border-red-500/30 flex flex-col items-center justify-center text-red-400/50 cursor-not-allowed"
+                        title="Cloudinary config missing"
+                      >
+                        <PlusCircle className="w-6 h-6 mb-1" />
+                        <span className="text-xs font-medium">Add More</span>
+                      </div>
+                    )
+                  )}
                 </div>
               </>
             )}
