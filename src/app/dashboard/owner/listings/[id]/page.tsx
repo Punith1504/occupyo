@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditPropertyClient from "./EditPropertyClient";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -31,5 +32,9 @@ export default async function EditPropertyPage({ params }: { params: Promise<{ i
     redirect("/dashboard/owner");
   }
 
-  return <EditPropertyClient property={property} initialImages={property.images} />;
+  return (
+    <ErrorBoundary>
+      <EditPropertyClient property={property} initialImages={property.images} />
+    </ErrorBoundary>
+  );
 }

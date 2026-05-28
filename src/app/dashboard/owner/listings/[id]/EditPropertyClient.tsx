@@ -159,33 +159,40 @@ export default function EditPropertyClient({ property, initialImages }: { proper
       return;
     }
 
-    const result = await updatePropertyAction(property.id, {
-      title: formData.title,
-      description: formData.description,
-      propertyType: formData.propertyType as "WAREHOUSE" | "FLEX" | "OFFICE",
-      sizeSqft: size,
-      pricePerHour: formData.pricePerHour ? Math.abs(parseFloat(formData.pricePerHour)) : undefined,
-      pricePerDay: formData.pricePerDay ? Math.abs(parseFloat(formData.pricePerDay)) : undefined,
-      pricePerMonth: priceM,
-      minDuration: minD,
-      maxDuration: maxD,
-      durationUnit: formData.durationUnit,
-      address: formData.address,
-      lat: formData.lat,
-      lng: formData.lng,
-      amenities: formData.amenities,
-      imageUrls: imageUrls,
-    });
+    try {
+      const result = await updatePropertyAction(property.id, {
+        title: formData.title,
+        description: formData.description,
+        propertyType: formData.propertyType as "WAREHOUSE" | "FLEX" | "OFFICE",
+        sizeSqft: size,
+        pricePerHour: formData.pricePerHour ? Math.abs(parseFloat(formData.pricePerHour)) : undefined,
+        pricePerDay: formData.pricePerDay ? Math.abs(parseFloat(formData.pricePerDay)) : undefined,
+        pricePerMonth: priceM,
+        minDuration: minD,
+        maxDuration: maxD,
+        durationUnit: formData.durationUnit,
+        address: formData.address,
+        lat: formData.lat,
+        lng: formData.lng,
+        amenities: formData.amenities,
+        imageUrls: imageUrls,
+      });
 
-    setLoading(false);
+      setLoading(false);
 
-    if (result.success) {
-      hapticSuccess();
-      setSaveSuccess(true);
-      // Auto-redirect removed to allow user to choose their next action
-    } else {
+      if (result.success) {
+        hapticSuccess();
+        setSaveSuccess(true);
+        // Auto-redirect removed to allow user to choose their next action
+      } else {
+        hapticError();
+        setError(result.error || "Something went wrong.");
+      }
+    } catch (err: any) {
+      console.error("Crash during submitForm:", err);
       hapticError();
-      setError(result.error || "Something went wrong.");
+      setLoading(false);
+      setError(err.message || "A critical error occurred while submitting.");
     }
   };
 
