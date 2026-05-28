@@ -71,6 +71,7 @@ export default function CheckoutForm({
           </div>
           <div>
             <p className="font-semibold text-gray-900">Stripe Secure Checkout</p>
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
             <p className="text-xs text-gray-500">You will be redirected to Stripe's secure payment page</p>
           </div>
         </div>

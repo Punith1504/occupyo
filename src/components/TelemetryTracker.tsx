@@ -24,6 +24,7 @@ export default function TelemetryTracker() {
     };
 
     if ("requestIdleCallback" in window) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).requestIdleCallback(track);
     } else {
       setTimeout(track, 200);

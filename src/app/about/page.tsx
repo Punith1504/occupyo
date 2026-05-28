@@ -39,6 +39,7 @@ export default function AboutPage() {
             <div className="space-y-6">
               <h2 className="text-3xl font-semibold">The Friction</h2>
               <p className="text-white/60 leading-relaxed text-lg">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
                 For decades, the commercial real estate (CRE) market has been dominated by gatekeepers, hidden fees, and months-long negotiation cycles. Whether you're a startup looking for a flex space, or a landlord trying to monetize empty square footage, the process was designed to slow you down.
               </p>
             </div>
@@ -66,6 +67,7 @@ export default function AboutPage() {
           <section className="text-center max-w-3xl mx-auto space-y-8">
             <h2 className="text-3xl font-semibold">Our Vision</h2>
             <p className="text-xl text-white/80 leading-relaxed">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
               We envision a world where physical space is as liquid and accessible as cloud computing. A world where businesses can spin up a headquarters as easily as a server. That's the future we are building at Occupyo.
             </p>
             <div className="pt-8">

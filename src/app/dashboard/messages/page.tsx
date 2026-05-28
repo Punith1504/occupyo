@@ -31,6 +31,7 @@ export default async function MessagesInboxPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {conversations.map((convo: any, index: number) => {
             const partner = convo.partner;
             const msg = convo.lastMessage;

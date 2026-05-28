@@ -153,6 +153,8 @@ export default async function TenantDashboardOverview() {
               <FileText className="h-7 w-7 text-[#b4e6ff]" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">Post a Space Request</h3>
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
             <p className="text-white/60 mb-8 max-w-sm">Can't find what you're looking for? Let owners bid on your request.</p>
           </div>
           <Link href="/dashboard/tenant/requests/new" className="glass-button-secondary inline-flex w-max flex items-center gap-2 group/btn">

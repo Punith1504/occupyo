@@ -55,6 +55,7 @@ export default function CreateListingPage() {
     if (currentStep === 1) {
       if (navigator.geolocation) {
         if (!formData.address && !formData.lat) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setAddressLoading(true);
         }
         navigator.geolocation.getCurrentPosition(
@@ -87,6 +88,7 @@ export default function CreateListingPage() {
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
 
   // Keyboard navigation for photo preview

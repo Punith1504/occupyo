@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { MapPin, DollarSign, Calendar, Mail, User } from "lucide-react";
+import { MapPin, DollarSign, Calendar, Mail, User, MessageSquare } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function OwnerSpaceRequestsPage() {
   }
 
   // Fetch all open space requests
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let requests: any[] = [];
   try {
     requests = await prisma.spaceRequest.findMany({

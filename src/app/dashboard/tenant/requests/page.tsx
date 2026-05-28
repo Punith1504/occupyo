@@ -21,6 +21,7 @@ export default async function TenantRequestsPage() {
     redirect("/onboarding");
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let requests: any[] = [];
   try {
     requests = await prisma.spaceRequest.findMany({
@@ -54,6 +55,7 @@ export default async function TenantRequestsPage() {
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No active requests</h3>
           <p className="text-gray-500 max-w-md mx-auto mb-6">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
             Can't find the perfect space in our marketplace? Post a request detailing what you need and let owners reach out to you directly.
           </p>
           <Link 

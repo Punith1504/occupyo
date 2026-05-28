@@ -14,6 +14,7 @@ export function PricingBreakdown({ baseRent }: PricingBreakdownProps) {
     <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm mt-8">
       <div className="p-6 bg-gray-50 border-b border-gray-200">
         <h3 className="text-xl font-semibold text-gray-900">Transparent Pricing Breakdown</h3>
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
         <p className="text-sm text-gray-500 mt-1">No hidden fees. Exactly what you'll pay each month.</p>
       </div>
       

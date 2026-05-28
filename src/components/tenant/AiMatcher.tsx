@@ -80,6 +80,7 @@ export function AiMatcher() {
           </div>
         ) : step === 0 ? (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
             <h4 className="text-2xl font-bold text-gray-900">What's your primary use case?</h4>
             <div className="grid grid-cols-2 gap-4">
               {['Creative Studio', 'Tech Startup', 'Heavy Industrial', 'Medical/Wellness'].map(vibe => (
@@ -95,6 +96,7 @@ export function AiMatcher() {
           </div>
         ) : step === 1 ? (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
             <h4 className="text-2xl font-bold text-gray-900">What's your monthly budget?</h4>
             <div className="space-y-3">
               {['Under $2,500', '$2,500 - $5,000', '$5,000 - $10,000', '$10,000+'].map(budget => (

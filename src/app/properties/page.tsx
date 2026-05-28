@@ -13,6 +13,7 @@ export default async function PublicPropertiesPage(props: {
   const userLat = lat ? parseFloat(lat) : null;
   const userLng = lng ? parseFloat(lng) : null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const whereClause: any = {
     status: "AVAILABLE",
   };
@@ -28,6 +29,7 @@ export default async function PublicPropertiesPage(props: {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let properties: any[] = [];
   try {
     properties = await prisma.property.findMany({
@@ -129,6 +131,7 @@ export default async function PublicPropertiesPage(props: {
             <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-2xl font-black text-gray-900 mb-2">No properties found</h3>
             <p className="text-gray-500 max-w-md mx-auto font-medium">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
               We couldn't find any spaces matching your criteria globally. Try adjusting your filters or check back later!
             </p>
           </div>

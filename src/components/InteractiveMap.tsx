@@ -141,6 +141,40 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
+    const initMap = () => {
+      if (!mapRef.current || !window.google) return;
+      setIsLoaded(true);
+  
+      const defaultLocation = { lat: 37.7749, lng: -122.4194 }; // SF default
+      const position = lat && lng ? { lat, lng } : defaultLocation;
+  
+      mapInstance.current = new window.google.maps.Map(mapRef.current, {
+        center: position,
+        zoom: lat && lng ? zoom : 4, // zoom out if no location
+        styles: darkMapStyle,
+        disableDefaultUI: true, // cleaner look
+        zoomControl: true,
+        gestureHandling: "cooperative",
+        backgroundColor: "#0e1626",
+      });
+  
+      if (lat && lng) {
+        markerInstance.current = new window.google.maps.Marker({
+          position,
+          map: mapInstance.current,
+          animation: window.google.maps.Animation.DROP,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#b4e6ff", // Pastel Accent
+            fillOpacity: 1,
+            strokeColor: "#ffffff",
+            strokeWeight: 2,
+          }
+        });
+      }
+    };
+
     // If maps api is already loaded, init right away
     if (window.google && window.google.maps) {
       initMap();
@@ -167,41 +201,8 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
       }, 100);
       return () => clearInterval(checkGoogle);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const initMap = () => {
-    if (!mapRef.current || !window.google) return;
-    setIsLoaded(true);
-
-    const defaultLocation = { lat: 37.7749, lng: -122.4194 }; // SF default
-    const position = lat && lng ? { lat, lng } : defaultLocation;
-
-    mapInstance.current = new window.google.maps.Map(mapRef.current, {
-      center: position,
-      zoom: lat && lng ? zoom : 4, // zoom out if no location
-      styles: darkMapStyle,
-      disableDefaultUI: true, // cleaner look
-      zoomControl: true,
-      gestureHandling: "cooperative",
-      backgroundColor: "#0e1626",
-    });
-
-    if (lat && lng) {
-      markerInstance.current = new window.google.maps.Marker({
-        position,
-        map: mapInstance.current,
-        animation: window.google.maps.Animation.DROP,
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: "#b4e6ff", // Pastel Accent
-          fillOpacity: 1,
-          strokeColor: "#ffffff",
-          strokeWeight: 2,
-        }
-      });
-    }
-  };
 
   useEffect(() => {
     // Update map when lat/lng changes

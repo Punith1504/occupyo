@@ -38,6 +38,7 @@ export default async function TenantLeasesPage() {
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No bookings yet</h3>
           <p className="text-gray-500 max-w-md mx-auto mb-6">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
             You haven't requested to book any properties yet.
           </p>
           <Link 

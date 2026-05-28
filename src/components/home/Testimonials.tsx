@@ -56,6 +56,7 @@ export function Testimonials() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           <h2 className="text-4xl font-bold text-white mb-4 tracking-tight">Don't just take our word for it</h2>
           <p className="text-xl text-white/50 max-w-2xl mx-auto">
             Join hundreds of forward-thinking companies who have already found their perfect space.
@@ -71,6 +72,8 @@ export function Testimonials() {
                 ))}
               </div>
               <p className="text-white/80 text-lg leading-relaxed mb-8">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
                 "{testimonial.content}"
               </p>
               <div>

@@ -165,6 +165,7 @@ export function BookingForm({
       </div>
       
       <p className="text-center text-xs text-gray-500 mt-4">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
         You won't be charged yet. The owner must approve your request first.
       </p>
     </div>

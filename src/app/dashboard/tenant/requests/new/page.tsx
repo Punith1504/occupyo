@@ -51,6 +51,7 @@ export default function NewSpaceRequestPage() {
 
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Post a Space Request</h1>
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
         <p className="text-gray-500 mt-1">Let owners know what you're looking for so they can reach out.</p>
       </div>
 

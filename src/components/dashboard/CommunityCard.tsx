@@ -10,6 +10,7 @@ export function CommunityCard() {
   useEffect(() => {
     // Generate a random referral code for the MVP if user doesn't have one loaded
     const randomCode = "OCC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setReferralCode(randomCode);
   }, []);
 

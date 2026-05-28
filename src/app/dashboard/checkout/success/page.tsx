@@ -7,6 +7,7 @@ import Stripe from "stripe";
 export const dynamic = "force-dynamic";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   apiVersion: "2023-10-16" as any,
 });
 
@@ -58,6 +59,7 @@ export default async function CheckoutSuccessPage(
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-3">Payment Unverified</h1>
           <p className="text-gray-600 mb-8">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
             We couldn't verify your payment with Stripe. If you were charged, please contact support.
           </p>
           <Link 

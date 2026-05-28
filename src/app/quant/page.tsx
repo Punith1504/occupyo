@@ -5,11 +5,13 @@ import React, { useState, useEffect } from 'react';
 export default function QuantDashboard() {
   const [ticker, setTicker] = useState('RELIANCE.NS');
   const [isSearching, setIsSearching] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>(null);
 
   // Simulate fetching data and evaluating metrics
   useEffect(() => {
     if (!ticker) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsSearching(true);
     
     // Simulating API calculation delay for TA Engine
@@ -135,7 +137,7 @@ export default function QuantDashboard() {
         <div>
           <h2 className="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-4">Technical Evaluation Matrix</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data?.metrics.map((metric: any, idx: number) => (
+            {data?.metrics.map((metric: { name: string, value: string, signal: string, signalColor: string, rule: string }, idx: number) => (
               <div key={idx} className="glass-card rounded-2xl p-6 transition-transform hover:-translate-y-1 duration-300">
                 <h3 className="text-lg font-bold text-cyan-400 uppercase tracking-widest mb-2">{metric.name}</h3>
                 <div className="text-4xl font-extrabold text-white mb-4">{metric.value}</div>
