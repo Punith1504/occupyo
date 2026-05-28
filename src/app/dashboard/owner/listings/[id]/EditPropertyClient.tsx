@@ -23,7 +23,6 @@ export default function EditPropertyClient({ property, initialImages }: { proper
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [userCoords, setUserCoords] = useState<{lat: number, lng: number} | null>(null);
   const [previewImage, setPreviewImage] = useState<number | null>(null);
   
   const [imageUrls, setImageUrls] = useState<string[]>(initialImages.map(img => img.url));
@@ -50,48 +49,6 @@ export default function EditPropertyClient({ property, initialImages }: { proper
     amenities: (property.amenities as string[]) || [],
   });
 
-  const [addressLoading, setAddressLoading] = useState(false);
-
-  useEffect(() => {
-    if (currentStep === 1) {
-      if (navigator.geolocation) {
-        if (!formData.address && !formData.lat) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
-          setAddressLoading(true);
-        }
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setUserCoords({ lat: latitude, lng: longitude });
-            
-            if (!formData.address && !formData.lat) {
-              fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
-                .then(res => res.json())
-                .then(data => {
-                  setFormData(prev => ({
-                    ...prev,
-                    address: data.display_name,
-                    lat: latitude,
-                    lng: longitude,
-                  }));
-                  setAddressLoading(false);
-                })
-                .catch(err => {
-                  console.error("Reverse geocoding error:", err);
-                  setAddressLoading(false);
-                });
-            }
-          },
-          (error) => {
-            console.error("Geolocation error:", error);
-            setAddressLoading(false);
-          }
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStep]);
-
   // Keyboard navigation for photo preview
   useEffect(() => {
     if (previewImage === null) return;
@@ -109,42 +66,6 @@ export default function EditPropertyClient({ property, initialImages }: { proper
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [previewImage, imageUrls.length]);
-
-  const handleCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
-      return;
-    }
-
-    setAddressLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
-          .then(res => res.json())
-          .then(data => {
-            setFormData({
-              ...formData,
-              address: data.display_name,
-              lat: latitude,
-              lng: longitude,
-            });
-            setAddressLoading(false);
-          })
-          .catch(err => {
-            console.error("Reverse geocoding error:", err);
-            setAddressLoading(false);
-            alert("Failed to get address for current location");
-          });
-      },
-      (error) => {
-        console.error("Geolocation error:", error);
-        setAddressLoading(false);
-        alert("Failed to get current location. Please allow location access.");
-      }
-    );
-  };
 
   const handleNext = () => {
     hapticMedium();
