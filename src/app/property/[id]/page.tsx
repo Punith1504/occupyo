@@ -92,10 +92,10 @@ export default async function PropertyPage(
                   {property.status}
                 </span>
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">{property.title}</h1>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4 break-words">{property.title}</h1>
               <div className="flex items-center text-gray-500 gap-2 text-lg">
-                <MapPin className="h-5 w-5" />
-                {property.address}
+                <MapPin className="h-5 w-5 shrink-0" />
+                <span className="break-words">{property.address}</span>
               </div>
             </div>
 
@@ -120,7 +120,7 @@ export default async function PropertyPage(
 
             <div>
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">About this space</h2>
-              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap text-lg">
+              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap text-lg break-words">
                 {property.description}
               </p>
             </div>
