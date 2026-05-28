@@ -11,9 +11,7 @@ import { hapticTap, hapticMedium, hapticSuccess, hapticError } from "@/lib/hapti
 
 const STEPS = [
   { id: "details", title: "Details", icon: Building2 },
-  { id: "location", title: "Location", icon: MapPin },
   { id: "media", title: "Media", icon: Camera },
-  { id: "legal", title: "Legal", icon: FileText },
 ];
 
 const MAX_IMAGES = 20;
@@ -492,60 +490,8 @@ export default function EditPropertyClient({ property, initialImages }: { proper
           </div>
         )}
 
-        {/* STEP 2: LOCATION */}
+        {/* STEP 2: MEDIA — Enhanced HQ Photo Management */}
         {currentStep === 1 && (
-          <div className="space-y-6 animate-staggerFadeUp">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-white/80">Property Address</label>
-                <button 
-                  type="button" 
-                  onClick={handleCurrentLocation}
-                  className="text-xs flex items-center gap-1 text-[#b4e6ff] font-medium hover:underline bg-[#b4e6ff]/10 px-3 py-1.5 rounded-lg border border-[#b4e6ff]/20 active:scale-95 transition-transform"
-                >
-                  <Navigation className="w-3 h-3" /> Use Current Location
-                </button>
-              </div>
-              <div className="relative">
-                <PredictiveAddressInput 
-                  initialValue={formData.address}
-                  onSelect={(address, lat, lng) => {
-                    setFormData({
-                      ...formData,
-                      address,
-                      lat,
-                      lng
-                    });
-                  }}
-                  className="w-full pl-12 glass-input"
-                />
-              </div>
-              <p className="text-xs text-white/50 mt-2">
-                Select an address from the dropdown to verify its location.
-              </p>
-            </div>
-            
-            <div className="h-64 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden relative">
-              {formData.address && formData.address.length > 5 ? (
-                <InteractiveMap 
-                  lat={formData.lat} 
-                  lng={formData.lng} 
-                  address={formData.address} 
-                  className="w-full h-full"
-                />
-              ) : (
-                <div className="bg-white/5 w-full h-full flex flex-col items-center justify-center">
-                  <MapPin className="h-10 w-10 text-white/30 mb-2" />
-                  <p className="text-white/60 font-medium">Map Preview</p>
-                  <p className="text-sm text-white/40">Map will center on selected address</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: MEDIA — Enhanced HQ Photo Management */}
-        {currentStep === 2 && (
           <div className="space-y-6 animate-staggerFadeUp">
             <div className="text-center">
               <h3 className="text-xl font-medium text-white">Upload Property Photos</h3>
@@ -696,46 +642,6 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                 </div>
               </>
             )}
-          </div>
-        )}
-
-        {/* STEP 4: LEGAL */}
-        {currentStep === 3 && (
-          <div className="space-y-6 animate-staggerFadeUp">
-            <div className="text-center">
-              <h3 className="text-xl font-medium text-white">Occupancy Agreement</h3>
-              <p className="text-sm text-white/60 mt-1">Upload your standard agreement or use our digital template.</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <label className="border-2 border-[#b4e6ff] bg-[#b4e6ff]/5 rounded-2xl p-6 cursor-pointer relative hover:bg-[#b4e6ff]/10 transition-colors">
-                <div className="absolute top-4 right-4 bg-[#b4e6ff] text-black rounded-full p-1 shadow-[var(--neon-glow)]">
-                  <CheckCircle2 className="w-4 h-4" />
-                </div>
-                <FileText className="w-8 h-8 text-[#b4e6ff] mb-4" />
-                <h4 className="font-semibold text-white mb-2">Occupyo Standard</h4>
-                <p className="text-sm text-white/60">Use our vetted, flexible occupancy agreement template. Recommended for fast onboarding.</p>
-              </label>
-              
-              <label className="border border-white/20 bg-white/5 rounded-2xl p-6 cursor-pointer hover:border-white/30 hover:bg-white/10 transition-colors">
-                <UploadCloud className="w-8 h-8 text-white/40 mb-4" />
-                <h4 className="font-semibold text-white mb-2">Custom Agreement</h4>
-                <p className="text-sm text-white/50 mb-4">Upload your own legal terms and conditions (PDF only).</p>
-                <div className="glass-button-secondary text-xs !px-3 !py-2 text-center font-medium">
-                  Upload PDF
-                </div>
-              </label>
-            </div>
-
-            <div className="bg-[#b4e6ff]/10 border border-[#b4e6ff]/20 p-5 rounded-2xl flex items-start gap-3 mt-6">
-              <div className="bg-[#b4e6ff]/20 text-[#b4e6ff] rounded-full p-1.5 mt-0.5 border border-[#b4e6ff]/30">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-[#b4e6ff]">Stripe Connect Integration</p>
-                <p className="text-xs text-white/70 mt-1 leading-relaxed">Payments will be routed directly to your account. A 5% platform fee will be deducted automatically from successful bookings.</p>
-              </div>
-            </div>
           </div>
         )}
           </>
