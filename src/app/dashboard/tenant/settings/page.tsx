@@ -24,7 +24,7 @@ export default async function TenantSettingsPage() {
     console.error("Database connection failed:", error);
   }
 
-  if (!user || (user.role !== "TENANT" && user.role !== "ADMIN")) {
+  if (!user || ((user.role as string) !== "TENANT" && (user.role as string) !== "ADMIN")) {
     if (process.env.NODE_ENV === "production" && !userId) {
        return <div>Loading...</div>; 
     }

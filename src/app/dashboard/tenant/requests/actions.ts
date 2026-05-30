@@ -22,7 +22,7 @@ export async function createSpaceRequest(data: {
     where: { clerkUserId: userId }
   });
 
-  if (!user || user.role !== "TENANT" && user.role !== "ADMIN" && user.role !== "ADMIN") {
+  if (!user || (user.role as string) !== "TENANT" && (user.role as string) !== "ADMIN" && (user.role as string) !== "ADMIN") {
     return { success: false, error: "Only registered tenants can post space requests." };
   }
 

@@ -29,7 +29,7 @@ export default async function OwnerDashboardOverview() {
     console.error("Database connection failed, likely during build:", error);
   }
 
-  if (!user || user.role !== "OWNER" && user.role !== "ADMIN" && user.role !== "ADMIN") {
+  if (!user || (user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN" && (user.role as string) !== "ADMIN") {
     if (process.env.NODE_ENV === "production" && !userId) {
        return <div>Loading...</div>;
     }

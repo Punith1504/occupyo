@@ -66,35 +66,6 @@ function CheckoutInnerForm({ amount, leaseId }: { amount: number, leaseId: strin
       <div className="bg-[#0f172a]/50 p-4 rounded-2xl border border-white/5">
         <PaymentElement options={{
            layout: "tabs",
-           // Use the "night" theme to blend seamlessly with our glassmorphism
-           appearance: {
-             theme: "night",
-             variables: {
-               colorPrimary: "#b4e6ff",
-               colorBackground: "transparent",
-               colorText: "#ffffff",
-               colorDanger: "#ef4444",
-               fontFamily: "inherit",
-               spacingUnit: "4px",
-               borderRadius: "12px",
-               colorTextPlaceholder: "#64748b"
-             },
-             rules: {
-               ".Input": {
-                 backgroundColor: "rgba(255, 255, 255, 0.03)",
-                 border: "1px solid rgba(255, 255, 255, 0.1)",
-                 boxShadow: "inset 0 1px 1px rgba(255,255,255,0.05)",
-               },
-               ".Input:focus": {
-                 border: "1px solid rgba(180, 230, 255, 0.5)",
-                 boxShadow: "0 0 0 1px rgba(180, 230, 255, 0.5)",
-               },
-               ".Label": {
-                 color: "rgba(255, 255, 255, 0.8)",
-                 fontWeight: "500",
-               }
-             }
-           }
         }} />
       </div>
 

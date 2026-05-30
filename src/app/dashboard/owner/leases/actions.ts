@@ -15,7 +15,7 @@ export async function updateLeaseStatus(leaseId: string, status: "APPROVED" | "R
     where: { clerkUserId: userId }
   });
 
-  if (!user || user.role !== "OWNER" && user.role !== "ADMIN" && user.role !== "ADMIN") {
+  if (!user || (user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN" && (user.role as string) !== "ADMIN") {
     return { success: false, error: "Unauthorized. Must be an owner." };
   }
 

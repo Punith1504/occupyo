@@ -23,6 +23,7 @@ enum LeaseStatus {
   APPROVED
   ACTIVE
   COMPLETED
+  REJECTED
 }
 
 model User {
