@@ -4,6 +4,9 @@ import Link from "next/link";
 import { PlusCircle, Building, MapPin, ArrowUpRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { CommunityCard } from "@/components/dashboard/CommunityCard";
+import { YieldAnalytics } from "./YieldAnalytics";
+import { getOwnerAnalytics } from "./analytics-actions";
+import { PropertyTimeline } from "@/components/dashboard/PropertyTimeline";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +37,18 @@ export default async function OwnerDashboardOverview() {
   }
 
   const properties = user.properties;
+  const analyticsData = await getOwnerAnalytics();
+  
+  let activityLogs: any[] = [];
+  try {
+    activityLogs = await prisma.activityLog.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+  } catch (error) {
+    console.error("Failed to fetch activity logs", error);
+  }
 
   return (
     <div className="p-8 relative min-h-screen">
@@ -56,6 +71,8 @@ export default async function OwnerDashboardOverview() {
           New Listing
         </Link>
       </div>
+
+      <YieldAnalytics data={analyticsData} />
 
       {properties.length === 0 ? (
         <div className="liquid-glass p-12 text-center flex flex-col items-center justify-center min-h-[400px]" style={{ animation: 'staggerFadeUp 0.5s ease-out 0.1s both' }}>
@@ -135,6 +152,8 @@ export default async function OwnerDashboardOverview() {
           ))}
         </div>
       )}
+
+      <PropertyTimeline events={activityLogs} />
 
       <CommunityCard />
     </div>

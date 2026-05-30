@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation, Star, ChevronLeft, ChevronRight, GripVertical, Image as ImageIcon } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 import { updatePropertyAction } from "../../actions";
 
 import PredictiveAddressInput from "@/components/PredictiveAddressInput";
@@ -83,69 +84,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
     }
   };
 
-  // Local File Upload Handlers
-  const [dragActive, setDragActive] = useState(false);
-  const [uploadingLocal, setUploadingLocal] = useState(false);
-
-  const handleLocalDragEnter = (e: React.DragEvent) => {
-    e.preventDefault(); e.stopPropagation();
-    setDragActive(true);
-  };
-  const handleLocalDragLeave = (e: React.DragEvent) => {
-    e.preventDefault(); e.stopPropagation();
-    setDragActive(false);
-  };
-  const handleLocalDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); e.stopPropagation();
-  };
-
-  const uploadFiles = async (files: File[]) => {
-    if (files.length === 0) return;
-    if (imageUrls.length + files.length > MAX_IMAGES) {
-      hapticError();
-      alert(`Maximum ${MAX_IMAGES} media files allowed.`);
-      return;
-    }
-
-    setUploadingLocal(true);
-    const formData = new FormData();
-    files.forEach(f => formData.append("file", f));
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData
-      });
-      const data = await res.json();
-      if (data.success) {
-        setImageUrls(prev => [...prev, ...data.urls]);
-        hapticSuccess();
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (err) {
-      console.error("Upload error:", err);
-      hapticError();
-      alert("Failed to upload media");
-    } finally {
-      setUploadingLocal(false);
-    }
-  };
-
-  const handleLocalDrop = (e: React.DragEvent) => {
-    e.preventDefault(); e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      uploadFiles(Array.from(e.dataTransfer.files));
-    }
-  };
-
-  const handleLocalFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      uploadFiles(Array.from(e.target.files));
-    }
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
+  // Cloudinary handles uploading automatically now.
 
   const removeImage = (indexToRemove: number) => {
     hapticTap();
@@ -495,58 +434,77 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             </div>
             
             {/* Upload Dropzone */}
-            {/* Native Local Upload Dropzone (Premium UI) */}
-            <div 
-              className={`relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out 
-                ${dragActive ? "shadow-[0_20px_40px_-15px_rgba(180,230,255,0.3)] border-[#b4e6ff] scale-[1.02] bg-gradient-to-b from-[#b4e6ff]/10 to-[#b4e6ff]/5" : "hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-[#b4e6ff]/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent"}
-                ${uploadingLocal ? "opacity-50 pointer-events-none" : ""}
-                backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]`}
-              onDragEnter={handleLocalDragEnter}
-              onDragOver={handleLocalDragOver}
-              onDragLeave={handleLocalDragLeave}
-              onDrop={handleLocalDrop}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <input 
-                type="file"
-                multiple
-                accept="image/*,video/*"
-                className="hidden"
-                ref={fileInputRef}
-                onChange={handleLocalFileSelect}
-              />
-              {/* Animated background glow */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#b4e6ff]/0 via-[#b4e6ff]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
-              
-              <div className="relative z-10 flex flex-col items-center">
-                <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-white/10 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                  {uploadingLocal ? (
-                    <Loader2 className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] animate-spin" strokeWidth={1.5} />
-                  ) : (
-                    <UploadCloud className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
-                  )}
-                </div>
-                
-                <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors duration-300">
-                  {uploadingLocal ? "Uploading Media..." : "Upload Property Media"}
-                </h4>
-                <p className="text-sm text-white/50 mb-8 max-w-sm leading-relaxed">
-                  Drag and drop your high-resolution photos or videos here, or click to browse your local files.
+            {/* Upload Dropzone (Cloudinary Premium UI) */}
+            {!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+              <div className="flex flex-col items-center justify-center py-12 px-4 border border-dashed border-red-500/30 rounded-2xl bg-red-500/5 backdrop-blur-md shadow-2xl">
+                <UploadCloud className="w-12 h-12 text-red-400 mb-4 animate-pulse" />
+                <h3 className="text-lg font-medium text-red-200">Cloudinary Configuration Missing</h3>
+                <p className="text-red-300/70 text-sm text-center max-w-sm mt-2 leading-relaxed">
+                  Please add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME to your environment variables to enable premium media uploads.
                 </p>
-                
-                <div className="relative group/btn">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-[#b4e6ff] to-[#cbb4ff] rounded-full blur opacity-30 group-hover/btn:opacity-70 transition duration-500"></div>
-                  <button 
-                    className="relative flex items-center gap-2 bg-[#0f172a] text-white px-6 py-3 rounded-full text-sm font-medium border border-white/10 group-hover/btn:border-white/20 transition-all duration-300 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50"
-                    onPointerDown={hapticTap}
-                    type="button"
-                    disabled={uploadingLocal}
-                  >
-                    <UploadCloud className="w-4 h-4 text-[#b4e6ff]" /> Browse Local Files
-                  </button>
-                </div>
               </div>
-            </div>
+            ) : (
+              <CldUploadWidget 
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
+                options={{
+                  multiple: true,
+                  maxFiles: MAX_IMAGES - imageUrls.length,
+                  clientAllowedFormats: ["image", "video"],
+                }}
+                onSuccess={(result: any) => {
+                  hapticSuccess();
+                  if (result?.info?.secure_url) {
+                    setImageUrls(prev => [...prev, result.info.secure_url]);
+                  }
+                }}
+                onError={() => {
+                  hapticError();
+                  alert("Failed to upload media via Cloudinary");
+                }}
+              >
+                {({ open }) => (
+                  <div 
+                    className="relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-[#b4e6ff]/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (imageUrls.length >= MAX_IMAGES) {
+                        hapticError();
+                        alert(`Maximum ${MAX_IMAGES} media files allowed.`);
+                        return;
+                      }
+                      open();
+                    }}
+                  >
+                    {/* Animated background glow */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#b4e6ff]/0 via-[#b4e6ff]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
+                    
+                    <div className="relative z-10 flex flex-col items-center">
+                      <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-white/10 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+                        <UploadCloud className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
+                      </div>
+                      
+                      <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors duration-300">
+                        Upload Property Media
+                      </h4>
+                      <p className="text-sm text-white/50 mb-8 max-w-sm leading-relaxed">
+                        Click to securely upload your high-resolution photos or videos via Cloudinary.
+                      </p>
+                      
+                      <div className="relative group/btn">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#b4e6ff] to-[#cbb4ff] rounded-full blur opacity-30 group-hover/btn:opacity-70 transition duration-500"></div>
+                        <button 
+                          className="relative flex items-center gap-2 bg-[#0f172a] text-white px-6 py-3 rounded-full text-sm font-medium border border-white/10 group-hover/btn:border-white/20 transition-all duration-300 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95"
+                          onPointerDown={hapticTap}
+                          type="button"
+                        >
+                          <UploadCloud className="w-4 h-4 text-[#b4e6ff]" /> Browse Files
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CldUploadWidget>
+            )}
             
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
@@ -604,20 +562,6 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                     </div>
                   ))}
                   
-                  {/* Local Add More button */}
-                  {imageUrls.length < MAX_IMAGES && (
-                    <div 
-                      onClick={() => !uploadingLocal && fileInputRef.current?.click()}
-                      className={`aspect-square bg-white/5 rounded-xl border border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:bg-white/10 hover:text-white/80 hover:border-[#b4e6ff]/40 cursor-pointer transition-all duration-300 active:scale-95 ${uploadingLocal ? 'opacity-50 pointer-events-none' : ''}`}
-                    >
-                      {uploadingLocal ? (
-                        <Loader2 className="w-6 h-6 mb-1 animate-spin text-[#b4e6ff]" />
-                      ) : (
-                        <PlusCircle className="w-6 h-6 mb-1" />
-                      )}
-                      <span className="text-xs font-medium">Add More</span>
-                    </div>
-                  )}
                 </div>
               </>
             )}

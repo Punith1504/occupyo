@@ -43,6 +43,7 @@ model User {
   spaceRequests  SpaceRequest[]
   sentMessages   Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
+  activityLogs   ActivityLog[]
 }
 
 model Property {
@@ -68,6 +69,7 @@ model Property {
   
   images           Image[]
   leases           Lease[]
+  activityLogs     ActivityLog[]
 }
 
 model Image {
@@ -123,4 +125,17 @@ model UserEvent {
   eventType String   // e.g., 'SEARCH', 'VIEW_PROPERTY', 'CLICK'
   eventData Json     @default("{}") // Store query, propertyId, etc.
   createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  propertyId  String?
+  property    Property? @relation(fields: [propertyId], references: [id])
+  type        String   // "PAYMENT_RECEIVED", "PROPERTY_CREATED", "LEASE_APPROVED"
+  title       String
+  description String
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
 }

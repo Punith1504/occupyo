@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { PropertyType } from "@prisma/client";
+import { trackEvent } from "@/lib/activity-logger";
 
 export async function createPropertyAction(data: {
   title: string;
@@ -61,6 +62,16 @@ export async function createPropertyAction(data: {
           }))
         } : undefined
       }
+    });
+
+    // Fire and forget logging
+    trackEvent({
+      userId: user.id,
+      propertyId: property.id,
+      type: "PROPERTY_CREATED",
+      title: "New Property Listed",
+      description: `Successfully published ${data.title} (${data.sizeSqft} sqft).`,
+      metadata: { propertyType: data.propertyType, pricePerMonth: data.pricePerMonth }
     });
 
     return { success: true, propertyId: property.id };

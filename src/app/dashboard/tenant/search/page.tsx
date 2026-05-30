@@ -4,11 +4,12 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Search, MapPin, Building2, Filter } from "lucide-react";
 import LocationSearchInput from "./LocationSearchInput";
+import { DiscoveryMap } from "@/components/dashboard/DiscoveryMap";
 
 export const dynamic = "force-dynamic";
 
 export default async function PropertySearchPage(props: {
-  searchParams: Promise<{ type?: string; location?: string; niche?: string }>;
+  searchParams: Promise<{ type?: string; location?: string; lat?: string; lng?: string; niche?: string }>;
 }) {
   const { userId } = await auth();
   if (!userId) {
@@ -145,17 +146,19 @@ export default async function PropertySearchPage(props: {
         </div>
       </div>
 
-      {/* Results Section */}
-      <div className="p-8 flex-1">
-        <div className="flex justify-between items-center mb-6">
-          <p className="text-gray-600 font-medium">
-            Showing <span className="text-black font-semibold">{properties.length}</span> properties
-          </p>
-          <button className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black">
-            <Filter className="h-4 w-4" />
-            More Filters
-          </button>
-        </div>
+      {/* Main Content: Split Layout */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* Left: Scrollable Results */}
+        <div className="w-full md:w-[60%] lg:w-[50%] flex flex-col h-full overflow-y-auto p-6 md:p-8 custom-scrollbar">
+          <div className="flex justify-between items-center mb-6">
+            <p className="text-gray-600 font-medium">
+              Showing <span className="text-black font-semibold">{properties.length}</span> properties
+            </p>
+            <button className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black">
+              <Filter className="h-4 w-4" />
+              More Filters
+            </button>
+          </div>
 
         {properties.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
@@ -167,12 +170,12 @@ export default async function PropertySearchPage(props: {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {properties.map(property => (
               <Link key={property.id} href={`/property/${property.id}`} className="group block">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
                   {/* Image Placeholder or Actual Image */}
-                  <div className="h-56 bg-gray-100 relative">
+                  <div className="h-40 bg-gray-100 relative">
                     {property.images && property.images.length > 0 ? (
                       <img src={property.images[0].url} alt={property.title} className="w-full h-full object-cover" />
                     ) : (
@@ -192,24 +195,24 @@ export default async function PropertySearchPage(props: {
                   </div>
                   
                   {/* Content */}
-                  <div className="p-5 flex-1 flex flex-col">
+                  <div className="p-4 flex-1 flex flex-col">
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors line-clamp-1">{property.title}</h3>
+                      <h3 className="font-bold text-gray-900 text-md group-hover:text-blue-600 transition-colors line-clamp-1">{property.title}</h3>
                     </div>
                     
-                    <p className="text-sm text-gray-500 mb-4 flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5" />
+                    <p className="text-xs text-gray-500 mb-3 flex items-center gap-1.5">
+                      <MapPin className="h-3 w-3" />
                       <span className="truncate">{property.address}</span>
                     </p>
                     
-                    <div className="grid grid-cols-2 gap-4 mt-auto pt-4 border-t border-gray-100">
+                    <div className="grid grid-cols-2 gap-2 mt-auto pt-3 border-t border-gray-100">
                       <div>
-                        <p className="text-gray-500 text-xs">Size</p>
-                        <p className="font-semibold text-gray-900">{property.sizeSqft.toLocaleString()} sqft</p>
+                        <p className="text-gray-500 text-[10px] uppercase">Size</p>
+                        <p className="font-semibold text-gray-900 text-sm">{property.sizeSqft.toLocaleString()} sqft</p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs">Price</p>
-                        <p className="font-semibold text-gray-900">${property.pricePerMonth.toLocaleString()}/mo</p>
+                        <p className="text-gray-500 text-[10px] uppercase">Price</p>
+                        <p className="font-semibold text-gray-900 text-sm">${property.pricePerMonth.toLocaleString()}/mo</p>
                       </div>
                     </div>
                   </div>
@@ -218,6 +221,12 @@ export default async function PropertySearchPage(props: {
             ))}
           </div>
         )}
+        </div>
+        
+        {/* Right: Interactive Discovery Map */}
+        <div className="hidden md:block md:w-[40%] lg:w-[50%] h-full p-6 md:pl-0">
+          <DiscoveryMap initialProperties={properties} />
+        </div>
       </div>
     </div>
   );
