@@ -33,7 +33,9 @@ export default function OwnerDashboardLayout({
     <div className="min-h-screen bg-[var(--background)] flex flex-col md:flex-row relative">
       {/* Mobile Top Navbar */}
       <div className="md:hidden glass-navbar flex items-center justify-between p-4 sticky top-0 z-50 border-b border-white/10">
-        <span className="text-xl font-bold text-white tracking-tight">Occupyo</span>
+        <Link href="/">
+          <span className="text-xl font-bold text-white tracking-tight">Occupyo</span>
+        </Link>
         <div className="flex items-center gap-4">
           <UserButton />
           <button 
@@ -53,7 +55,9 @@ export default function OwnerDashboardLayout({
         md:flex md:relative md:top-0 md:w-64 glass-heavy border-r border-white/10 flex-col shrink-0 md:min-h-screen
       `}>
         <div className="hidden md:flex h-16 items-center px-6 border-b border-white/10">
-          <span className="text-xl font-bold text-white tracking-tight">Occupyo</span>
+          <Link href="/">
+            <span className="text-xl font-bold text-white tracking-tight">Occupyo</span>
+          </Link>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           {NAV_ITEMS.map(item => {
