@@ -4,6 +4,7 @@ import { MapPin, Building2, Calendar, DollarSign, CheckCircle2 } from "lucide-re
 import Link from "next/link";
 import { BookingForm } from "./BookingForm";
 import { PricingBreakdown } from "@/components/property/PricingBreakdown";
+import CreFinancialCalculator from "@/components/property/CreFinancialCalculator";
 
 export const dynamic = "force-dynamic";
 
@@ -170,7 +171,13 @@ export default async function PropertyPage(
             
             <PricingBreakdown baseRent={property.pricePerMonth} />
             
-            <div>
+            <CreFinancialCalculator 
+              defaultMonthlyRent={property.pricePerMonth}
+              defaultCapRate={property.capRate ?? undefined}
+              defaultNoi={property.noi ?? undefined}
+            />
+            
+            <div className="mt-10">
                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Location</h2>
                <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative bg-gray-100">
                  <iframe 
