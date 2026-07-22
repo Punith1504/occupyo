@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import DOMPurify from 'isomorphic-dompurify';
+import { pusherServer } from "@/lib/pusher/server";
 
 export async function sendMessage(receiverId: string, content: string) {
   const { userId } = await auth();
@@ -14,11 +15,15 @@ export async function sendMessage(receiverId: string, content: string) {
 
     const message = await prisma.message.create({
       data: {
-        content: DOMPurify.sanitize(content, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }), // No HTML allowed in messages
+        content: DOMPurify.sanitize(content, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }),
         senderId: user.id,
         receiverId,
       }
     });
+
+    // Broadcast over Pusher
+    const channelName = `presence-chat-${[user.id, receiverId].sort().join("-")}`;
+    await pusherServer.trigger(channelName, "new_message", { message });
 
     return { success: true, messageId: message.id };
   } catch (error) {

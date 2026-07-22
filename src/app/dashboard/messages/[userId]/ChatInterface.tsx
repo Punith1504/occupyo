@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Circle } from "lucide-react";
 import { sendMessage } from "../actions";
-import { useRouter } from "next/navigation";
+import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 
 interface Message {
   id: string;
@@ -21,8 +21,14 @@ export default function ChatInterface({
   currentUserId: string;
   partnerId: string;
 }) {
-  const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const { 
+    messages, 
+    setMessages, 
+    partnerIsTyping, 
+    partnerIsOnline, 
+    sendTypingEvent 
+  } = useRealtimeMessages(currentUserId, partnerId, initialMessages);
+
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,7 +36,7 @@ export default function ChatInterface({
   // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, partnerIsTyping]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,19 +55,31 @@ export default function ChatInterface({
 
     const result = await sendMessage(partnerId, tempMsg.content);
     
-    if (result.success) {
-      router.refresh(); // Refresh server data
-    } else {
+    if (!result.success) {
       alert("Failed to send message.");
-      // Rollback optimistic update
       setMessages(prev => prev.filter(m => m.id !== tempMsg.id));
     }
     
     setSending(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    sendTypingEvent();
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)] bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      
+      {/* Live Presence Indicator */}
+      <div className="bg-gray-50 border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Circle className={`w-3 h-3 ${partnerIsOnline ? 'fill-green-500 text-green-500' : 'fill-gray-300 text-gray-300'}`} />
+          <span className="text-sm font-medium text-gray-600">
+            {partnerIsOnline ? "Online" : "Offline"}
+          </span>
+        </div>
+      </div>
+
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50">
         {messages.length === 0 ? (
@@ -89,6 +107,18 @@ export default function ChatInterface({
             );
           })
         )}
+        
+        {/* Typing Indicator */}
+        {partnerIsTyping && (
+          <div className="flex flex-col items-start animate-pulse">
+            <div className="max-w-[75%] px-4 py-3 rounded-2xl bg-white border border-gray-200 text-gray-500 rounded-bl-sm shadow-sm flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -99,6 +129,7 @@ export default function ChatInterface({
             type="text" 
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="flex-1 bg-gray-100 border-transparent focus:bg-white focus:border-black focus:ring-1 focus:ring-black rounded-full px-5 py-3 outline-none transition-all"
             disabled={sending}
