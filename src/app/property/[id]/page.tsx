@@ -24,7 +24,8 @@ export default async function PropertyPage(
       },
       images: {
         orderBy: { isHero: 'desc' }
-      }
+      },
+      suites: true
     }
   });
 
@@ -109,12 +110,20 @@ export default async function PropertyPage(
                 <p className="font-semibold text-xl text-gray-900">${property.pricePerMonth.toLocaleString()}/mo</p>
               </div>
               <div>
-                <p className="text-gray-500 text-sm mb-1">Min Duration</p>
-                <p className="font-semibold text-xl text-gray-900">{property.minDuration} {property.durationUnit.toLowerCase()}</p>
+                <p className="text-gray-500 text-sm mb-1">Cap Rate</p>
+                <p className="font-semibold text-xl text-gray-900">{property.capRate ? `${property.capRate}%` : 'N/A'}</p>
               </div>
               <div>
-                <p className="text-gray-500 text-sm mb-1">Max Duration</p>
-                <p className="font-semibold text-xl text-gray-900">{property.maxDuration} {property.durationUnit.toLowerCase()}</p>
+                <p className="text-gray-500 text-sm mb-1">NOI</p>
+                <p className="font-semibold text-xl text-gray-900">{property.noi ? `$${property.noi.toLocaleString()}` : 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm mb-1">Lease Type</p>
+                <p className="font-semibold text-xl text-gray-900">{property.leaseType || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm mb-1">Duration</p>
+                <p className="font-semibold text-xl text-gray-900">{property.minDuration}-{property.maxDuration} {property.durationUnit.toLowerCase()}</p>
               </div>
             </div>
 
@@ -133,6 +142,26 @@ export default async function PropertyPage(
                     <div key={amenity} className="flex items-center gap-3 text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
                       <CheckCircle2 className="h-5 w-5 text-black" />
                       <span className="font-medium">{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {property.suites && property.suites.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Available Suites</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {property.suites.map(suite => (
+                    <div key={suite.id} className="p-4 border border-gray-200 rounded-xl bg-white shadow-sm flex justify-between items-center hover:border-black transition-colors cursor-pointer">
+                      <div>
+                        <h4 className="font-bold text-gray-900">{suite.title}</h4>
+                        <p className="text-sm text-gray-500">{suite.sizeSqft.toLocaleString()} sqft</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-gray-900">${suite.pricePerMonth.toLocaleString()}/mo</p>
+                        <span className="text-[10px] font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full uppercase tracking-wider">{suite.status}</span>
+                      </div>
                     </div>
                   ))}
                 </div>

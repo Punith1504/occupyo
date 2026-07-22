@@ -78,6 +78,20 @@ export default function ChatInterface({
             {partnerIsOnline ? "Online" : "Offline"}
           </span>
         </div>
+        <button 
+          onClick={() => {
+            const rent = prompt("Enter proposed monthly rent:", "5000");
+            const term = prompt("Enter lease term in months:", "36");
+            if (rent && term) {
+              alert(`Digital LOI initiated for $${rent}/mo over ${term} months. Check your Deal Pipeline.`);
+              // In production, this would call createDeal & generateDigitalLOI actions.
+            }
+          }}
+          className="text-xs bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center gap-2 transition-colors active:scale-95"
+        >
+          <svg className="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+          Submit Digital LOI
+        </button>
       </div>
 
       {/* Messages Area */}

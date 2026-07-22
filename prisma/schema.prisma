@@ -12,6 +12,7 @@ enum Role {
   OWNER
   TENANT
   ADMIN
+  BROKER
 }
 
 enum PropertyType {
@@ -26,6 +27,14 @@ enum LeaseStatus {
   ACTIVE
   COMPLETED
   REJECTED
+}
+
+enum DealStatus {
+  INQUIRY
+  TOUR
+  LOI_SUBMITTED
+  LEASE_SIGNED
+  CLOSED
 }
 
 model User {
@@ -47,6 +56,8 @@ model User {
   sentMessages   Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
   activityLogs   ActivityLog[]
+  tenantDeals    Deal[]    @relation("TenantDeals")
+  brokerDeals    Deal[]    @relation("BrokerDeals")
 }
 
 model Property {
@@ -74,10 +85,15 @@ model Property {
   imageEmbedding   Unsupported("vector(512)")?
   isExternal       Boolean      @default(false)
   sourceUrl        String?
+  capRate          Float?
+  noi              Float?
+  leaseType        String?
   
   images           Image[]
   leases           Lease[]
   activityLogs     ActivityLog[]
+  deals            Deal[]
+  suites           Suite[]
 }
 
 model Image {
@@ -146,4 +162,31 @@ model ActivityLog {
   description String
   metadata    Json     @default("{}")
   createdAt   DateTime @default(now())
+}
+
+model Deal {
+  id              String      @id @default(cuid())
+  propertyId      String
+  property        Property    @relation(fields: [propertyId], references: [id])
+  tenantId        String
+  tenant          User        @relation("TenantDeals", fields: [tenantId], references: [id])
+  brokerId        String?
+  broker          User?       @relation("BrokerDeals", fields: [brokerId], references: [id])
+  status          DealStatus  @default(INQUIRY)
+  commissionFee   Float?
+  loiDocumentUrl  String?
+  proposedRent    Float?
+  leaseTermMonths Int?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Suite {
+  id              String      @id @default(cuid())
+  propertyId      String
+  property        Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  title           String
+  sizeSqft        Int
+  pricePerMonth   Float
+  status          String      @default("AVAILABLE")
 }
