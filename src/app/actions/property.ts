@@ -1,11 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { inngest } from "@/lib/inngest/client";
 
 export type PropertyData = {
   ownerId: string;
@@ -24,57 +20,44 @@ export type PropertyData = {
   lng?: number | null;
   amenities?: any;
   status?: string;
+  sourceUrl?: string | null;
 };
 
 export async function createPropertyListing(data: PropertyData) {
   try {
-    // 1. Generate text payload for embedding
-    const textToEmbed = `${data.title}. ${data.description}. Located at ${data.address}. Type: ${data.propertyType}. Size: ${data.sizeSqft} sqft. Amenities: ${JSON.stringify(data.amenities || [])}.`;
-    
-    // 2. Fetch embeddings
-    const response = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: textToEmbed,
-      encoding_format: "float",
+    // 1. Insert property using Prisma ORM (no embeddings generated here)
+    const newProperty = await prisma.property.create({
+      data: {
+        ownerId: data.ownerId,
+        title: data.title,
+        description: data.description,
+        propertyType: data.propertyType,
+        sizeSqft: data.sizeSqft,
+        pricePerHour: data.pricePerHour,
+        pricePerDay: data.pricePerDay,
+        pricePerMonth: data.pricePerMonth,
+        minDuration: data.minDuration ?? 1,
+        maxDuration: data.maxDuration ?? 12,
+        durationUnit: data.durationUnit ?? "MONTHS",
+        address: data.address,
+        lat: data.lat,
+        lng: data.lng,
+        amenities: data.amenities ?? [],
+        status: data.status ?? "AVAILABLE",
+        sourceUrl: data.sourceUrl,
+      }
     });
-    
-    const embedding = response.data[0].embedding;
-    const embeddingString = `[${embedding.join(',')}]`;
 
-    // 3. Insert using $executeRaw to support pgvector format
-    // Parameterized to prevent SQL injection, using `::vector` cast for the embedding array string.
-    await prisma.$executeRaw`
-      INSERT INTO "Property" (
-        "id", "ownerId", "title", "description", "propertyType", "sizeSqft",
-        "pricePerHour", "pricePerDay", "pricePerMonth", "minDuration",
-        "maxDuration", "durationUnit", "address", "lat", "lng", "amenities",
-        "status", "createdAt", "embedding"
-      ) VALUES (
-        gen_random_uuid()::text,
-        ${data.ownerId},
-        ${data.title},
-        ${data.description},
-        CAST(${data.propertyType} AS "PropertyType"),
-        ${data.sizeSqft},
-        ${data.pricePerHour ?? null},
-        ${data.pricePerDay ?? null},
-        ${data.pricePerMonth},
-        ${data.minDuration ?? 1},
-        ${data.maxDuration ?? 12},
-        ${data.durationUnit ?? "MONTHS"},
-        ${data.address},
-        ${data.lat ?? null},
-        ${data.lng ?? null},
-        CAST(${JSON.stringify(data.amenities ?? [])} AS jsonb),
-        ${data.status ?? "AVAILABLE"},
-        NOW(),
-        ${embeddingString}::vector
-      )
-    `;
+    // 2. Dispatch to Inngest for async durable execution of Vector Generation (Text & Vision)
+    await inngest.send({
+      name: "property.created",
+      data: { id: newProperty.id }
+    });
 
     return { success: true };
   } catch (error) {
-    console.error("Failed to create property listing with embedding:", error);
+    console.error("Failed to create property listing:", error);
     return { success: false, error: "Internal server error" };
   }
 }
+

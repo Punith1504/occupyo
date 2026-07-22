@@ -71,6 +71,7 @@ model Property {
   createdAt        DateTime     @default(now())
   embedding        Unsupported("vector(1536)")?
   location         Unsupported("geography(Point, 4326)")?
+  imageEmbedding   Unsupported("vector(512)")?
   isExternal       Boolean      @default(false)
   sourceUrl        String?
   

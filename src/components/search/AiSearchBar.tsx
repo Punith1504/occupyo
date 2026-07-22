@@ -3,8 +3,9 @@
 import { useState, useRef } from "react";
 import Script from "next/script";
 import { searchSimilarProperties } from "@/app/actions/search";
+import { searchByImage } from "@/app/actions/vision-search";
 import Link from "next/link";
-import { Search, Loader2, ExternalLink } from "lucide-react";
+import { Search, Loader2, ExternalLink, Image as ImageIcon } from "lucide-react";
 
 export default function AiSearchBar() {
   const [query, setQuery] = useState("");
@@ -13,6 +14,7 @@ export default function AiSearchBar() {
   const [fallbackTriggered, setFallbackTriggered] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   const handleScriptLoad = () => {
@@ -53,6 +55,36 @@ export default function AiSearchBar() {
     } catch (error) {
       console.error("Search failed", error);
     } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsLoading(true);
+    setResults([]);
+    setFallbackTriggered(false);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const dataUrl = event.target?.result as string;
+        try {
+          const res = await searchByImage(dataUrl);
+          if (res.success && res.properties) {
+            setResults(res.properties);
+          }
+        } catch (error) {
+          console.error("Vision search failed", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Failed to read file", error);
       setIsLoading(false);
     }
   };
@@ -135,6 +167,21 @@ export default function AiSearchBar() {
           placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn under $5k/mo')"
           className="flex-1 bg-transparent border-none outline-none text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 py-3 px-2 text-lg w-full"
         />
+        <input 
+          type="file" 
+          accept="image/*" 
+          className="hidden" 
+          ref={fileInputRef} 
+          onChange={handleImageUpload} 
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="p-2 text-gray-500 hover:text-indigo-500 transition-colors"
+          title="Search by Image"
+        >
+          <ImageIcon size={24} />
+        </button>
         <button
           type="submit"
           disabled={isLoading || !query.trim()}
