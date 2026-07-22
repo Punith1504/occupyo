@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import DOMPurify from 'isomorphic-dompurify';
 
 export async function sendMessage(receiverId: string, content: string) {
   const { userId } = await auth();
@@ -13,7 +14,7 @@ export async function sendMessage(receiverId: string, content: string) {
 
     const message = await prisma.message.create({
       data: {
-        content,
+        content: DOMPurify.sanitize(content, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }), // No HTML allowed in messages
         senderId: user.id,
         receiverId,
       }

@@ -6,7 +6,7 @@ import { createSpaceRequest } from "../actions";
 import { Loader2, ArrowLeft, MapPin, DollarSign, Expand, Calendar } from "lucide-react";
 import Link from "next/link";
 import { PropertyType } from "@prisma/client";
-import PredictiveAddressInput from "@/components/PredictiveAddressInput";
+
 export default function NewSpaceRequestPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -113,13 +113,14 @@ export default function NewSpaceRequestPage() {
                 <MapPin className="w-4 h-4 text-gray-400" />
                 Target City / Area
               </label>
-              <PredictiveAddressInput 
-                initialValue={formData.city}
-                onSelect={(address) => setFormData({...formData, city: address})}
+              <input 
+                type="text"
+                required
+                value={formData.city}
+                onChange={(e) => setFormData({...formData, city: e.target.value})}
                 placeholder="e.g. Austin, TX"
                 className="w-full pl-12 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none bg-white"
               />
-              <input type="hidden" required value={formData.city} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">

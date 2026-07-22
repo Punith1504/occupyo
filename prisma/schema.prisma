@@ -1,9 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  extensions = [vector, postgis]
 }
 
 enum Role {
@@ -67,6 +69,10 @@ model Property {
   amenities        Json         @default("[]")
   status           String       @default("AVAILABLE")
   createdAt        DateTime     @default(now())
+  embedding        Unsupported("vector(1536)")?
+  location         Unsupported("geography(Point, 4326)")?
+  isExternal       Boolean      @default(false)
+  sourceUrl        String?
   
   images           Image[]
   leases           Lease[]
@@ -77,7 +83,7 @@ model Image {
   id         String   @id @default(cuid())
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
-  url        String
+  url        String   @db.Text
   isHero     Boolean  @default(false)
 }
 

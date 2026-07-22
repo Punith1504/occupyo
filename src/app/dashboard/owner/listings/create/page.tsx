@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation, Star, ChevronLeft, ChevronRight, GripVertical, Image as ImageIcon } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
+
 import { createPropertyAction } from "../../actions";
 
-import PredictiveAddressInput from "@/components/PredictiveAddressInput";
 import InteractiveMap from "@/components/InteractiveMap";
 import { hapticTap, hapticMedium, hapticSuccess, hapticError } from "@/lib/haptics";
 
@@ -29,7 +29,6 @@ export default function CreateListingPage() {
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -52,6 +51,52 @@ export default function CreateListingPage() {
   });
 
   const [addressLoading, setAddressLoading] = useState(false);
+  const autocompleteContainerRef = useRef<HTMLDivElement>(null);
+  const autocompleteInstanceRef = useRef<any>(null);
+
+  // Initialize new Google Maps PlaceAutocompleteElement Web Component
+  useEffect(() => {
+    if (currentStep === 1 && autocompleteContainerRef.current && !autocompleteInstanceRef.current) {
+      const initAutocomplete = async () => {
+        if (!window.google) {
+          const script = document.createElement("script");
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&v=beta`;
+          script.async = true;
+          document.head.appendChild(script);
+          await new Promise((resolve) => { script.onload = resolve; });
+        }
+        
+        if (window.google?.maps?.places?.PlaceAutocompleteElement) {
+          const autocomplete = new window.google.maps.places.PlaceAutocompleteElement({
+            componentRestrictions: { country: ["us"] }
+          } as any);
+          
+          autocomplete.addEventListener('gmp-placeselect', async (e: any) => {
+            const place = e.place;
+            await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] });
+            
+            setFormData(prev => ({
+              ...prev,
+              address: place.formattedAddress || place.displayName,
+              lat: place.location?.lat() || null,
+              lng: place.location?.lng() || null,
+            }));
+            hapticMedium();
+          });
+
+          // Style internal shadow DOM parts with CSS variables for Liquid Glass
+          autocomplete.style.setProperty('--gmpx-color-surface', 'transparent');
+          autocomplete.style.setProperty('--gmpx-color-on-surface', 'white');
+          autocomplete.style.setProperty('--gmpx-color-primary', '#b4e6ff');
+          autocomplete.style.setProperty('--gmpx-font-family-base', 'inherit');
+          
+          autocompleteContainerRef.current?.appendChild(autocomplete);
+          autocompleteInstanceRef.current = autocomplete;
+        }
+      };
+      initAutocomplete();
+    }
+  }, [currentStep]);
 
   useEffect(() => {
     if (currentStep === 1) {
@@ -214,7 +259,7 @@ export default function CreateListingPage() {
     setDragOverIndex(null);
   };
 
-  // Cloudinary handles uploading automatically now.
+  // handleFileSelect replaced by CldUploadWidget
 
   const submitForm = async () => {
     setLoading(true);
@@ -490,18 +535,15 @@ export default function CreateListingPage() {
                 </button>
               </div>
               <div className="relative">
-                <PredictiveAddressInput 
-                  initialValue={formData.address}
-                  onSelect={(address, lat, lng) => {
-                    setFormData({
-                      ...formData,
-                      address,
-                      lat,
-                      lng
-                    });
-                  }}
-                  className="w-full pl-12 glass-input"
-                />
+                <div 
+                  ref={autocompleteContainerRef}
+                  className="w-full min-h-[52px] bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] overflow-hidden flex items-center px-4 transition-all duration-300 focus-within:border-[#b4e6ff]/50 focus-within:shadow-[0_0_15px_rgba(180,230,255,0.2),inset_0_2px_4px_rgba(0,0,0,0.1)]"
+                  style={{
+                     // Hide default borders in the web component wrapper
+                     '--gmpx-border-color-base': 'transparent',
+                     '--gmpx-border-color-focused': 'transparent'
+                  } as React.CSSProperties}
+                ></div>
               </div>
               <p className="text-xs text-white/50 mt-2">
                 Select an address from the dropdown to verify its location.
@@ -541,32 +583,18 @@ export default function CreateListingPage() {
               </div>
             </div>
             
-            {/* Upload Dropzone (Cloudinary Premium UI) */}
-            {!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
-              <div className="flex flex-col items-center justify-center py-12 px-4 border border-dashed border-red-500/30 rounded-2xl bg-red-500/5 backdrop-blur-md shadow-2xl">
-                <UploadCloud className="w-12 h-12 text-red-400 mb-4 animate-pulse" />
-                <h3 className="text-lg font-medium text-red-200">Cloudinary Configuration Missing</h3>
-                <p className="text-red-300/70 text-sm text-center max-w-sm mt-2 leading-relaxed">
-                  Please add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME to your environment variables to enable premium media uploads.
-                </p>
-              </div>
-            ) : (
               <CldUploadWidget 
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "occupyo_preset"}
-                options={{
-                  multiple: true,
-                  maxFiles: MAX_IMAGES - imageUrls.length,
-                  clientAllowedFormats: ["image", "video"],
-                }}
+                signatureEndpoint="/api/sign-cloudinary"
                 onSuccess={(result: any) => {
                   hapticSuccess();
-                  if (result?.info?.secure_url) {
-                    setImageUrls(prev => [...prev, result.info.secure_url]);
-                  }
+                  setImageUrls(prev => [...prev, result.info.secure_url]);
                 }}
-                onError={() => {
-                  hapticError();
-                  alert("Failed to upload media via Cloudinary");
+                options={{
+                  maxFiles: MAX_IMAGES - imageUrls.length,
+                  multiple: true,
+                  maxFileSize: 50000000, // 50MB
+                  clientAllowedFormats: ['image', 'video'],
+                  resourceType: 'auto'
                 }}
               >
                 {({ open }) => (
@@ -582,7 +610,6 @@ export default function CreateListingPage() {
                       open();
                     }}
                   >
-                    {/* Animated background glow */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-[#b4e6ff]/0 via-[#b4e6ff]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
                     
                     <div className="relative z-10 flex flex-col items-center">
@@ -590,28 +617,17 @@ export default function CreateListingPage() {
                         <UploadCloud className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
                       </div>
                       
-                      <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors duration-300">
-                        Upload Property Media
+                      <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors">
+                        Click to Upload securely
                       </h4>
-                      <p className="text-sm text-white/50 mb-8 max-w-sm leading-relaxed">
-                        Click to securely upload your high-resolution photos or videos via Cloudinary.
+                      <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-4">
+                        Supported formats: JPG, PNG, WEBP (Max 10MB per file)
                       </p>
-                      
-                      <div className="relative group/btn">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#b4e6ff] to-[#cbb4ff] rounded-full blur opacity-30 group-hover/btn:opacity-70 transition duration-500"></div>
-                        <button 
-                          className="relative flex items-center gap-2 bg-[#0f172a] text-white px-6 py-3 rounded-full text-sm font-medium border border-white/10 group-hover/btn:border-white/20 transition-all duration-300 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95"
-                          onPointerDown={hapticTap}
-                          type="button"
-                        >
-                          <UploadCloud className="w-4 h-4 text-[#b4e6ff]" /> Browse Files
-                        </button>
-                      </div>
                     </div>
                   </div>
                 )}
-              </CldUploadWidget>
-            )}
+              </CldUploadWidget>    
+
             
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (

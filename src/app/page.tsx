@@ -6,6 +6,7 @@ import { Building2, Search, Sparkles } from "lucide-react";
 import { hapticTap, hapticMedium } from "@/lib/haptics";
 import { TrustSignals } from "@/components/home/TrustSignals";
 import { Testimonials } from "@/components/home/Testimonials";
+import AiSearchBar from "@/components/search/AiSearchBar";
 
 export default function Home() {
   const router = useRouter();
@@ -150,11 +151,15 @@ export default function Home() {
             Friction-Free Space
           </h1>
           <p 
-            className="text-xl text-white/50 max-w-2xl mx-auto font-medium"
+            className="text-xl text-white/50 max-w-2xl mx-auto font-medium mb-12"
             style={{ animation: "staggerFadeUp 0.6s ease-out 0.7s both" }}
           >
             The intelligent marketplace for commercial real estate. Discover, book, and manage your perfect workspace with transparent pricing and zero hidden fees.
           </p>
+
+          <div className="w-full relative z-50 mb-12" style={{ animation: "staggerFadeUp 0.6s ease-out 0.8s both" }}>
+            <AiSearchBar />
+          </div>
         </div>
 
         {/* The Two Cards */}

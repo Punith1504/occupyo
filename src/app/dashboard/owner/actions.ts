@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { PropertyType } from "@prisma/client";
 import { trackEvent } from "@/lib/activity-logger";
+import DOMPurify from 'isomorphic-dompurify';
 
 export async function createPropertyAction(data: {
   title: string;
@@ -41,7 +42,7 @@ export async function createPropertyAction(data: {
       data: {
         ownerId: user.id,
         title: data.title,
-        description: data.description,
+        description: DOMPurify.sanitize(data.description, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], ALLOWED_ATTR: [] }),
         propertyType: data.propertyType,
         sizeSqft: data.sizeSqft,
         pricePerMonth: data.pricePerMonth,
@@ -128,7 +129,7 @@ export async function updatePropertyAction(
       where: { id: propertyId },
       data: {
         title: data.title,
-        description: data.description,
+        description: DOMPurify.sanitize(data.description, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], ALLOWED_ATTR: [] }),
         propertyType: data.propertyType,
         sizeSqft: data.sizeSqft,
         pricePerMonth: data.pricePerMonth,
@@ -168,5 +169,52 @@ export async function updatePropertyAction(
   } catch (error) {
     console.error("Error updating property:", error);
     return { success: false, error: "Failed to update property" };
+  }
+}
+
+export async function updatePropertyImagesAction(propertyId: string, imageUrls: string[]) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
+    return { success: false, error: "Unauthorized. Must be an owner." };
+  }
+
+  try {
+    const existingProperty = await prisma.property.findUnique({
+      where: { id: propertyId },
+    });
+
+    if (!existingProperty || existingProperty.ownerId !== user.id) {
+      return { success: false, error: "Property not found or unauthorized" };
+    }
+
+    // Delete existing images
+    await prisma.image.deleteMany({
+      where: { propertyId: propertyId },
+    });
+
+    // Create new images in the updated order
+    if (imageUrls.length > 0) {
+      await prisma.image.createMany({
+        data: imageUrls.map((url, index) => ({
+          url,
+          propertyId: propertyId,
+          isHero: index === 0, 
+        })),
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error auto-saving images:", error);
+    return { success: false, error: "Failed to auto-save images" };
   }
 }

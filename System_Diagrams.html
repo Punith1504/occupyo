@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Occupyo System Diagrams</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+        h1 { border-bottom: 2px solid #eaecef; padding-bottom: 10px; }
+        .diagram-container {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .instructions {
+            background: #e1f5fe;
+            padding: 1rem;
+            border-left: 4px solid #03a9f4;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Occupyo - System Diagrams</h1>
+    
+    <div class="instructions">
+        <strong>How to save as images:</strong> You can right-click any of the diagrams below and select <strong>"Save image as..."</strong> or <strong>"Copy image"</strong> (depending on your browser) to extract them. 
+        You can also print this page as a PDF using Ctrl+P.
+    </div>
+
+    <h2>1. System Architecture</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+        graph TD
+            Client[Web / Mobile Client] --> Clerk[Clerk Auth]
+            Client --> Next[Next.js App Server]
+            
+            Next --> DB[(PostgreSQL + pgvector)]
+            Next --> Cloudinary[Cloudinary Media API]
+            Next --> Stripe[Stripe / Razorpay Payments]
+            Next --> OpenAI[OpenAI API]
+            
+            Next --> Actions[Server Actions]
+            Actions --> Prisma[Prisma ORM]
+            Prisma --> DB
+        </div>
+    </div>
+
+    <h2>2. Pipeline Architecture</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+        graph LR
+            subgraph CI/CD Pipeline
+                Code[GitHub Repository] --> lint[Lint & Format - ESLint]
+                lint --> build[Next.js Build & Prisma Generate]
+                build --> deploy[Vercel Deployment]
+                deploy --> production[Production Environment]
+            end
+            
+            subgraph Data Pipeline - Property Creation
+                Action[User Creates Property] --> Save[Save to Postgres]
+                Save --> Trigger[Trigger Embedding Job]
+                Trigger --> API[OpenAI Embeddings API]
+                API --> VectorDB[Update pgvector in DB]
+            end
+        </div>
+    </div>
+
+    <h2>3. Database Schema Overview</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+        erDiagram
+            User ||--o{ Property : owns
+            User ||--o{ Lease : signs
+            User ||--o{ SpaceRequest : creates
+            User ||--o{ Message : sends/receives
+            
+            Property ||--o{ Lease : has
+            Property ||--o{ Image : contains
+            
+            User {
+                String id PK
+                String clerkUserId
+                String role
+                String email
+            }
+            
+            Property {
+                String id PK
+                String title
+                String propertyType
+                Float pricePerMonth
+                String embedding
+            }
+            
+            Lease {
+                String id PK
+                DateTime startDate
+                DateTime endDate
+                String status
+            }
+            
+            Message {
+                String content
+                Boolean read
+            }
+        </div>
+    </div>
+
+    <!-- Include Mermaid.js -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+    </script>
+</body>
+</html>

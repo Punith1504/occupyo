@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Search, Building2, Calendar, FileText, ArrowRight } from "lucide-react";
-import { AiMatcher } from "@/components/tenant/AiMatcher";
+import AiSearchBar from "@/components/search/AiSearchBar";
 import { CommunityCard } from "@/components/dashboard/CommunityCard";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +60,7 @@ export default async function TenantDashboardOverview() {
       </div>
 
       <div className="mb-10" style={{ animation: 'staggerFadeUp 0.5s ease-out 0.1s both' }}>
-        <AiMatcher />
+        <AiSearchBar />
       </div>
 
       {leases.length === 0 ? (
