@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, MapPin, Building2, Filter } from "lucide-react";
 import LocationSearchInput from "./LocationSearchInput";
 import { DiscoveryMap } from "@/components/dashboard/DiscoveryMap";
+import { PropertyCard } from "@/components/search/PropertyCard";
 
 export const dynamic = "force-dynamic";
 
@@ -86,23 +87,23 @@ export default async function PropertySearchPage(props: {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Search Header */}
-      <div className="bg-white border-b border-gray-200 px-8 py-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Find Your Perfect Space</h1>
+    <div className="h-screen bg-[#060608] flex flex-col font-sans overflow-hidden">
+      {/* Search Header - Glassmorphic */}
+      <div className="glass-panel mx-4 mt-4 px-8 py-6 z-10 shrink-0">
+        <h1 className="text-2xl font-bold text-white mb-6">Find Your Perfect Space</h1>
         
-        {/* Simple Search Form */}
+        {/* Simple Search Form - Neumorphic inputs */}
         <form className="flex flex-col md:flex-row gap-4 max-w-4xl">
           <div className="flex-1 relative">
             <LocationSearchInput />
           </div>
           
           <div className="w-full md:w-64 relative">
-             <Building2 className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+             <Building2 className="absolute left-3 top-3.5 h-5 w-5 text-gray-400 z-10" />
              <select 
                name="type"
                defaultValue={type || "ALL"}
-               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none bg-white appearance-none"
+               className="neu-input w-full pl-10 pr-4 py-3 appearance-none cursor-pointer"
              >
                <option value="ALL">All Property Types</option>
                <option value="WAREHOUSE">Warehouse</option>
@@ -111,7 +112,7 @@ export default async function PropertySearchPage(props: {
              </select>
           </div>
           
-          <button type="submit" className="bg-black text-white px-6 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+          <button type="submit" className="neu-button px-6 py-3 font-medium flex items-center justify-center gap-2 shrink-0">
             <Search className="h-4 w-4" />
             Search
           </button>
@@ -119,13 +120,13 @@ export default async function PropertySearchPage(props: {
         
         {/* Niche Filtering Tags */}
         <div className="mt-6 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-          <span className="text-sm font-medium text-gray-500 whitespace-nowrap mr-2">Popular Niches:</span>
+          <span className="text-sm font-medium text-gray-400 whitespace-nowrap mr-2">Popular Niches:</span>
           {['Premium Co-working', 'Medical', 'Industrial', 'Creative Studio', 'Retail Pop-up'].map(tag => (
             <Link 
               key={tag}
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
               href={`/search?${new URLSearchParams({...searchParams as any, niche: tag}).toString()}`}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${niche === tag ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${niche === tag ? 'neu-button-active' : 'neu-button'}`}
             >
               {tag}
             </Link>
@@ -133,7 +134,7 @@ export default async function PropertySearchPage(props: {
           {niche && (
             <Link 
               href={`/search`}
-              className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors ml-2"
+              className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium text-[#ff5b7b] border border-[#ff5b7b]/30 bg-[#ff5b7b]/10 hover:bg-[#ff5b7b]/20 transition-colors ml-2"
             >
               Clear Filter
             </Link>
@@ -142,84 +143,39 @@ export default async function PropertySearchPage(props: {
       </div>
 
       {/* Main Content: Split Layout */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden p-4 gap-4">
         {/* Left: Scrollable Results */}
-        <div className="w-full md:w-[60%] lg:w-[50%] flex flex-col h-full overflow-y-auto p-6 md:p-8 custom-scrollbar">
-          <div className="flex justify-between items-center mb-6">
-            <p className="text-gray-600 font-medium">
-              Showing <span className="text-black font-semibold">{properties.length}</span> properties
+        <div className="w-full md:w-[60%] lg:w-[45%] flex flex-col h-full overflow-y-auto custom-scrollbar pr-2">
+          <div className="flex justify-between items-center mb-6 px-2">
+            <p className="text-gray-400 font-medium text-sm">
+              Showing <span className="text-white font-semibold">{properties.length}</span> properties
             </p>
-            <button className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black">
+            <button className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
               <Filter className="h-4 w-4" />
               More Filters
             </button>
           </div>
 
         {properties.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
-            <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No properties found</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
+          <div className="glass-panel p-16 text-center mt-4 mx-2">
+            <Building2 className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-2">No properties found</h3>
+            <p className="text-gray-400 max-w-md mx-auto">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
-              We couldn't find any spaces matching your criteria. Try adjusting your filters or post a Space Request to get custom offers from owners.
+              We couldn't find any spaces matching your criteria. Try adjusting your filters.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-12">
             {properties.map(property => (
-              <Link key={property.id} href={`/property/${property.id}`} className="group block">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
-                  {/* Image Placeholder or Actual Image */}
-                  <div className="h-40 bg-gray-100 relative">
-                    {property.images && property.images.length > 0 ? (
-                      <img src={property.images[0].url} alt={property.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                        <Building2 className="h-10 w-10 opacity-20" />
-                      </div>
-                    )}
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wide text-gray-800">
-                      {property.propertyType}
-                    </div>
-                    {property.distance !== undefined && property.distance !== Infinity && (
-                      <div className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-sm text-white px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 shadow-sm">
-                        <MapPin className="h-3 w-3" />
-                        {property.distance.toFixed(1)} mi away
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="p-4 flex-1 flex flex-col">
-                    <div className="flex justify-between items-start mb-1">
-                      <h3 className="font-bold text-gray-900 text-md group-hover:text-blue-600 transition-colors line-clamp-1">{property.title}</h3>
-                    </div>
-                    
-                    <p className="text-xs text-gray-500 mb-3 flex items-center gap-1.5">
-                      <MapPin className="h-3 w-3" />
-                      <span className="truncate">{property.address}</span>
-                    </p>
-                    
-                    <div className="grid grid-cols-2 gap-2 mt-auto pt-3 border-t border-gray-100">
-                      <div>
-                        <p className="text-gray-500 text-[10px] uppercase">Size</p>
-                        <p className="font-semibold text-gray-900 text-sm">{property.sizeSqft.toLocaleString()} sqft</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500 text-[10px] uppercase">Price</p>
-                        <p className="font-semibold text-gray-900 text-sm">${property.pricePerMonth.toLocaleString()}/mo</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
         )}
         </div>
         
         {/* Right: Interactive Discovery Map */}
-        <div className="hidden md:block md:w-[40%] lg:w-[50%] h-full p-6 md:pl-0">
+        <div className="hidden md:block md:w-[40%] lg:w-[55%] h-full pb-4">
           <DiscoveryMap initialProperties={properties} />
         </div>
       </div>

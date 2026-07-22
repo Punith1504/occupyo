@@ -577,3 +577,164 @@ select option {
 .nav-link-active svg {
   color: var(--accent) !important;
 }
+
+/* ====== HYBRID DESIGN SYSTEM (PHASE 9) ====== */
+
+/* 1. GLASSMORPHISM (Panels & Containers) */
+.glass-panel {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+}
+
+.glass-desk {
+  background: radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+  backdrop-filter: blur(40px);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
+}
+
+/* 2. NEUMORPHISM (Buttons & Interactive) */
+.neu-button {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid rgba(255,255,255,0.02);
+  border-radius: 12px;
+  /* Dual outer shadow: top-left light source, bottom-right dark shadow */
+  box-shadow: 
+    -4px -4px 10px rgba(255, 255, 255, 0.05),
+    4px 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform, box-shadow;
+}
+
+.neu-button:hover {
+  box-shadow: 
+    -2px -2px 5px rgba(255, 255, 255, 0.05),
+    2px 2px 5px rgba(0, 0, 0, 0.5);
+  transform: translateY(1px);
+}
+
+.neu-button:active, .neu-button-active {
+  /* Pressed state: dual inner shadows */
+  box-shadow: 
+    inset 4px 4px 8px rgba(0, 0, 0, 0.6),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.03) !important;
+  transform: translateY(2px) scale(0.98);
+  color: #a1ebd6; /* Pastel mint active */
+}
+
+.neu-input {
+  background: #0f172a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 
+    inset 4px 4px 8px rgba(0, 0, 0, 0.6),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.02);
+  transition: all 0.3s ease;
+  outline: none;
+}
+.neu-input:focus {
+  box-shadow: 
+    inset 2px 2px 4px rgba(0, 0, 0, 0.6),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.02),
+    0 0 10px rgba(161, 235, 214, 0.2);
+}
+
+/* 3. SKEUOMORPHISM (Financial Engine & Textures) */
+.skeuo-paper {
+  /* Realistic physical paper grain texture */
+  background-color: #f8f9fa;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  color: #1a1a1a;
+  border: 1px solid #e5e7eb;
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.skeuo-card {
+  /* Subtle metallic gradient bevel */
+  background: linear-gradient(145deg, #2a3342, #1e2532);
+  border-radius: 16px;
+  box-shadow: 
+    -5px -5px 10px rgba(255,255,255,0.03),
+    5px 5px 10px rgba(0,0,0,0.4),
+    inset 1px 1px 1px rgba(255,255,255,0.1);
+}
+
+.skeuo-led-emerald {
+  /* Emerald LED readout */
+  color: #10b981;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  font-family: var(--font-mono);
+  background: #064e3b;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+  border: 1px solid #022c22;
+}
+
+.skeuo-led-amber {
+  /* Amber LED readout */
+  color: #f59e0b;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  font-family: var(--font-mono);
+  background: #78350f;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+  border: 1px solid #451a03;
+}
+
+.skeuo-folder {
+  /* Manila folder physical styling */
+  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+  box-shadow: 
+    3px 3px 8px rgba(0,0,0,0.2),
+    inset 1px 1px 2px rgba(255,255,255,0.6);
+  color: #78350f;
+  border-radius: 4px 12px 12px 12px;
+  position: relative;
+}
+.skeuo-folder::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 0;
+  width: 40%;
+  height: 12px;
+  background: #fcd34d;
+  border-radius: 8px 8px 0 0;
+  box-shadow: inset 1px 1px 1px rgba(255,255,255,0.6);
+}
+
+.skeuo-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: #0f172a;
+  border-radius: 10px;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.6), inset -2px -2px 5px rgba(255,255,255,0.05);
+  outline: none;
+}
+.skeuo-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #475569, #334155);
+  box-shadow: -2px -2px 4px rgba(255,255,255,0.1), 2px 2px 4px rgba(0,0,0,0.6);
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.skeuo-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #475569, #334155);
+  box-shadow: -2px -2px 4px rgba(255,255,255,0.1), 2px 2px 4px rgba(0,0,0,0.6);
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+}
