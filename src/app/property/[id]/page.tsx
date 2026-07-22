@@ -85,24 +85,26 @@ export default async function PropertyPage(
           
           {/* Main Content: Physical Memorandum */}
           <div className="flex-1 space-y-10 skeuo-paper p-8 md:p-12 rounded-lg relative">
-            {/* Memorandum Top Stamp */}
-            <div className="absolute top-8 right-8 border-2 border-red-800/30 text-red-800/30 font-serif font-bold text-xl uppercase tracking-widest px-4 py-2 rotate-[-5deg] pointer-events-none">
-              Confidential<br/>Memorandum
-            </div>
-
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <span className="bg-gray-800 text-gray-200 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase font-mono shadow-inner border border-gray-700">
-                  {property.propertyType}
-                </span>
-                <span className={`px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase font-mono border shadow-inner ${property.status === "AVAILABLE" ? "bg-green-900/20 text-green-800 border-green-800/30" : "bg-yellow-900/20 text-yellow-800 border-yellow-800/30"}`}>
-                  {property.status}
-                </span>
+            <div className="flex justify-between items-start gap-6">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="bg-gray-800 text-gray-200 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase font-mono shadow-inner border border-gray-700">
+                    {property.propertyType}
+                  </span>
+                  <span className={`px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase font-mono border shadow-inner ${property.status === "AVAILABLE" ? "bg-green-900/20 text-green-800 border-green-800/30" : "bg-yellow-900/20 text-yellow-800 border-yellow-800/30"}`}>
+                    {property.status}
+                  </span>
+                </div>
+                <h1 className="text-5xl font-serif font-bold text-[#1a1a1a] mb-4 break-words leading-tight">{property.title}</h1>
+                <div className="flex items-center text-gray-600 gap-2 text-lg font-mono">
+                  <MapPin className="h-5 w-5 shrink-0" />
+                  <span className="break-words border-b border-gray-300 pb-1">{property.address}</span>
+                </div>
               </div>
-              <h1 className="text-5xl font-serif font-bold text-[#1a1a1a] mb-4 break-words leading-tight">{property.title}</h1>
-              <div className="flex items-center text-gray-600 gap-2 text-lg font-mono">
-                <MapPin className="h-5 w-5 shrink-0" />
-                <span className="break-words border-b border-gray-300 pb-1">{property.address}</span>
+              
+              {/* Memorandum Top Stamp */}
+              <div className="hidden sm:block border-2 border-red-800/40 text-red-800/40 font-serif font-bold text-lg uppercase tracking-widest px-4 py-2 rotate-[-5deg] pointer-events-none shrink-0 mt-4">
+                Confidential<br/>Memorandum
               </div>
             </div>
 
