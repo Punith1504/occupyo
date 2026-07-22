@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Search, MapPin, Building2, Filter } from "lucide-react";
-import LocationSearchInput from "@/app/dashboard/tenant/search/LocationSearchInput";
+import LocationSearchInput from "@/app/search/LocationSearchInput";
 
 export const dynamic = "force-dynamic";
 

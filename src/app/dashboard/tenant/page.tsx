@@ -73,11 +73,9 @@ export default async function TenantDashboardOverview() {
             Ready to find your next workspace? Browse our network of premium, flexible commercial properties.
           </p>
           <Link 
-            href="/dashboard/tenant/search"
-            className="glass-button flex items-center gap-2"
-          >
-            <Search className="h-5 w-5" />
-            Browse Properties
+            href="/search"
+            className="flex items-center gap-2 px-5 py-2.5 bg-black text-white font-medium rounded-xl hover:bg-gray-800 transition-colors shadow-lg shadow-black/10"
+          >  Browse Properties
           </Link>
         </div>
       ) : (
@@ -142,9 +140,11 @@ export default async function TenantDashboardOverview() {
             <h3 className="text-xl font-semibold text-white mb-2">Search Properties</h3>
             <p className="text-white/60 mb-8 max-w-sm">Find exactly what you need in our extensive marketplace.</p>
           </div>
-          <Link href="/dashboard/tenant/search" className="glass-button-secondary inline-flex w-max flex items-center gap-2 group/btn">
-            Start browsing <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+          <div className="mt-8 text-center">
+          <Link href="/search" className="glass-button-secondary inline-flex w-max flex items-center gap-2 group/btn">
+            View All Properties <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </Link>
+        </div>
         </div>
         
         <div className="glass-card p-8 flex flex-col justify-between group">

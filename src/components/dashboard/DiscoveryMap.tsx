@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Loader2, MapPin, Building, Sparkles } from "lucide-react";
+import { Loader2, MapPin, Building, Sparkles, Navigation2, Users, DollarSign, Layers } from "lucide-react";
 import Link from "next/link";
 import { PropertyType } from "@prisma/client";
+import { getIsochronePolygons } from "@/app/actions/isochrone";
 
 interface Property {
   id: string;
@@ -22,7 +23,6 @@ interface DiscoveryMapProps {
 }
 
 const darkMapStyle = [
-  // Keeping our cinematic dark style from InteractiveMap
   { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
@@ -41,6 +41,12 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
   const [hoveredProperty, setHoveredProperty] = useState<Property | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Geospatial Intelligence State
+  const [isochroneProfile, setIsochroneProfile] = useState<'driving' | 'walking' | 'cycling' | null>(null);
+  const [showFootTraffic, setShowFootTraffic] = useState(false);
+  const [showIncome, setShowIncome] = useState(false);
+  const [activeIsochronePolygon, setActiveIsochronePolygon] = useState<google.maps.Polygon | null>(null);
+
   // Debounced search
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -52,7 +58,17 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
     try {
       const res = await fetch(`/api/properties/search?neLat=${ne.lat()}&neLng=${ne.lng()}&swLat=${sw.lat()}&swLng=${sw.lng()}`);
       if (!res.ok) throw new Error("Search failed");
-      const data: Property[] = await res.json();
+      let data: Property[] = await res.json();
+
+      // STRICT Client-Side Spatial Filtering: Only keep properties INSIDE the Isochrone if active
+      if (activeIsochronePolygon && window.google.maps.geometry) {
+        data = data.filter(p => {
+          if (!p.lat || !p.lng) return false;
+          const pt = new window.google.maps.LatLng(p.lat, p.lng);
+          return window.google.maps.geometry.poly.containsLocation(pt, activeIsochronePolygon);
+        });
+      }
+
       setProperties(data);
       if (onPropertiesUpdate) onPropertiesUpdate(data);
     } catch (error) {
@@ -60,11 +76,10 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
     } finally {
       setIsSearching(false);
     }
-  }, [onPropertiesUpdate]);
+  }, [onPropertiesUpdate, activeIsochronePolygon]);
 
   const handleBoundsChanged = useCallback(() => {
     if (!mapInstance.current) return;
-    
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     
     searchTimeoutRef.current = setTimeout(() => {
@@ -72,7 +87,7 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
       if (bounds) {
         performSearch(bounds);
       }
-    }, 500); // 500ms debounce
+    }, 500); 
   }, [performSearch]);
 
   // Map Initialization
@@ -81,7 +96,7 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
       if (!mapRef.current || !window.google) return;
       setIsLoaded(true);
   
-      const defaultLocation = { lat: 39.8283, lng: -98.5795 }; // US center
+      const defaultLocation = { lat: 39.8283, lng: -98.5795 }; 
   
       mapInstance.current = new window.google.maps.Map(mapRef.current, {
         center: defaultLocation,
@@ -91,6 +106,49 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
         zoomControl: true,
         gestureHandling: "cooperative",
         backgroundColor: "#0e1626",
+      });
+
+      // Data Layer Styling
+      mapInstance.current.data.setStyle((feature) => {
+        const type = feature.getProperty('type');
+        if (type === 'isochrone') {
+          const contour = feature.getProperty('contour');
+          let color = '#22c55e'; // 5 min
+          if (contour === 10) color = '#eab308';
+          if (contour === 15) color = '#ef4444';
+          
+          return {
+            fillColor: color,
+            strokeColor: color,
+            strokeWeight: 2,
+            fillOpacity: 0.15,
+            zIndex: 10 - contour
+          };
+        }
+        
+        if (type === 'foot_traffic') {
+          const intensity = feature.getProperty('intensity');
+          return {
+            icon: {
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: intensity * 5,
+              fillColor: '#f97316',
+              fillOpacity: 0.4,
+              strokeWeight: 0
+            }
+          };
+        }
+        
+        if (type === 'income') {
+          return {
+            fillColor: '#8b5cf6',
+            strokeColor: '#7c3aed',
+            strokeWeight: 1,
+            fillOpacity: 0.3
+          };
+        }
+
+        return {};
       });
 
       mapInstance.current.addListener('idle', handleBoundsChanged);
@@ -109,7 +167,8 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
     const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
     if (!existingScript) {
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+      // ADDED GEOMETRY LIBRARY FOR SPATIAL FILTERING
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places,geometry`;
       script.async = true;
       script.defer = true;
       (window as any).gm_authFailure = () => setLoadError(true);
@@ -127,18 +186,63 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
     }
   }, [handleBoundsChanged]);
 
+  // Handle Isochrone fetching
+  useEffect(() => {
+    const fetchAndRenderIsochrone = async () => {
+      if (!mapInstance.current) return;
+      
+      // Clear existing isochrones
+      mapInstance.current.data.forEach((feature) => {
+        if (feature.getProperty('type') === 'isochrone') {
+          mapInstance.current!.data.remove(feature);
+        }
+      });
+      setActiveIsochronePolygon(null);
+
+      if (!isochroneProfile) {
+        // Trigger a fresh search to restore all pins
+        const bounds = mapInstance.current.getBounds();
+        if (bounds) performSearch(bounds);
+        return;
+      }
+
+      setIsSearching(true);
+      const center = mapInstance.current.getCenter();
+      if (!center) return;
+
+      const res = await getIsochronePolygons(center.lng(), center.lat(), [5, 10, 15], isochroneProfile);
+      
+      if (res.success && res.geojson) {
+        // Inject custom properties so the styled Data layer catches it
+        res.geojson.features.forEach((f: any) => {
+          f.properties.type = 'isochrone';
+        });
+        
+        mapInstance.current.data.addGeoJson(res.geojson);
+
+        // Build a Google Maps Polygon from the largest contour (15m) for client-side filtering
+        const largestFeature = res.geojson.features.find((f: any) => f.properties.contour === 15);
+        if (largestFeature && window.google.maps.geometry) {
+          const coords = largestFeature.geometry.coordinates[0].map((c: number[]) => ({ lng: c[0], lat: c[1] }));
+          const polygon = new window.google.maps.Polygon({ paths: coords });
+          setActiveIsochronePolygon(polygon);
+        }
+      }
+      setIsSearching(false);
+    };
+
+    fetchAndRenderIsochrone();
+  }, [isochroneProfile, performSearch]);
+
   // Marker Management
   useEffect(() => {
     if (!mapInstance.current || !window.google) return;
 
-    // Clear old markers
     markersRef.current.forEach(marker => marker.setMap(null));
     markersRef.current = [];
 
     properties.forEach(prop => {
       if (prop.lat && prop.lng) {
-        // Simple default markers since we don't have AdvancedMarkerElement guarantee without the specific library
-        // But we can add listeners for hover state
         const marker = new window.google.maps.Marker({
           position: { lat: prop.lat, lng: prop.lng },
           map: mapInstance.current,
@@ -156,50 +260,19 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
         marker.addListener("mouseover", () => setHoveredProperty(prop));
         marker.addListener("mouseout", () => setHoveredProperty(null));
         marker.addListener("click", () => {
-          // If we had a router, we could push here. But we just show the card.
           setHoveredProperty(prop);
         });
 
         markersRef.current.push(marker);
       }
     });
-
   }, [properties, isLoaded]);
 
-
-  // Fallback UI (Premium Grid View)
+  // Render
   if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || loadError) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-[#0e1626] rounded-3xl border border-white/10 p-8 text-center animate-fadeUp relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-screen" />
-        <div className="absolute top-0 right-1/4 w-[30rem] h-[30rem] bg-[#cbb4ff] opacity-10 rounded-full blur-[120px] mix-blend-screen animate-pulse" />
-        
-        <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mb-6 shadow-2xl relative z-10 backdrop-blur-md">
-          <MapPin className="w-10 h-10 text-[#a1ebd6]" />
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-3 relative z-10">Geospatial Discovery Disabled</h2>
-        <p className="text-white/60 max-w-md mb-8 relative z-10">
-          The interactive map engine is currently running in fallback mode due to a missing API configuration. You can still discover premium spaces using our high-fidelity list view.
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full relative z-10">
-           {/* Fallback Grid items from initial properties */}
-           {initialProperties.slice(0, 3).map(prop => (
-             <Link key={prop.id} href={`/property/${prop.id}`} className="glass-card p-4 hover:bg-white/10 transition-colors text-left flex items-start gap-4">
-                <div className="w-16 h-16 rounded-xl bg-white/5 shrink-0 overflow-hidden">
-                  {prop.images[0] ? (
-                    <img src={prop.images[0].url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <Building className="w-8 h-8 m-4 text-white/30" />
-                  )}
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold truncate w-32">{prop.title}</h4>
-                  <p className="text-[#a1ebd6] font-medium text-sm mt-1">${prop.pricePerMonth}/mo</p>
-                </div>
-             </Link>
-           ))}
-        </div>
+      <div className="w-full h-full flex flex-col items-center justify-center bg-[#0e1626] rounded-3xl border border-white/10 p-8 text-center">
+         <p className="text-white/60">Map loading failed. Please check your API keys.</p>
       </div>
     );
   }
@@ -215,7 +288,63 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
       
       {isSearching && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-[#0e1626]/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 text-white/70 text-xs font-medium shadow-lg">
-          <Loader2 className="w-3 h-3 animate-spin" /> Scanning Area...
+          <Loader2 className="w-3 h-3 animate-spin" /> Analyzing Spatial Data...
+        </div>
+      )}
+
+      {/* Geospatial Intelligence Control Panel */}
+      {isLoaded && (
+        <div className="absolute top-4 left-4 z-20 bg-[#0e1626]/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl w-64 shadow-2xl">
+          <div className="flex items-center gap-2 mb-4 text-white">
+            <Layers className="w-4 h-4 text-[#a1ebd6]" />
+            <h4 className="font-bold text-sm">Geospatial Intel</h4>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-2">Drive-Time Isochrones</p>
+              <div className="flex gap-2">
+                {(['driving', 'walking', 'cycling'] as const).map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setIsochroneProfile(isochroneProfile === mode ? null : mode)}
+                    className={`flex-1 flex justify-center py-2 rounded-lg border text-xs font-medium transition-colors ${
+                      isochroneProfile === mode 
+                        ? 'bg-[#a1ebd6] text-[#0e1626] border-[#a1ebd6]' 
+                        : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
+                    }`}
+                  >
+                    {mode === 'driving' && <Navigation2 className="w-3 h-3" />}
+                    {mode === 'walking' && <Users className="w-3 h-3" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-2">Demographic Overlays</p>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={showFootTraffic}
+                    onChange={(e) => setShowFootTraffic(e.target.checked)}
+                    className="rounded bg-white/10 border-white/20 text-[#a1ebd6] focus:ring-[#a1ebd6]"
+                  />
+                  Foot Traffic Heatmap
+                </label>
+                <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={showIncome}
+                    onChange={(e) => setShowIncome(e.target.checked)}
+                    className="rounded bg-white/10 border-white/20 text-[#a1ebd6] focus:ring-[#a1ebd6]"
+                  />
+                  Median Household Income
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -229,7 +358,7 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
         }`}
       >
         {hoveredProperty && (
-          <div className="liquid-glass rounded-2xl overflow-hidden shadow-2xl border border-white/20">
+          <div className="liquid-glass rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-[#0e1626]/90 backdrop-blur-xl">
             <div className="h-40 bg-white/5 relative">
               {hoveredProperty.images && hoveredProperty.images[0] ? (
                 <img src={hoveredProperty.images[0].url} alt="" className="w-full h-full object-cover" />
@@ -239,16 +368,12 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0e1626] via-transparent to-transparent" />
-              <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md px-2 py-1 rounded text-xs font-medium text-white border border-white/10 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-[#cbb4ff]" /> Premium
-              </div>
             </div>
-            <div className="p-4 bg-[#0e1626]/90 backdrop-blur-xl">
+            <div className="p-4">
               <h3 className="text-white font-bold truncate text-lg">{hoveredProperty.title}</h3>
               <p className="text-white/60 text-xs mb-3 flex items-center gap-1 mt-1">
                 <MapPin className="w-3 h-3" /> {hoveredProperty.sizeSqft} sqft {hoveredProperty.propertyType}
               </p>
-              
               <div className="flex items-end justify-between mt-2">
                 <div>
                   <p className="text-white/40 text-[10px] uppercase tracking-wider mb-0.5">Monthly Lease</p>

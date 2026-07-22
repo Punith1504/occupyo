@@ -42,7 +42,7 @@ export default async function TenantLeasesPage() {
             You haven't requested to book any properties yet.
           </p>
           <Link 
-            href="/dashboard/tenant/search"
+            href="/search"
             className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors font-medium text-sm"
           >
             <Search className="h-4 w-4" />

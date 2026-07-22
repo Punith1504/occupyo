@@ -3,15 +3,15 @@
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, LayoutDashboard, Settings, FileText, ClipboardList, MessageSquare, Menu, X } from "lucide-react";
+import { Search, LayoutDashboard, Settings, FileText, ClipboardList, MessageSquare, Menu, X, Home } from "lucide-react";
 import { useState } from "react";
 import { hapticTap } from "@/lib/haptics";
 
 const NAV_ITEMS = [
   { href: "/dashboard/tenant", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/tenant/search", label: "Search Properties", icon: Search },
-  { href: "/dashboard/tenant/leases", label: "My Leases", icon: ClipboardList },
-  { href: "/dashboard/tenant/requests", label: "Space Requests", icon: FileText },
+  { href: "/search", label: "Search Properties", icon: Search },
+  { href: "/dashboard/tenant/leases", label: "Active Leases", icon: Home },
+  { href: "/dashboard/tenant/requests", label: "My Requests", icon: FileText },
   { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
   { href: "/dashboard/tenant/settings", label: "Settings", icon: Settings },
 ];

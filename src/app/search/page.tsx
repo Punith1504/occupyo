@@ -11,11 +11,6 @@ export const dynamic = "force-dynamic";
 export default async function PropertySearchPage(props: {
   searchParams: Promise<{ type?: string; location?: string; lat?: string; lng?: string; niche?: string }>;
 }) {
-  const { userId } = await auth();
-  if (!userId) {
-    if (process.env.NODE_ENV !== "production") redirect("/sign-in");
-  }
-
   const searchParams = await props.searchParams;
   const { type, location, lat, lng, niche } = searchParams;
   const userLat = lat ? parseFloat(lat) : null;
@@ -129,7 +124,7 @@ export default async function PropertySearchPage(props: {
             <Link 
               key={tag}
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              href={`/dashboard/tenant/search?${new URLSearchParams({...searchParams as any, niche: tag}).toString()}`}
+              href={`/search?${new URLSearchParams({...searchParams as any, niche: tag}).toString()}`}
               className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${niche === tag ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               {tag}
@@ -137,7 +132,7 @@ export default async function PropertySearchPage(props: {
           ))}
           {niche && (
             <Link 
-              href={`/dashboard/tenant/search`}
+              href={`/search`}
               className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors ml-2"
             >
               Clear Filter
