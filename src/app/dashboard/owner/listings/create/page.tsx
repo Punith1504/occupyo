@@ -9,6 +9,7 @@ import { createPropertyAction } from "../../actions";
 
 import InteractiveMap from "@/components/InteractiveMap";
 import { hapticTap, hapticMedium, hapticSuccess, hapticError } from "@/lib/haptics";
+import { scanRoomAR } from "@/lib/capacitor/room-plan-plugin";
 
 const STEPS = [
   { id: "details", title: "Details", icon: Building2 },
@@ -53,6 +54,26 @@ export default function CreateListingPage() {
   const [addressLoading, setAddressLoading] = useState(false);
   const autocompleteContainerRef = useRef<HTMLDivElement>(null);
   const autocompleteInstanceRef = useRef<any>(null);
+
+  const handleLiDARScan = async () => {
+    hapticMedium();
+    setLoading(true);
+    try {
+      const result = await scanRoomAR();
+      setFormData(prev => ({
+        ...prev,
+        sizeSqft: result.sizeSqft.toString()
+      }));
+      setImageUrls(prev => [...prev, result.usdzModelUrl]);
+      hapticSuccess();
+    } catch (e) {
+      console.error(e);
+      hapticError();
+      alert("Failed to scan room.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Initialize new Google Maps PlaceAutocompleteElement Web Component
   useEffect(() => {
@@ -402,7 +423,16 @@ export default function CreateListingPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Total Size (Sqft)</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-white/80">Total Size (Sqft)</label>
+                  <button 
+                    type="button" 
+                    onClick={handleLiDARScan}
+                    className="text-xs flex items-center gap-1 text-[#b4e6ff] font-medium hover:underline bg-[#b4e6ff]/10 px-3 py-1.5 rounded-lg border border-[#b4e6ff]/20 active:scale-95 transition-transform"
+                  >
+                    <Camera className="w-3 h-3" /> Scan with LiDAR AR
+                  </button>
+                </div>
                 <input 
                   type="number"
                   value={formData.sizeSqft}

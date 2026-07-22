@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000, // 1 year cache
+    remotePatterns: [
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "neon.tech" }
+    ]
   },
   compress: true,
   poweredByHeader: false,
@@ -26,7 +30,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/(.*)\\.(js|css|woff2|png|jpg|svg|ico)",
+        source: "/(.*)\\.(js|css|woff2|png|jpg|svg|ico|usdz|glb|obj)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
