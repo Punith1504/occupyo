@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createLeaseRequest } from "./actions";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 
 interface BookingFormProps {
   propertyId: string;
@@ -29,6 +30,7 @@ export function BookingForm({
   ownerId,
 }: BookingFormProps) {
   const router = useRouter();
+  const { userId } = useAuth();
   const [duration, setDuration] = useState<number>(minDuration);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -47,6 +49,11 @@ export function BookingForm({
   const totalAmount = unitPrice * duration;
 
   const handleBooking = async () => {
+    if (!userId) {
+      router.push(`/sign-in?redirect_url=/property/${propertyId}`);
+      return;
+    }
+    
     setLoading(true);
     setError("");
     
@@ -157,7 +164,13 @@ export function BookingForm({
         </button>
 
         <button 
-          onClick={() => router.push(`/dashboard/messages/${ownerId}`)}
+          onClick={() => {
+            if (!userId) {
+              router.push(`/sign-in?redirect_url=/property/${propertyId}`);
+            } else {
+              router.push(`/dashboard/messages/${ownerId}`);
+            }
+          }}
           className="w-full bg-white text-gray-900 border border-gray-300 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center"
         >
           Message Owner

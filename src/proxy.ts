@@ -7,8 +7,10 @@ const isPublicRoute = createRouteMatcher([
   '/about',
   '/onboarding',
   '/property(.*)',
+  '/search(.*)',
   '/api/telemetry',
   '/api/properties/search',
+  '/api/vision-search',
   '/api/webhooks(.*)',
 ])
 
