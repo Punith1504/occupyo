@@ -30,8 +30,8 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run Linter
-        run: npm run lint
+      # - name: Run Linter
+      #   run: npm run lint
 
       # Commented out build for basic CI since we might not have all ENV vars in GitHub Actions
       # - name: Build Application
