@@ -80,94 +80,92 @@ export default async function PropertyPage(
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-        <div className="flex flex-col lg:flex-row gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 md:mt-10">
+        <div className="flex flex-col lg:flex-row gap-8 md:gap-12">
           
-          {/* Main Content: Physical Memorandum */}
-          <div className="flex-1 space-y-10 skeuo-paper p-8 md:p-12 rounded-lg relative">
+          {/* Main Content */}
+          <div className="flex-1 space-y-8 md:space-y-10 liquid-glass p-5 md:p-12 border border-white/20 relative">
             <div className="flex justify-between items-start gap-6">
               <div>
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="bg-gray-800 text-gray-200 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase font-mono shadow-inner border border-gray-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="bg-white/10 text-[#a1ebd6] px-3 py-1 rounded text-xs font-bold tracking-widest uppercase shadow-sm border border-white/10">
                     {property.propertyType}
                   </span>
-                  <span className={`px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase font-mono border shadow-inner ${property.status === "AVAILABLE" ? "bg-green-900/20 text-green-800 border-green-800/30" : "bg-yellow-900/20 text-yellow-800 border-yellow-800/30"}`}>
+                  <span className={`px-3 py-1 rounded text-xs font-bold tracking-widest uppercase border shadow-sm ${property.status === "AVAILABLE" ? "bg-green-500/20 text-green-300 border-green-500/30" : "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"}`}>
                     {property.status}
                   </span>
                 </div>
-                <h1 className="text-5xl font-serif font-bold text-[#1a1a1a] mb-4 break-words leading-tight">{property.title}</h1>
-                <div className="flex items-center text-gray-600 gap-2 text-lg font-mono">
-                  <MapPin className="h-5 w-5 shrink-0" />
-                  <span className="break-words border-b border-gray-300 pb-1">{property.address}</span>
+                <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4 break-words leading-tight drop-shadow-md">{property.title}</h1>
+                <div className="flex items-center text-gray-300 gap-2 text-base md:text-lg font-medium">
+                  <MapPin className="h-5 w-5 shrink-0 text-[#a1ebd6]" />
+                  <span>{property.address}</span>
                 </div>
               </div>
-              
-              {/* Memorandum Top Stamp */}
-              <div className="hidden sm:block border-2 border-red-800/40 text-red-800/40 font-serif font-bold text-lg uppercase tracking-widest px-4 py-2 rotate-[-5deg] pointer-events-none shrink-0 mt-4">
-                Confidential<br/>Memorandum
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 py-6 md:py-8 border-y border-white/10">
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Size</p>
+                <p className="text-xl md:text-2xl font-bold text-white">{property.sizeSqft.toLocaleString()} sqft</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Price</p>
+                <p className="text-xl md:text-2xl font-bold text-white">${property.pricePerMonth.toLocaleString()}<span className="text-sm font-normal text-gray-400">/mo</span></p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Cap Rate</p>
+                <p className="text-2xl font-bold text-white">{property.capRate ? `${property.capRate}%` : 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">NOI</p>
+                <p className="text-2xl font-bold text-white">{property.noi ? `$${property.noi.toLocaleString()}` : 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Lease Type</p>
+                <p className="text-2xl font-bold text-white">{property.leaseType || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Duration</p>
+                <p className="text-2xl font-bold text-white">{property.minDuration}-{property.maxDuration} {property.durationUnit.toLowerCase()}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-6 border-y-2 border-double border-gray-300">
-              <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Size</p>
-                <p className="font-serif font-semibold text-2xl text-gray-900">{property.sizeSqft.toLocaleString()} sqft</p>
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Price</p>
-                <p className="font-serif font-semibold text-2xl text-gray-900">${property.pricePerMonth.toLocaleString()}/mo</p>
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Cap Rate</p>
-                <p className="font-serif font-semibold text-2xl text-gray-900">{property.capRate ? `${property.capRate}%` : 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">NOI</p>
-                <p className="font-serif font-semibold text-2xl text-gray-900">{property.noi ? `$${property.noi.toLocaleString()}` : 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Lease Type</p>
-                <p className="font-serif font-semibold text-2xl text-gray-900">{property.leaseType || 'N/A'}</p>
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Duration</p>
-                <p className="font-serif font-semibold text-2xl text-gray-900">{property.minDuration}-{property.maxDuration} {property.durationUnit.toLowerCase()}</p>
-              </div>
-            </div>
-
+            {/* Description */}
             <div>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4 border-b border-gray-300 pb-2 inline-block">Executive Summary</h2>
-              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-lg font-serif">
-                {property.description}
+              <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-md">Executive Summary</h2>
+              <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
+                {property.description || "No description provided."}
               </p>
             </div>
 
+            {/* Amenities */}
             {amenities.length > 0 && (
               <div>
-                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4 border-b border-gray-300 pb-2 inline-block">Amenities & Features</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {amenities.map(amenity => (
-                    <div key={amenity} className="flex items-center gap-3 text-gray-800 font-serif">
-                      <CheckCircle2 className="h-5 w-5 text-gray-400" />
-                      <span className="font-medium text-lg">{amenity}</span>
+                <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-md">Amenities & Features</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {amenities.map((amenity, idx) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-[#a1ebd6] shrink-0" />
+                      <span className="text-gray-300 font-medium text-lg">{amenity}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            
+
             {property.suites && property.suites.length > 0 && (
               <div>
-                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4 border-b border-gray-300 pb-2 inline-block">Available Suites (Rent Roll)</h2>
+                <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-md">Available Suites (Rent Roll)</h2>
                 <div className="grid grid-cols-1 gap-2">
                   {property.suites.map(suite => (
-                    <div key={suite.id} className="p-3 border-b border-dashed border-gray-300 flex justify-between items-center hover:bg-black/5 transition-colors cursor-pointer font-serif">
+                    <div key={suite.id} className="p-4 rounded-lg bg-white/5 border border-white/5 flex justify-between items-center hover:bg-white/10 transition-colors cursor-pointer">
                       <div>
-                        <h4 className="font-bold text-gray-900">{suite.title}</h4>
-                        <p className="text-sm text-gray-600">{suite.sizeSqft.toLocaleString()} sqft</p>
+                        <h4 className="font-bold text-white">{suite.title}</h4>
+                        <p className="text-sm text-gray-300">{suite.sizeSqft.toLocaleString()} sqft</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-gray-900">${suite.pricePerMonth.toLocaleString()}/mo</p>
+                        <p className="font-bold text-white">${suite.pricePerMonth.toLocaleString()}/mo</p>
                         <span className="text-[10px] font-mono font-bold bg-gray-200 text-gray-700 px-2 py-0.5 rounded-sm uppercase tracking-widest">{suite.status}</span>
                       </div>
                     </div>

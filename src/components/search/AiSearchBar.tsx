@@ -154,40 +154,42 @@ export default function AiSearchBar() {
       {/* Search Bar - Liquid Glass */}
       <form 
         onSubmit={handleSearch}
-        className="relative group flex items-center bg-white/10 backdrop-blur-md border border-white/20 dark:bg-black/20 rounded-full p-2 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] focus-within:ring-2 focus-within:ring-indigo-500/50"
+        className="relative group flex flex-col md:flex-row items-center bg-white/20 backdrop-blur-xl border border-white/40 dark:bg-black/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:bg-white/30 focus-within:ring-2 focus-within:ring-[#a1ebd6]/50 focus-within:bg-white/30"
       >
-        <div className="pl-4 pr-2 text-gray-500 dark:text-gray-400">
-          <Search size={20} />
+        <div className="flex items-center w-full">
+          <div className="pl-3 md:pl-5 pr-2 md:pr-3 text-white dark:text-gray-300">
+            <Search size={22} className="w-5 h-5 md:w-6 md:h-6" />
+          </div>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn')"
+            className="flex-1 bg-transparent border-none outline-none text-white dark:text-white placeholder-gray-200 dark:placeholder-gray-300 py-3 px-2 text-base md:text-lg w-full drop-shadow-sm font-medium"
+          />
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            ref={fileInputRef} 
+            onChange={handleImageUpload} 
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="p-2 md:p-3 text-white/80 hover:text-white transition-colors drop-shadow-sm"
+            title="Search by Image"
+          >
+            <ImageIcon size={26} className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
         </div>
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn under $5k/mo')"
-          className="flex-1 bg-transparent border-none outline-none text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 py-3 px-2 text-lg w-full"
-        />
-        <input 
-          type="file" 
-          accept="image/*" 
-          className="hidden" 
-          ref={fileInputRef} 
-          onChange={handleImageUpload} 
-        />
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="p-2 text-gray-500 hover:text-indigo-500 transition-colors"
-          title="Search by Image"
-        >
-          <ImageIcon size={24} />
-        </button>
         <button
           type="submit"
           disabled={isLoading || !query.trim()}
-          className="ml-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-full px-6 py-3 font-medium transition-all shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2),0_4px_10px_rgba(99,102,241,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+          className="w-full md:w-auto mt-2 md:mt-0 ml-0 md:ml-2 bg-[#a1ebd6] hover:bg-[#b4e6ff] text-[#060608] rounded-xl md:rounded-full px-6 md:px-8 py-3 md:py-3.5 text-base md:text-lg font-extrabold transition-all shadow-[0_4px_15px_rgba(161,235,214,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
         >
-          {isLoading ? <Loader2 className="animate-spin" size={20} /> : "Discover"}
+          {isLoading ? <Loader2 className="animate-spin text-[#060608]" size={22} /> : "Discover"}
         </button>
       </form>
 
