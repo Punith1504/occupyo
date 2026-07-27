@@ -1,83 +1,31 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { searchSimilarProperties, autocompleteSearch } from "@/app/actions/search";
+import { useState, useRef } from "react";
+import { searchSimilarProperties } from "@/app/actions/search";
 import { searchByImage } from "@/app/actions/vision-search";
 import Link from "next/link";
-import { Search, Loader2, ExternalLink, Image as ImageIcon, AlertCircle, MapPin, Sparkles, Building2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Search, Loader2, ExternalLink, Image as ImageIcon, AlertCircle } from "lucide-react";
 
 export default function AiSearchBar() {
-  const router = useRouter();
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-  
-  // Autocomplete State
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [keywordSuggestions, setKeywordSuggestions] = useState<string[]>([]);
-  
-  // Main Search Results
   const [results, setResults] = useState<any[]>([]);
   const [fallbackTriggered, setFallbackTriggered] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Debounced Autocomplete
-  useEffect(() => {
-    const fetchAutocomplete = async () => {
-      if (query.length < 2) {
-        setSuggestions([]);
-        setKeywordSuggestions([]);
-        return;
-      }
-      try {
-        setIsSearching(true);
-        const res = await autocompleteSearch(query);
-        if (res.success) {
-          setSuggestions(res.properties);
-          setKeywordSuggestions(res.keywords);
-          setShowDropdown(true);
-        }
-      } catch (err) {
-        console.error("Autocomplete fetch failed:", err);
-      } finally {
-        setIsSearching(false);
-      }
-    };
-
-    const timeoutId = setTimeout(fetchAutocomplete, 300);
-    return () => clearTimeout(timeoutId);
-  }, [query]);
-
-  // Click outside to close dropdown
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleSearch = async (e: React.FormEvent, overrideQuery?: string) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    const searchQuery = overrideQuery || query;
-    if (!searchQuery.trim()) return;
+    if (!query.trim()) return;
 
-    setShowDropdown(false);
     setIsLoading(true);
     setResults([]);
     setFallbackTriggered(false);
     setError(null);
-    setQuery(searchQuery);
 
     try {
-      const res = await searchSimilarProperties(searchQuery);
+      const res = await searchSimilarProperties(query);
       if (res.success && res.properties) {
         setResults(res.properties);
         setFallbackTriggered(res.fallbackTriggered || false);
@@ -100,7 +48,6 @@ export default function AiSearchBar() {
     setResults([]);
     setFallbackTriggered(false);
     setError(null);
-    setShowDropdown(false);
 
     try {
       const reader = new FileReader();
@@ -128,30 +75,20 @@ export default function AiSearchBar() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-6 relative" ref={dropdownRef}>
+    <div className="w-full max-w-3xl mx-auto space-y-6">
       {/* Search Bar - Liquid Glass */}
       <form 
-        onSubmit={(e) => handleSearch(e)}
-        className="relative z-50 group flex flex-col md:flex-row items-center bg-white/20 backdrop-blur-xl border border-white/40 dark:bg-black/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:bg-white/30 focus-within:bg-white/30"
+        onSubmit={handleSearch}
+        className="relative group flex flex-col md:flex-row items-center bg-white/20 backdrop-blur-xl border border-white/40 dark:bg-black/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:bg-white/30 focus-within:bg-white/30 focus-within:ring-2 focus-within:ring-[#a1ebd6]/50"
       >
-        <div className="flex items-center w-full relative">
+        <div className="flex items-center w-full">
           <div className="pl-3 md:pl-5 pr-2 md:pr-3 text-white dark:text-gray-300">
-            {isSearching ? (
-              <Loader2 size={22} className="w-5 h-5 md:w-6 md:h-6 animate-spin text-[#a1ebd6]" />
-            ) : (
-              <Search size={22} className="w-5 h-5 md:w-6 md:h-6" />
-            )}
+            <Search size={22} className="w-5 h-5 md:w-6 md:h-6" />
           </div>
           <input
             type="text"
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setShowDropdown(true);
-            }}
-            onFocus={() => {
-              if (query.length >= 2) setShowDropdown(true);
-            }}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn')"
             className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-white dark:text-white placeholder-gray-200 dark:placeholder-gray-300 py-3 px-2 text-base md:text-lg w-full drop-shadow-sm font-medium"
           />
@@ -179,75 +116,6 @@ export default function AiSearchBar() {
           {isLoading ? <Loader2 className="animate-spin text-[#060608]" size={22} /> : "Discover"}
         </button>
       </form>
-
-      {/* Autocomplete Dropdown */}
-      {showDropdown && (suggestions.length > 0 || keywordSuggestions.length > 0) && (
-        <div className="absolute top-[100%] left-0 right-0 mt-2 bg-white/95 dark:bg-[#0a0a0f]/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
-          
-          {keywordSuggestions.length > 0 && (
-            <div className="p-4 border-b border-gray-100 dark:border-white/5">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Sparkles size={14} className="text-indigo-400" /> Recommended Keywords
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {keywordSuggestions.map(kw => (
-                  <button
-                    key={kw}
-                    type="button"
-                    onClick={(e) => handleSearch(e, kw)}
-                    className="px-3 py-1.5 bg-gray-100 hover:bg-indigo-50 dark:bg-white/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors border border-transparent hover:border-indigo-200 dark:hover:border-white/20"
-                  >
-                    {kw}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {suggestions.length > 0 && (
-            <div className="p-2">
-              <h4 className="px-3 pt-2 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                <MapPin size={14} className="text-[#a1ebd6]" /> Properties Nearby
-              </h4>
-              {suggestions.map(prop => (
-                <Link
-                  key={prop.id}
-                  href={`/properties/${prop.id}`}
-                  onClick={() => setShowDropdown(false)}
-                  className="flex items-center gap-4 p-3 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-colors group cursor-pointer"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/10 flex items-center justify-center shrink-0">
-                    <Building2 size={20} className="text-gray-500 dark:text-gray-400 group-hover:text-[#a1ebd6] transition-colors" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-[#a1ebd6] transition-colors">
-                      {prop.title}
-                    </h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate flex items-center gap-2">
-                      <span className="font-medium text-gray-700 dark:text-gray-300">${prop.pricePerMonth?.toLocaleString()}/mo</span>
-                      <span>•</span>
-                      <span>{prop.address}</span>
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-xs font-bold px-2 py-1 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 rounded-md">
-                    {prop.propertyType}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          <div className="p-3 bg-gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 text-center">
-            <button 
-              type="button"
-              onClick={(e) => handleSearch(e)}
-              className="text-sm font-semibold text-indigo-600 dark:text-[#a1ebd6] hover:underline flex items-center justify-center gap-1 w-full"
-            >
-              <Search size={14} /> Search Web & Local for "{query}"
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Loading Indicator */}
       {isLoading && (
