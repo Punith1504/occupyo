@@ -9,7 +9,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build",
 });
 
 const redis = process.env.UPSTASH_REDIS_REST_URL ? new Redis({
