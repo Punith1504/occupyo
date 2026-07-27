@@ -10,7 +10,7 @@ Occupyo is a modern, full-stack real estate and commercial space management plat
 - **ORM:** Prisma
 - **Authentication:** Clerk
 - **Media Storage:** Cloudinary
-- **Payments:** Stripe & Razorpay integration
+- **Payments:** Stripe integration
 - **AI & Search:** OpenAI (for embeddings)
 - **Form Management:** React Hook Form + Zod (Validation)
 - **Mobile/Cross-Platform:** Capacitor (iOS/Android support)
@@ -25,7 +25,7 @@ graph TD
     
     Next --> DB[(PostgreSQL + pgvector)]
     Next --> Cloudinary[Cloudinary Media API]
-    Next --> Stripe[Stripe / Razorpay Payments]
+    Next --> Stripe[Stripe Payments]
     Next --> OpenAI[OpenAI API]
     
     Next --> Actions[Server Actions]
@@ -40,7 +40,7 @@ graph TD
 4. **External Services:**
    - **Clerk:** Handles secure user authentication, registration, and session management.
    - **Cloudinary:** Secures and serves user-uploaded images.
-   - **Stripe/Razorpay:** Manages financial transactions and lease payments.
+   - **Stripe:** Manages financial transactions and lease payments.
    - **OpenAI:** Generates vector embeddings for properties to enable semantic search capabilities.
 
 ## 4. Pipeline Architecture (CI/CD & Data Flow)
@@ -108,7 +108,7 @@ a:\occupyo\
 
 ### Phase 3: Booking & Communication (Next Steps)
 - [ ] Implement end-to-end lease booking flow
-- [ ] Integrate Stripe/Razorpay for checkout and payment processing
+- [ ] Integrate Stripe for checkout and payment processing
 - [ ] Real-time messaging system between Tenants and Owners
 - [ ] Advanced tenant dashboard for managing active leases and space requests
 

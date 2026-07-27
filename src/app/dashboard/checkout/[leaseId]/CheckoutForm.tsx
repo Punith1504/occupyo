@@ -110,10 +110,11 @@ export default function CheckoutForm({
   useEffect(() => {
     const fetchIntent = async () => {
       try {
+        const idempotencyKey = window.crypto.randomUUID();
         const res = await fetch("/api/checkout/intent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ leaseId }),
+          body: JSON.stringify({ leaseId, idempotencyKey }),
         });
         
         if (!res.ok) {

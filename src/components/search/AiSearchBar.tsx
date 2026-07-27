@@ -5,13 +5,14 @@ import Script from "next/script";
 import { searchSimilarProperties } from "@/app/actions/search";
 import { searchByImage } from "@/app/actions/vision-search";
 import Link from "next/link";
-import { Search, Loader2, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Search, Loader2, ExternalLink, Image as ImageIcon, AlertCircle } from "lucide-react";
 
 export default function AiSearchBar() {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [fallbackTriggered, setFallbackTriggered] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,15 +46,19 @@ export default function AiSearchBar() {
     setIsLoading(true);
     setResults([]);
     setFallbackTriggered(false);
+    setError(null);
 
     try {
       const res = await searchSimilarProperties(query);
       if (res.success && res.properties) {
         setResults(res.properties);
         setFallbackTriggered(res.fallbackTriggered || false);
+      } else if (!res.success) {
+        setError(res.error || "Search couldn't be completed. Please try again.");
       }
-    } catch (error) {
-      console.error("Search failed", error);
+    } catch (err) {
+      console.error("Search failed", err);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -66,6 +71,7 @@ export default function AiSearchBar() {
     setIsLoading(true);
     setResults([]);
     setFallbackTriggered(false);
+    setError(null);
 
     try {
       const reader = new FileReader();
@@ -75,9 +81,12 @@ export default function AiSearchBar() {
           const res = await searchByImage(dataUrl);
           if (res.success && res.properties) {
             setResults(res.properties);
+          } else if (!res.success) {
+            setError(res.error || "Image search couldn't be completed.");
           }
-        } catch (error) {
-          console.error("Vision search failed", error);
+        } catch (err) {
+          console.error("Vision search failed", err);
+          setError("An unexpected error occurred with vision search.");
         } finally {
           setIsLoading(false);
         }
@@ -211,6 +220,16 @@ export default function AiSearchBar() {
         </div>
       )}
 
+      {/* Error Message */}
+      {error && !isLoading && (
+        <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 px-4 py-3 rounded-2xl flex items-center gap-3 backdrop-blur-sm mt-4">
+          <AlertCircle size={20} className="shrink-0" />
+          <p className="text-sm font-medium">
+            {error}
+          </p>
+        </div>
+      )}
+
       {/* Results Grid */}
       {!isLoading && results.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -261,7 +280,7 @@ export default function AiSearchBar() {
         </div>
       )}
       
-      {!isLoading && query && results.length === 0 && !fallbackTriggered && (
+      {!isLoading && query && results.length === 0 && !fallbackTriggered && !error && (
         <div className="text-center py-12 text-gray-500">
           No matches found for your query. Try a different search.
         </div>

@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 
+// Cache buster for Turbopack
+// 2026-07-27
+
 export default function TelemetryTracker() {
   const pathname = usePathname();
   const { user } = useUser();

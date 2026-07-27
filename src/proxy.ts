@@ -11,8 +11,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/telemetry',
   '/api/properties/search',
   '/api/vision-search',
-  '/api/webhooks(.*)',
-  '/api/seed',
+
+  '/api/webhooks/clerk',
 ])
 
 export default clerkMiddleware(async (auth, request) => {

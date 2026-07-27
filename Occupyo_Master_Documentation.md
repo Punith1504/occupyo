@@ -13,7 +13,7 @@ The platform aims to reduce friction in commercial real estate by supporting fle
 - **ORM:** Prisma
 - **Authentication:** Clerk (`@clerk/nextjs`)
 - **Media Storage:** Cloudinary (`next-cloudinary`)
-- **Payments:** Stripe (`@stripe/stripe-js`) & Razorpay
+- **Payments:** Stripe (`@stripe/stripe-js`)
 - **AI & Search:** OpenAI (for embeddings)
 - **Form Management:** React Hook Form + Zod (Validation)
 - **Mobile/Cross-Platform:** Capacitor (iOS/Android support via `@capacitor/core`)
@@ -30,7 +30,7 @@ graph TD
     
     Next --> DB[(PostgreSQL + pgvector)]
     Next --> Cloudinary[Cloudinary Media API]
-    Next --> Stripe[Stripe / Razorpay Payments]
+    Next --> Stripe[Stripe Payments]
     Next --> OpenAI[OpenAI API]
     
     Next --> Actions[Server Actions]
@@ -42,7 +42,7 @@ graph TD
 1. **Client-side:** Built with React Server Components (RSC) and Client Components. Handles UI rendering, user interactions, and complex forms.
 2. **Server-side:** Next.js API Routes and Server Actions handle business logic, secure database interactions, and third-party integrations.
 3. **Database Layer:** Prisma manages relational data while PostgreSQL leverages `pgvector` for advanced AI search functionalities.
-4. **External Services:** Clerk (Auth), Cloudinary (Media), Stripe/Razorpay (Payments), OpenAI (Embeddings).
+4. **External Services:** Clerk (Auth), Cloudinary (Media), Stripe (Payments), OpenAI (Embeddings).
 
 ---
 
@@ -98,7 +98,6 @@ The application exposes the following standard RESTful API endpoints, primarily 
 
 - **`/api/checkout`**: Handles initialization of checkout sessions for property bookings.
 - **`/api/properties`**: Read-only endpoints for fetching property data for external consumers or client-side fetching.
-- **`/api/razorpay`**: Handles Razorpay payment intents, order creation, and signature verification (primarily for Indian market).
 - **`/api/sign-cloudinary`**: Generates secure, short-lived signatures so the client can upload images directly to Cloudinary without exposing secret keys.
 - **`/api/stripe`**: Handles Stripe payment intents and checkout sessions.
 - **`/api/telemetry`**: Captures frontend user events (clicks, searches, views) for analytics.

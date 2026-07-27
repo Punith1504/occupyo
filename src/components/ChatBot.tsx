@@ -38,9 +38,9 @@ export default function ChatBot() {
       } else if (lowerInput.includes("how to list") || lowerInput.includes("add property") || lowerInput.includes("post")) {
         botResponse = "To list a property, simply create an Owner account, navigate to your Dashboard, and click 'Add Property'. You can upload HQ photos and set your lease terms instantly.";
       } else if (lowerInput.includes("fee") || lowerInput.includes("cost") || lowerInput.includes("price")) {
-        botResponse = "Listing a property is free! We take a small service fee only when a lease is successfully booked through our secure Razorpay/Stripe checkout.";
+        botResponse = "Listing a property is free! We take a small service fee only when a lease is successfully booked through our secure Stripe checkout.";
       } else if (lowerInput.includes("payment") || lowerInput.includes("pay")) {
-        botResponse = "We support seamless global payments! For Indian transactions, we use Razorpay (UPI, Netbanking, Cards). For international bookings, we use Stripe Connect.";
+        botResponse = "We support seamless global payments! We use Stripe Connect for all transactions to ensure security and speed.";
       } else if (lowerInput.includes("hello") || lowerInput.includes("hi") || lowerInput.includes("hey")) {
         botResponse = "Hey! 😊 I'm here to help. Ask me about listing properties, pricing, payments, or anything about Occupyo!";
       }

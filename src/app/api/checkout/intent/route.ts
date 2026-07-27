@@ -11,10 +11,10 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { leaseId } = body;
+    const { leaseId, idempotencyKey } = body;
 
-    if (!leaseId) {
-      return new NextResponse("Missing leaseId", { status: 400 });
+    if (!leaseId || !idempotencyKey) {
+      return new NextResponse("Missing required fields", { status: 400 });
     }
 
     const lease = await prisma.lease.findUnique({
@@ -49,6 +49,8 @@ export async function POST(req: Request) {
       automatic_payment_methods: {
         enabled: true,
       },
+    }, {
+      idempotencyKey,
     });
 
     return NextResponse.json({

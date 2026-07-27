@@ -3,13 +3,37 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import OpenAI from "openai";
+import { auth } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const redis = process.env.UPSTASH_REDIS_REST_URL ? new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+}) : null;
+
+const ratelimit = redis ? new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"), // 10 requests per minute
+}) : null;
+
 export async function searchSimilarProperties(query: string, lat?: number, lng?: number, radiusMiles: number = 10) {
   try {
+    if (ratelimit) {
+      const { userId } = await auth();
+      const ip = (await headers()).get("x-forwarded-for") || "anonymous";
+      const identifier = userId || ip;
+      
+      const { success } = await ratelimit.limit(identifier);
+      if (!success) {
+        return { success: false, error: "Too many requests. Please try again later." };
+      }
+    }
     // 1. Convert natural language to embedding
     const response = await openai.embeddings.create({
       model: "text-embedding-3-small",
@@ -182,11 +206,11 @@ async function ingestExternalPropertiesFallback(query: string) {
     // Update embedding via raw SQL if it succeeded
     if (embString) {
       try {
-        await prisma.$executeRawUnsafe(`
+        await prisma.$executeRaw`
           UPDATE "Property" 
-          SET embedding = '${embString}'::vector 
-          WHERE id = '${newProp.id}'
-        `);
+          SET embedding = ${embString}::vector 
+          WHERE id = ${newProp.id}
+        `;
       } catch (dbErr) {
         console.error("Failed to inject vector embedding into DB:", dbErr);
       }

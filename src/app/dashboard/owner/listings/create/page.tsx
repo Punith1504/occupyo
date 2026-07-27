@@ -622,9 +622,10 @@ export default function CreateListingPage() {
                 options={{
                   maxFiles: MAX_IMAGES - imageUrls.length,
                   multiple: true,
-                  maxFileSize: 50000000, // 50MB
-                  clientAllowedFormats: ['image', 'video'],
-                  resourceType: 'auto'
+                  maxFileSize: 15000000, // 15MB
+                  clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
+                  allowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
+                  resourceType: 'image'
                 }}
               >
                 {({ open }) => (

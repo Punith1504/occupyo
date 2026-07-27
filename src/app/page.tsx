@@ -23,7 +23,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#060608]">
       {/* 1. Navigation Bar (Liquid Glass) */}
-      <header className="sticky top-0 z-50 liquid-glass !rounded-none !border-x-0 !border-t-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+      <header className="sticky top-0 z-50 fluted-glass !rounded-none !border-x-0 !border-t-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div className="max-w-7xl mx-auto px-6 py-6 md:px-10 flex flex-col md:flex-row items-center gap-6 justify-between">
           <div className="flex items-center justify-between w-full md:w-auto">
             <Link href="/" className="text-3xl font-bold text-white tracking-tight flex items-center gap-3 drop-shadow-md">
@@ -53,13 +53,16 @@ export default async function Home() {
 
         {/* The Central Pristine Glass Widget */}
         <div className="relative z-10 w-full max-w-6xl px-4 md:mt-6">
-          <div className="liquid-glass p-5 md:p-12 lg:p-16 flex flex-col border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+          <div className="fluted-glass rounded-[32px] p-5 md:p-12 lg:p-16 flex flex-col border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
             
-            {/* Tabs - LoopNet style but Liquid Glass */}
-            <div className="flex items-center gap-6 md:gap-10 overflow-x-auto w-full border-b border-white/10 pb-0">
-              <button className="text-white font-bold text-sm md:text-base border-b-4 border-[#a1ebd6] pb-3 whitespace-nowrap drop-shadow-sm">Rent Space</button>
-              <button className="text-gray-400 font-semibold text-sm md:text-base border-b-4 border-transparent hover:border-white/30 hover:text-white pb-3 whitespace-nowrap transition-all">Post Space</button>
-              <button className="text-gray-400 font-semibold text-sm md:text-base border-b-4 border-transparent hover:border-white/30 hover:text-white pb-3 whitespace-nowrap transition-all">Enterprise Solutions</button>
+            {/* Tabs - Match uploaded image style */}
+            <div className="flex items-center gap-6 md:gap-8 w-fit border border-white/20 bg-black/20 backdrop-blur-md rounded-full px-8 py-3 mb-6 shadow-inner">
+              <div className="flex flex-col items-center gap-1 cursor-pointer">
+                <span className="text-white font-bold text-sm md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
+                <div className="w-full h-[3px] bg-[#a1ebd6] rounded-full shadow-[0_0_8px_rgba(161,235,214,0.6)] mt-[2px]"></div>
+              </div>
+              <button className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Post Space</button>
+              <button className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Enterprise Solutions</button>
             </div>
 
             {/* Property Types - Minimalist Icons */}

@@ -25,6 +25,21 @@ export async function POST(req: Request) {
       return new NextResponse("Missing socketId or channel", { status: 400 });
     }
 
+    if (channel.startsWith("presence-chat-")) {
+      const channelIds = channel.replace("presence-chat-", "").split("-");
+      if (!channelIds.includes(user.id)) {
+        return new NextResponse("Forbidden: You are not a participant in this channel", { status: 403 });
+      }
+
+      const partnerId = channelIds.find((id) => id !== user.id);
+      if (partnerId) {
+        const partner = await prisma.user.findUnique({ where: { id: partnerId } });
+        if (!partner) {
+          return new NextResponse("Forbidden: Partner not found", { status: 403 });
+        }
+      }
+    }
+
     const presenceData = {
       user_id: user.id,
       user_info: {

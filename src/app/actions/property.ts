@@ -2,9 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { inngest } from "@/lib/inngest/client";
+import { auth } from "@clerk/nextjs/server";
 
 export type PropertyData = {
-  ownerId: string;
+  // ownerId is removed from input to prevent IDOR
   title: string;
   description: string;
   propertyType: "WAREHOUSE" | "FLEX" | "OFFICE";
@@ -25,10 +26,16 @@ export type PropertyData = {
 
 export async function createPropertyListing(data: PropertyData) {
   try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
+    if (!user) throw new Error("User not found");
+
     // 1. Insert property using Prisma ORM (no embeddings generated here)
     const newProperty = await prisma.property.create({
       data: {
-        ownerId: data.ownerId,
+        ownerId: user.id,
         title: data.title,
         description: data.description,
         propertyType: data.propertyType,

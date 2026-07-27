@@ -30,7 +30,6 @@ Engineered with a focus on modern **Liquid Glass UI**, enterprise-grade scalabil
 
 - **Global Payment Infrastructure**
   - Integrated **Stripe Connect** for multi-currency, cross-border international transactions.
-  - Integrated **Razorpay** SDK with automated Webhook listeners to handle localized Indian payment methods (UPI, RuPay, Netbanking).
 
 - **Geospatial & Predictive Global Search**
   - Engineered a custom, debounced predictive autocomplete service interacting directly with the **Google Maps Places API**.
@@ -52,7 +51,7 @@ Engineered with a focus on modern **Liquid Glass UI**, enterprise-grade scalabil
 | **Backend API** | Next.js Route Handlers, Python (FastAPI, Pandas, Scikit-Learn) |
 | **Database & ORM** | PostgreSQL (Neon), Prisma ORM |
 | **Authentication** | Clerk Auth (B2B OAuth & JWT) |
-| **Payments** | Stripe Connect, Razorpay |
+| **Payments** | Stripe Connect |
 | **Mobile Native** | Ionic Capacitor (iOS/Android) |
 | **DevOps & CI/CD** | GitHub Actions, Vercel |
 
@@ -68,7 +67,7 @@ Engineered with a focus on modern **Liquid Glass UI**, enterprise-grade scalabil
 
 ### 3. Payment State Machine
 - Transactions trigger a `PENDING` state in the database.
-- Asynchronous webhook endpoints (for both Stripe and Razorpay) listen for cryptographically verified success payloads to update the lease state to `ACTIVE`, ensuring zero data loss during network interruptions.
+- Asynchronous webhook endpoints (for Stripe) listen for cryptographically verified success payloads to update the lease state to `ACTIVE`, ensuring zero data loss during network interruptions.
 
 ## 💻 Local Development Setup
 
@@ -98,10 +97,6 @@ To run Occupyo locally on your machine:
    # Payments
    STRIPE_SECRET_KEY="..."
    STRIPE_WEBHOOK_SECRET="..."
-   RAZORPAY_KEY_ID="..."
-   RAZORPAY_KEY_SECRET="..."
-   RAZORPAY_WEBHOOK_SECRET="..."
-   
    # Maps
    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="..."
    ```

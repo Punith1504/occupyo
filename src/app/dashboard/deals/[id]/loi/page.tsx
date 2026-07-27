@@ -1,19 +1,34 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { FileSignature, CheckCircle2 } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function DigitalLOIPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
+  const { userId } = await auth();
+
+  if (!userId) {
+    return notFound();
+  }
+
   const deal = await prisma.deal.findUnique({
     where: { id },
     include: {
-      property: true,
+      property: { include: { owner: true } },
       tenant: true,
       broker: true,
     }
   });
 
   if (!deal) return notFound();
+
+  if (
+    deal.tenant.clerkUserId !== userId &&
+    deal.property.owner.clerkUserId !== userId &&
+    deal.broker?.clerkUserId !== userId
+  ) {
+    return notFound();
+  }
 
   return (
     <div className="min-h-screen bg-[#060608] glass-desk py-20 px-4 font-sans relative">
