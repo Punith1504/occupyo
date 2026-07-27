@@ -155,7 +155,7 @@ export async function autocompleteSearch(query: string) {
 async function ingestExternalPropertiesFallback(query: string) {
   // Real live web scraping fallback using Cheerio and DuckDuckGo HTML
   try {
-    const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query + " commercial real estate for lease loopnet crexi")}`;
+    const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query + " commercial real estate for lease loopnet crexi facebook marketplace")}`;
     const res = await fetch(searchUrl, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
