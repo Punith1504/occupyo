@@ -132,7 +132,7 @@ export default function AiSearchBar() {
       {/* Search Bar - Liquid Glass */}
       <form 
         onSubmit={(e) => handleSearch(e)}
-        className="relative z-50 group flex flex-col md:flex-row items-center bg-white/20 backdrop-blur-xl border border-white/40 dark:bg-black/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:bg-white/30 focus-within:ring-2 focus-within:ring-[#a1ebd6]/50 focus-within:bg-white/30"
+        className="relative z-50 group flex flex-col md:flex-row items-center bg-white/20 backdrop-blur-xl border border-white/40 dark:bg-black/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:bg-white/30 focus-within:bg-white/30"
       >
         <div className="flex items-center w-full relative">
           <div className="pl-3 md:pl-5 pr-2 md:pr-3 text-white dark:text-gray-300">
@@ -153,7 +153,7 @@ export default function AiSearchBar() {
               if (query.length >= 2) setShowDropdown(true);
             }}
             placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn')"
-            className="flex-1 bg-transparent border-none outline-none text-white dark:text-white placeholder-gray-200 dark:placeholder-gray-300 py-3 px-2 text-base md:text-lg w-full drop-shadow-sm font-medium"
+            className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-white dark:text-white placeholder-gray-200 dark:placeholder-gray-300 py-3 px-2 text-base md:text-lg w-full drop-shadow-sm font-medium"
           />
           <input 
             type="file" 

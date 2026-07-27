@@ -160,7 +160,7 @@ async function ingestExternalPropertiesFallback(query: string) {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
       },
-      signal: AbortSignal.timeout(8000)
+      signal: AbortSignal.timeout(4000)
     });
     
     if (!res.ok) throw new Error("Search engine blocked request");
