@@ -58,17 +58,17 @@ export default async function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none rounded-[32px]"></div>
             
             {/* Tabs - Match uploaded image style */}
-            <div className="flex items-center gap-6 md:gap-8 w-fit border border-white/20 bg-black/20 backdrop-blur-md rounded-full px-8 py-3 mb-6 shadow-inner relative z-10">
+            <div className="flex flex-wrap items-center gap-4 md:gap-8 w-fit border border-white/20 bg-black/40 backdrop-blur-md rounded-full px-6 py-3 md:px-8 mb-6 shadow-inner relative z-20">
               <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer">
                 <span className="text-white font-bold text-sm md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
                 <div className="w-full h-[3px] bg-[#a1ebd6] rounded-full shadow-[0_0_8px_rgba(161,235,214,0.6)] mt-[2px]"></div>
               </Link>
-              <Link href="/dashboard/owner" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Post Space</Link>
-              <Link href="/enterprise" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Enterprise Solutions</Link>
+              <Link href="/dashboard/owner" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-colors pb-[5px]">Post Space</Link>
+              <Link href="/enterprise" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-colors pb-[5px]">Enterprise Solutions</Link>
             </div>
 
             {/* Property Types - Minimalist Icons */}
-            <div className="flex items-center gap-6 md:gap-10 w-full mt-6 mb-6 overflow-x-auto pb-2 relative z-10">
+            <div className="flex items-center gap-6 md:gap-10 w-full mt-6 mb-8 overflow-x-auto pb-2 relative z-20">
               <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-2 cursor-pointer group">
                 <Building2 className="w-8 h-8 text-gray-300 group-hover:text-[#a1ebd6] transition-colors" strokeWidth={1.5} />
                 <span className="text-gray-300 text-xs font-semibold uppercase tracking-wider group-hover:text-[#a1ebd6] transition-colors drop-shadow-sm">Office</span>
@@ -88,7 +88,7 @@ export default async function Home() {
             </div>
 
             {/* AI Search Bar */}
-            <div className="w-full">
+            <div className="w-full relative z-30">
               <AiSearchBar />
             </div>
 
