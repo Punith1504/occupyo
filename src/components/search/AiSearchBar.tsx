@@ -34,14 +34,19 @@ export default function AiSearchBar() {
         setKeywordSuggestions([]);
         return;
       }
-      setIsSearching(true);
-      const res = await autocompleteSearch(query);
-      if (res.success) {
-        setSuggestions(res.properties);
-        setKeywordSuggestions(res.keywords);
-        setShowDropdown(true);
+      try {
+        setIsSearching(true);
+        const res = await autocompleteSearch(query);
+        if (res.success) {
+          setSuggestions(res.properties);
+          setKeywordSuggestions(res.keywords);
+          setShowDropdown(true);
+        }
+      } catch (err) {
+        console.error("Autocomplete fetch failed:", err);
+      } finally {
+        setIsSearching(false);
       }
-      setIsSearching(false);
     };
 
     const timeoutId = setTimeout(fetchAutocomplete, 300);
