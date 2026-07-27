@@ -53,11 +53,19 @@ export async function searchSimilarProperties(query: string, lat?: number, lng?:
     // 3. Perform Hybrid Search: Cosine Distance (<=>) + Spatial Bounds
     const properties: any[] = await prisma.$queryRaw`
       SELECT 
-        "id", "ownerId", "title", "description", "propertyType", "sizeSqft",
-        "pricePerHour", "pricePerDay", "pricePerMonth", "address", "lat", "lng", 
-        "amenities", "status", "createdAt", "isExternal", "sourceUrl",
-        1 - ("embedding" <=> ${embeddingString}::vector) as similarity
-      FROM "Property"
+        p."id", p."ownerId", p."title", p."description", p."propertyType", p."sizeSqft",
+        p."pricePerHour", p."pricePerDay", p."pricePerMonth", p."address", p."lat", p."lng", 
+        p."amenities", p."status", p."createdAt", p."isExternal", p."sourceUrl",
+        1 - (p."embedding" <=> ${embeddingString}::vector) as similarity,
+        COALESCE(
+          (
+            SELECT json_agg(json_build_object('url', i.url, 'isHero', i."isHero"))
+            FROM "Image" i
+            WHERE i."propertyId" = p.id
+          ), 
+          '[]'::json
+        ) as images
+      FROM "Property" p
       WHERE "status" = 'AVAILABLE'
         AND "embedding" IS NOT NULL
         ${spatialFilter}

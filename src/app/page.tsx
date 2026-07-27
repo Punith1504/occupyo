@@ -53,36 +53,38 @@ export default async function Home() {
 
         {/* The Central Pristine Glass Widget */}
         <div className="relative z-10 w-full max-w-6xl px-4 md:mt-6">
-          <div className="fluted-glass rounded-[32px] p-5 md:p-12 lg:p-16 flex flex-col border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+          <div className="bg-black/40 backdrop-blur-2xl rounded-[32px] p-5 md:p-12 lg:p-16 flex flex-col border border-white/20 shadow-[0_8px_32px_0_rgba(255,255,255,0.1)] relative overflow-hidden">
+            {/* Subtle inner highlight for true glass feel */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none rounded-[32px]"></div>
             
             {/* Tabs - Match uploaded image style */}
-            <div className="flex items-center gap-6 md:gap-8 w-fit border border-white/20 bg-black/20 backdrop-blur-md rounded-full px-8 py-3 mb-6 shadow-inner">
-              <div className="flex flex-col items-center gap-1 cursor-pointer">
+            <div className="flex items-center gap-6 md:gap-8 w-fit border border-white/20 bg-black/20 backdrop-blur-md rounded-full px-8 py-3 mb-6 shadow-inner relative z-10">
+              <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer">
                 <span className="text-white font-bold text-sm md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
                 <div className="w-full h-[3px] bg-[#a1ebd6] rounded-full shadow-[0_0_8px_rgba(161,235,214,0.6)] mt-[2px]"></div>
-              </div>
-              <button className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Post Space</button>
-              <button className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Enterprise Solutions</button>
+              </Link>
+              <Link href="/dashboard/owner" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Post Space</Link>
+              <Link href="/enterprise" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-all pb-[5px]">Enterprise Solutions</Link>
             </div>
 
             {/* Property Types - Minimalist Icons */}
-            <div className="flex items-center gap-6 md:gap-10 w-full mt-6 mb-6 overflow-x-auto pb-2">
-              <div className="flex flex-col items-center gap-2 cursor-pointer group">
+            <div className="flex items-center gap-6 md:gap-10 w-full mt-6 mb-6 overflow-x-auto pb-2 relative z-10">
+              <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-2 cursor-pointer group">
                 <Building2 className="w-8 h-8 text-gray-300 group-hover:text-[#a1ebd6] transition-colors" strokeWidth={1.5} />
                 <span className="text-gray-300 text-xs font-semibold uppercase tracking-wider group-hover:text-[#a1ebd6] transition-colors drop-shadow-sm">Office</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 cursor-pointer group">
+              </Link>
+              <Link href="/search?type=RETAIL" className="flex flex-col items-center gap-2 cursor-pointer group">
                 <Store className="w-8 h-8 text-gray-300 group-hover:text-[#a1ebd6] transition-colors" strokeWidth={1.5} />
                 <span className="text-gray-300 text-xs font-semibold uppercase tracking-wider group-hover:text-[#a1ebd6] transition-colors drop-shadow-sm">Retail</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 cursor-pointer group">
+              </Link>
+              <Link href="/search?type=INDUSTRIAL" className="flex flex-col items-center gap-2 cursor-pointer group">
                 <Factory className="w-8 h-8 text-gray-300 group-hover:text-[#a1ebd6] transition-colors" strokeWidth={1.5} />
                 <span className="text-gray-300 text-xs font-semibold uppercase tracking-wider group-hover:text-[#a1ebd6] transition-colors drop-shadow-sm">Industrial</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 cursor-pointer group">
+              </Link>
+              <Link href="/search?type=FLEX" className="flex flex-col items-center gap-2 cursor-pointer group">
                 <Briefcase className="w-8 h-8 text-gray-300 group-hover:text-[#a1ebd6] transition-colors" strokeWidth={1.5} />
                 <span className="text-gray-300 text-xs font-semibold uppercase tracking-wider group-hover:text-[#a1ebd6] transition-colors drop-shadow-sm">Flex</span>
-              </div>
+              </Link>
             </div>
 
             {/* AI Search Bar */}
