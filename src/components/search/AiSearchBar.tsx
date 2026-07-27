@@ -182,7 +182,7 @@ export default function AiSearchBar() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn')"
             style={{ boxShadow: 'none' }}
-            className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-white dark:text-white placeholder-gray-200 dark:placeholder-gray-300 py-3 px-2 text-base md:text-lg w-full drop-shadow-sm font-medium"
+            className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-white dark:text-white placeholder-gray-200 dark:placeholder-gray-300 py-3 px-2 text-sm md:text-lg w-full drop-shadow-sm font-medium"
           />
           <input 
             type="file" 
@@ -203,7 +203,7 @@ export default function AiSearchBar() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full md:w-auto mt-2 md:mt-0 ml-0 md:ml-2 bg-[#a1ebd6] hover:bg-[#b4e6ff] text-[#060608] rounded-xl md:rounded-full px-6 md:px-8 py-3 md:py-3.5 text-base md:text-lg font-extrabold transition-all shadow-[0_4px_15px_rgba(161,235,214,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
+          className="w-full md:w-auto mt-2 md:mt-0 ml-0 md:ml-2 bg-[#a1ebd6] hover:bg-[#b4e6ff] text-[#060608] rounded-xl md:rounded-full px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-lg font-extrabold transition-all shadow-[0_4px_15px_rgba(161,235,214,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
         >
           {isLoading ? <Loader2 className="animate-spin text-[#060608]" size={22} /> : "Discover"}
         </button>

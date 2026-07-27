@@ -43,10 +43,10 @@ export default async function Home() {
         <HeroCarousel />
 
         <div className="relative z-10 text-center px-4 w-full mb-8 md:mb-12 mt-12 md:mt-0">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-3 md:mb-4 drop-shadow-lg tracking-tight leading-tight">
+          <h1 className="text-3xl md:text-6xl lg:text-7xl font-extrabold text-white mb-3 md:mb-4 drop-shadow-lg tracking-tight leading-tight">
             The Intelligent CRE Marketplace
           </h1>
-          <p className="text-white/90 text-lg md:text-2xl font-medium drop-shadow-md max-w-3xl mx-auto">
+          <p className="text-white/90 text-sm md:text-2xl font-medium drop-shadow-md max-w-3xl mx-auto">
             Discover the perfect space for your business.
           </p>
         </div>
@@ -60,11 +60,11 @@ export default async function Home() {
             {/* Tabs - Match uploaded image style */}
             <div className="flex flex-wrap items-center gap-4 md:gap-8 w-fit border border-white/20 bg-black/40 backdrop-blur-md rounded-full px-6 py-3 md:px-8 mb-6 shadow-inner relative z-20">
               <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer">
-                <span className="text-white font-bold text-sm md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
+                <span className="text-white font-bold text-xs md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
                 <div className="w-full h-[3px] bg-[#a1ebd6] rounded-full shadow-[0_0_8px_rgba(161,235,214,0.6)] mt-[2px]"></div>
               </Link>
-              <Link href="/dashboard/owner" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-colors pb-[5px]">Post Space</Link>
-              <Link href="/enterprise" className="text-gray-300 font-medium text-sm md:text-base whitespace-nowrap hover:text-white transition-colors pb-[5px]">Enterprise Solutions</Link>
+              <Link href="/dashboard/owner" className="text-gray-300 font-medium text-xs md:text-base whitespace-nowrap hover:text-white transition-colors pb-[5px]">Post Space</Link>
+              <Link href="/enterprise" className="text-gray-300 font-medium text-xs md:text-base whitespace-nowrap hover:text-white transition-colors pb-[5px]">Enterprise Solutions</Link>
             </div>
 
             {/* Property Types - Minimalist Icons */}
@@ -100,7 +100,7 @@ export default async function Home() {
       <div className="w-full py-24 px-4 sm:px-6 lg:px-12 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-16">
-            <h2 className="text-4xl font-extrabold text-white tracking-tight drop-shadow-md">Featured Spaces</h2>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-md">Featured Spaces</h2>
             <Link href="/search" className="text-[#a1ebd6] font-semibold hover:text-white flex items-center gap-1 transition-colors text-lg">
               View All <span aria-hidden="true">&rarr;</span>
             </Link>
