@@ -43,19 +43,19 @@ export default async function Home() {
         <HeroCarousel />
 
         <div className="relative z-10 text-center px-4 w-full mb-12 md:mb-16 mt-16 md:mt-8 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-sm font-semibold mb-6 shadow-sm">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-sm font-semibold mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400"></span>
             </span>
             Next Generation Commercial Real Estate
           </div>
           
-          <h1 className="text-4xl md:text-6xl lg:text-8xl font-extrabold mb-6 tracking-tight leading-[1.1] drop-shadow-sm text-gray-900">
-            The <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-600 via-emerald-500 to-cyan-600">Intelligent</span><br className="hidden md:block"/> CRE Marketplace
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-extrabold mb-6 tracking-tight leading-[1.1] text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
+            The <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]">Intelligent</span><br className="hidden md:block"/> CRE Marketplace
           </h1>
           
-          <p className="text-gray-600 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-100 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
             Discover the perfect space for your business with AI-powered matching and premium flex occupancy.
           </p>
         </div>
