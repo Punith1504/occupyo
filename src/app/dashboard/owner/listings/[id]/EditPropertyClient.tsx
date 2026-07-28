@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { CldUploadWidget } from 'next-cloudinary';
 import { useRouter } from "next/navigation";
 import { Camera, MapPin, FileText, Building2, CheckCircle2, Loader2, UploadCloud, PlusCircle, X, Navigation, Star, ChevronLeft, ChevronRight, GripVertical, Image as ImageIcon } from "lucide-react";
 
@@ -93,36 +94,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const files = Array.from(e.target.files);
-    
-    if (imageUrls.length + files.length > MAX_IMAGES) {
-      hapticError();
-      alert(`Maximum ${MAX_IMAGES} media files allowed.`);
-      return;
-    }
-
-    const readers = files.map(file => {
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(readers)
-      .then(base64Strings => {
-        hapticSuccess();
-        const newUrls = [...imageUrls, ...base64Strings];
-        setImageUrls(newUrls);
-        autoSaveImages(newUrls);
-      })
-      .catch(err => {
-        console.error("Error reading files:", err);
-        hapticError();
-        alert("Failed to read one or more files.");
-      });
+    // This is no longer used since we use Cloudinary widget directly
   };
 
   const removeImage = (indexToRemove: number) => {
@@ -475,54 +447,53 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             </div>
             
             {/* Upload Dropzone */}
-              <div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef}
-                  multiple 
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileSelect}
-                />
-                <div 
-                  className="relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-[#b4e6ff]/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (imageUrls.length >= MAX_IMAGES) {
-                      hapticError();
-                      alert(`Maximum ${MAX_IMAGES} media files allowed.`);
-                      return;
-                    }
-                    fileInputRef.current?.click();
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#b4e6ff]/0 via-[#b4e6ff]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
-                  
-                  <div className="relative z-10 flex flex-col items-center">
-                    <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-white/10 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                      <UploadCloud className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
-                    </div>
+              <CldUploadWidget 
+                signatureEndpoint="/api/sign-cloudinary"
+                onSuccess={(result: any) => {
+                  hapticSuccess();
+                  const newUrls = [...imageUrls, result.info.secure_url];
+                  setImageUrls(newUrls);
+                  autoSaveImages(newUrls);
+                }}
+                options={{
+                  maxFiles: MAX_IMAGES - imageUrls.length,
+                  multiple: true,
+                  maxFileSize: 15000000, // 15MB
+                  clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
+                  allowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
+                  resourceType: 'image'
+                }}
+              >
+                {({ open }) => (
+                  <div 
+                    className="relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-[#b4e6ff]/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (imageUrls.length >= MAX_IMAGES) {
+                        hapticError();
+                        alert(`Maximum ${MAX_IMAGES} media files allowed.`);
+                        return;
+                      }
+                      open();
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#b4e6ff]/0 via-[#b4e6ff]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
                     
-                    <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors duration-300">
-                      Select Property Media
-                    </h4>
-                    <p className="text-sm text-white/50 mb-8 max-w-sm leading-relaxed">
-                      Click to choose high-resolution photos directly from your device.
-                    </p>
-                    
-                    <div className="relative group/btn">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#b4e6ff] to-[#cbb4ff] rounded-full blur opacity-30 group-hover/btn:opacity-70 transition duration-500"></div>
-                      <button 
-                        className="relative flex items-center gap-2 bg-[#0f172a] text-white px-6 py-3 rounded-full text-sm font-medium border border-white/10 group-hover/btn:border-white/20 transition-all duration-300 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] active:scale-95"
-                        onPointerDown={hapticTap}
-                        type="button"
-                      >
-                        <UploadCloud className="w-4 h-4 text-[#b4e6ff]" /> Browse Files
-                      </button>
+                    <div className="relative z-10 flex flex-col items-center">
+                      <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-white/10 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+                        <UploadCloud className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
+                      </div>
+                      
+                      <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors">
+                        Click to Upload securely
+                      </h4>
+                      <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-4">
+                        Supported formats: JPG, PNG, WEBP (Max 10MB per file)
+                      </p>
                     </div>
                   </div>
-                </div>
-              </div>
+                )}
+              </CldUploadWidget>
             
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
