@@ -30,7 +30,20 @@ export function HeroCarousel() {
           }}
         />
       ))}
-      <div className="absolute inset-0 bg-white/60 z-[1] pointer-events-none" />
+      {/* Gradient Overlay for contrast */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#FAFAF7]/95 via-[#FAFAF7]/70 to-[#FAFAF7] z-[1] pointer-events-none" />
+      
+      {/* Vibrant Colorful Glowing Orbs */}
+      <div className="absolute inset-0 overflow-hidden z-[2] pointer-events-none opacity-[0.85]">
+        {/* Top Left Teal/Emerald Orb */}
+        <div className="absolute -top-[20%] -left-[10%] w-[700px] h-[700px] bg-gradient-to-tr from-teal-400/40 to-emerald-300/40 rounded-full blur-[120px] mix-blend-multiply" />
+        
+        {/* Middle Right Cyan/Blue Orb */}
+        <div className="absolute top-[10%] -right-[10%] w-[800px] h-[800px] bg-gradient-to-bl from-cyan-400/30 to-blue-300/30 rounded-full blur-[130px] mix-blend-multiply" />
+        
+        {/* Bottom Center Mint Orb */}
+        <div className="absolute -bottom-[30%] left-[20%] w-[900px] h-[600px] bg-gradient-to-r from-emerald-300/30 to-teal-200/30 rounded-full blur-[140px] mix-blend-multiply" />
+      </div>
     </>
   );
 }

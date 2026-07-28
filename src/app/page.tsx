@@ -42,12 +42,21 @@ export default async function Home() {
       <div className="relative w-full h-[85vh] min-h-[600px] md:min-h-[750px] flex flex-col items-center justify-center overflow-hidden py-12 md:py-16">
         <HeroCarousel />
 
-        <div className="relative z-10 text-center px-4 w-full mb-12 md:mb-16 mt-16 md:mt-8">
-          <h1 className="text-3xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-4 md:mb-6 drop-shadow-sm tracking-tight leading-tight">
-            The Intelligent CRE Marketplace
+        <div className="relative z-10 text-center px-4 w-full mb-12 md:mb-16 mt-16 md:mt-8 flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-sm font-semibold mb-6 shadow-sm">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
+            </span>
+            Next Generation Commercial Real Estate
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-extrabold mb-6 tracking-tight leading-[1.1] drop-shadow-sm text-gray-900">
+            The <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-600 via-emerald-500 to-cyan-600">Intelligent</span><br className="hidden md:block"/> CRE Marketplace
           </h1>
-          <p className="text-gray-700 text-sm md:text-2xl font-medium drop-shadow-sm max-w-3xl mx-auto">
-            Discover the perfect space for your business.
+          
+          <p className="text-gray-600 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
+            Discover the perfect space for your business with AI-powered matching and premium flex occupancy.
           </p>
         </div>
 
