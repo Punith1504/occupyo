@@ -85,6 +85,9 @@ const HQ_PROPERTIES = [
 ];
 
 export async function GET() {
+  if (process.env.NODE_ENV === 'production') {
+    return new NextResponse(null, { status: 404 });
+  }
   try {
     let owner = await prisma.user.findFirst({ where: { email: 'admin@occupyo.com' } });
     if (!owner) {

@@ -9,14 +9,25 @@ export async function createDeal(propertyId: string, tenantId: string, brokerId?
   try {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
-    
-    // Only the tenant or broker can create a deal for the tenant. But let's check basic auth for now.
+    const caller = await prisma.user.findUnique({ where: { clerkUserId: userId } });
+    if (!caller) throw new Error("User not found");
+
+    let finalTenantId = caller.id;
+    let finalBrokerId = null;
+
+    if (brokerId) {
+      if (caller.role !== "BROKER") {
+        throw new Error("Only brokers can create deals on behalf of tenants");
+      }
+      finalBrokerId = caller.id;
+      finalTenantId = tenantId;
+    }
     
     const deal = await prisma.deal.create({
       data: {
         propertyId,
-        tenantId,
-        brokerId,
+        tenantId: finalTenantId,
+        brokerId: finalBrokerId,
         status: DealStatus.INQUIRY,
       }
     });

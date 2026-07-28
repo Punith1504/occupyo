@@ -23,21 +23,21 @@ export async function createPropertyAction(data: {
   amenities: string[];
   imageUrls?: string[];
 }) {
-  const { userId } = await auth();
-
-  if (!userId) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId }
-  });
-
-  if (!user || (user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN") {
-    return { success: false, error: "Unauthorized. Must be an owner." };
-  }
-
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkUserId: userId }
+    });
+
+    if (!user || (user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN") {
+      return { success: false, error: "Unauthorized. Must be an owner." };
+    }
+
     const property = await prisma.property.create({
       data: {
         ownerId: user.id,
@@ -102,21 +102,21 @@ export async function updatePropertyAction(
     imageUrls?: string[];
   }
 ) {
-  const { userId } = await auth();
-
-  if (!userId) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-  });
-
-  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
-    return { success: false, error: "Unauthorized. Must be an owner." };
-  }
-
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+
+    if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
+      return { success: false, error: "Unauthorized. Must be an owner." };
+    }
+
     const existingProperty = await prisma.property.findUnique({
       where: { id: propertyId },
     });
@@ -173,21 +173,21 @@ export async function updatePropertyAction(
 }
 
 export async function updatePropertyImagesAction(propertyId: string, imageUrls: string[]) {
-  const { userId } = await auth();
-
-  if (!userId) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-  });
-
-  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
-    return { success: false, error: "Unauthorized. Must be an owner." };
-  }
-
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+
+    if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
+      return { success: false, error: "Unauthorized. Must be an owner." };
+    }
+
     const existingProperty = await prisma.property.findUnique({
       where: { id: propertyId },
     });

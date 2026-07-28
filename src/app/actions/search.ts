@@ -23,6 +23,10 @@ const ratelimit = redis ? new Ratelimit({
   limiter: Ratelimit.slidingWindow(10, "1 m"), // 10 requests per minute
 }) : null;
 
+if (process.env.NODE_ENV === 'production' && !ratelimit) {
+  console.warn("[WARN] UPSTASH_REDIS_REST_URL is missing. Rate limiting is disabled in PRODUCTION.");
+}
+
 export async function searchSimilarProperties(query: string, lat?: number, lng?: number, radiusMiles: number = 10) {
   try {
     if (ratelimit) {
@@ -86,35 +90,39 @@ export async function searchSimilarProperties(query: string, lat?: number, lng?:
     return { success: true, properties, fallbackTriggered: false };
   } catch (error: any) {
     if (error?.error?.code === 'insufficient_quota' || error?.code === 'insufficient_quota' || error?.message?.includes('quota')) {
-      console.warn("OpenAI Quota Exceeded. Returning mock fallback results to preview UI.");
-      return { 
-        success: true, 
-        fallbackTriggered: true,
-        properties: [
-          {
-            id: 'mock-1',
-            title: "Creative Film Studio with Soundproofing",
-            description: "Spacious studio perfect for film production, equipped with green screens and soundproofing. Matches: " + query,
-            propertyType: "FLEX",
-            sizeSqft: 2500,
-            pricePerMonth: 2800,
-            address: "Seattle, WA",
-            isExternal: true,
-            similarity: 0.99,
-          },
-          {
-            id: 'mock-2',
-            title: "Industrial Flex Space for Shoots",
-            description: "High ceilings and industrial vibe. Great for sets and large productions.",
-            propertyType: "WAREHOUSE",
-            sizeSqft: 3200,
-            pricePerMonth: 2950,
-            address: "Seattle, WA",
-            isExternal: true,
-            similarity: 0.96,
-          }
-        ] 
-      };
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn("OpenAI Quota Exceeded. Returning mock fallback results to preview UI.");
+        return { 
+          success: true, 
+          fallbackTriggered: true,
+          properties: [
+            {
+              id: 'mock-1',
+              title: "Creative Film Studio with Soundproofing",
+              description: "Spacious studio perfect for film production, equipped with green screens and soundproofing. Matches: " + query,
+              propertyType: "FLEX",
+              sizeSqft: 2500,
+              pricePerMonth: 2800,
+              address: "Seattle, WA",
+              isExternal: true,
+              similarity: 0.99,
+            },
+            {
+              id: 'mock-2',
+              title: "Industrial Flex Space for Shoots",
+              description: "High ceilings and industrial vibe. Great for sets and large productions.",
+              propertyType: "WAREHOUSE",
+              sizeSqft: 3200,
+              pricePerMonth: 2950,
+              address: "Seattle, WA",
+              isExternal: true,
+              similarity: 0.96,
+            }
+          ] 
+        };
+      } else {
+        return { success: false, error: "Search is temporarily unavailable" };
+      }
     }
     console.error("Semantic search failed:", error);
     return { success: false, error: "Internal server error" };
@@ -186,8 +194,6 @@ async function ingestExternalPropertiesFallback(query: string) {
           title: title.replace(/\|.*/, "").trim(),
           description: snippet,
           propertyType: title.toLowerCase().includes("warehouse") ? "WAREHOUSE" : title.toLowerCase().includes("retail") ? "RETAIL" : "OFFICE",
-          sizeSqft: 2000 + Math.floor(Math.random() * 5000),
-          pricePerMonth: 3000 + Math.floor(Math.random() * 10000),
           address: "Web Listing",
           isExternal: true,
           sourceUrl: url,
@@ -200,20 +206,21 @@ async function ingestExternalPropertiesFallback(query: string) {
   } catch (err) {
     console.error("Live Web Scraping Fallback failed:", err);
     // Ultimate failsafe mock
-    return [
-      {
-        id: 'mock-1',
-        title: "Web Listing Match",
-        description: `External listing found matching: ${query}. Click to search LoopNet.`,
-        propertyType: "FLEX",
-        sizeSqft: 2500,
-        pricePerMonth: 3500,
-        address: "External Listing",
-        isExternal: true,
-        sourceUrl: `https://www.loopnet.com/search/commercial-real-estate/for-lease/?sk=${encodeURIComponent(query)}`,
-        similarity: 0.90,
-      }
-    ];
+    if (process.env.NODE_ENV !== 'production') {
+      return [
+        {
+          id: 'mock-1',
+          title: "Web Listing Match",
+          description: `External listing found matching: ${query}. Click to search LoopNet.`,
+          propertyType: "FLEX",
+          address: "External Listing",
+          isExternal: true,
+          sourceUrl: `https://www.loopnet.com/search/commercial-real-estate/for-lease/?sk=${encodeURIComponent(query)}`,
+          similarity: 0.90,
+        }
+      ];
+    }
+    return [];
   }
 }
 

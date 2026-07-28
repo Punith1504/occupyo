@@ -13,6 +13,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/vision-search',
 
   '/api/webhooks/clerk',
+  '/api/webhooks/stripe',
 ])
 
 export default clerkMiddleware(async (auth, request) => {
