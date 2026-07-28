@@ -89,9 +89,9 @@ export async function searchSimilarProperties(query: string, lat?: number, lng?:
 
     return { success: true, properties, fallbackTriggered: false };
   } catch (error: any) {
-    if (error?.error?.code === 'insufficient_quota' || error?.code === 'insufficient_quota' || error?.message?.includes('quota')) {
+    if (error?.error?.code === 'insufficient_quota' || error?.code === 'insufficient_quota' || error?.message?.includes('quota') || error?.status === 401 || error?.message?.includes('API key')) {
       if (process.env.NODE_ENV !== 'production') {
-        console.warn("OpenAI Quota Exceeded. Returning mock fallback results to preview UI.");
+        console.warn("OpenAI API unavailable (quota or missing key). Returning mock fallback results to preview UI.");
         return { 
           success: true, 
           fallbackTriggered: true,

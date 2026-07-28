@@ -133,17 +133,11 @@ export default function AiSearchBar() {
         }
         
         .pac-item {
-          border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
           padding: 12px 16px !important;
           cursor: pointer !important;
           color: rgba(0, 0, 0, 0.8) !important;
           transition: background-color 0.2s;
-        }
-        
-        .dark .pac-item, @media (prefers-color-scheme: dark) {
-          .pac-item {
-            color: rgba(255, 255, 255, 0.9) !important;
-          }
         }
 
         .pac-item:hover, .pac-item-selected {
@@ -166,13 +160,13 @@ export default function AiSearchBar() {
         }
       `}} />
 
-      {/* Search Bar - Liquid Glass */}
+      {/* Search Bar - High Contrast Pastel Glass */}
       <form 
         onSubmit={handleSearch}
-        className="relative group flex flex-col md:flex-row items-center bg-white/20 backdrop-blur-xl border border-white/40 dark:bg-black/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:bg-white/30 focus-within:bg-white/30"
+        className="relative group flex flex-col md:flex-row items-center bg-white/80 backdrop-blur-2xl border border-white/60 rounded-2xl md:rounded-full p-2 md:p-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.1)] hover:bg-white focus-within:bg-white focus-within:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-black/5"
       >
         <div className="flex items-center w-full">
-          <div className="pl-3 md:pl-5 pr-2 md:pr-3 text-white dark:text-gray-300">
+          <div className="pl-3 md:pl-5 pr-2 md:pr-3 text-teal-600">
             <Search size={22} className="w-5 h-5 md:w-6 md:h-6" />
           </div>
           <input
@@ -182,7 +176,7 @@ export default function AiSearchBar() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn')"
             style={{ boxShadow: 'none' }}
-            className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-white dark:text-white placeholder-gray-200 dark:placeholder-gray-300 py-3 px-2 text-sm md:text-lg w-full drop-shadow-sm font-medium"
+            className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-gray-900 placeholder-gray-400 py-3 px-2 text-sm md:text-lg w-full font-medium"
           />
           <input 
             type="file" 
@@ -194,26 +188,26 @@ export default function AiSearchBar() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 md:p-3 text-white/80 hover:text-white transition-colors drop-shadow-sm"
+            className="p-2 md:p-3 text-teal-600 hover:text-teal-800 transition-colors bg-teal-50 hover:bg-teal-100 rounded-full mr-2"
             title="Search by Image"
           >
-            <ImageIcon size={26} className="w-5 h-5 md:w-6 md:h-6" />
+            <ImageIcon size={20} className="w-5 h-5 md:w-5 md:h-5" />
           </button>
         </div>
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full md:w-auto mt-2 md:mt-0 ml-0 md:ml-2 bg-[#a1ebd6] hover:bg-[#b4e6ff] text-[#060608] rounded-xl md:rounded-full px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-lg font-extrabold transition-all shadow-[0_4px_15px_rgba(161,235,214,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
+          className="w-full md:w-auto mt-2 md:mt-0 ml-0 md:ml-2 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl md:rounded-full px-6 md:px-10 py-3 md:py-3.5 text-sm md:text-lg font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
         >
-          {isLoading ? <Loader2 className="animate-spin text-[#060608]" size={22} /> : "Discover"}
+          {isLoading ? <Loader2 className="animate-spin text-white" size={22} /> : "Discover"}
         </button>
       </form>
 
       {/* Loading Indicator */}
       {isLoading && (
         <div className="flex flex-col items-center justify-center py-10 space-y-4 animate-pulse">
-          <div className="w-12 h-12 rounded-full border-4 border-indigo-500/30 border-t-indigo-500 animate-spin"></div>
-          <p className="text-gray-600 dark:text-gray-300 font-medium">Scraping web & computing semantic matches...</p>
+          <div className="w-12 h-12 rounded-full border-4 border-teal-500/30 border-t-teal-500 animate-spin"></div>
+          <p className="text-gray-600 font-medium">Scraping web & computing semantic matches...</p>
         </div>
       )}
 

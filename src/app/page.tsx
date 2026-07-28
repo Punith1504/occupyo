@@ -62,9 +62,9 @@ export default async function Home() {
 
         {/* The Central Pristine Glass Widget */}
         <div className="relative z-10 w-full max-w-6xl px-4 md:px-8 md:mt-8">
-          <div className="bg-white/70 backdrop-blur-3xl rounded-[32px] p-6 md:p-14 lg:p-20 flex flex-col border border-white shadow-xl relative overflow-hidden">
+          <div className="bg-white/60 backdrop-blur-3xl rounded-[32px] p-6 md:p-14 lg:p-20 flex flex-col border border-white shadow-2xl shadow-teal-900/5 relative overflow-hidden ring-1 ring-black/5">
             {/* Subtle inner highlight for true glass feel */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none rounded-[32px]"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none rounded-[32px]"></div>
             
             {/* Tabs - Match uploaded image style */}
             <div className="flex flex-wrap items-center gap-6 md:gap-10 w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-full px-8 py-4 md:px-10 mb-8 shadow-sm relative z-20">
@@ -79,20 +79,20 @@ export default async function Home() {
             {/* Property Types - Minimalist Icons */}
             <div className="flex items-center justify-start md:justify-start gap-8 md:gap-12 w-full mt-8 mb-10 overflow-x-auto pb-4 relative z-20">
               <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Building2 className="w-10 h-10 text-gray-400 group-hover:text-teal-500 transition-colors" strokeWidth={1.5} />
-                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Office</span>
+                <Building2 className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Office</span>
               </Link>
               <Link href="/search?type=RETAIL" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Store className="w-10 h-10 text-gray-400 group-hover:text-teal-500 transition-colors" strokeWidth={1.5} />
-                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Retail</span>
+                <Store className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Retail</span>
               </Link>
               <Link href="/search?type=INDUSTRIAL" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Factory className="w-10 h-10 text-gray-400 group-hover:text-teal-500 transition-colors" strokeWidth={1.5} />
-                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Industrial</span>
+                <Factory className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Industrial</span>
               </Link>
               <Link href="/search?type=FLEX" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Briefcase className="w-10 h-10 text-gray-400 group-hover:text-teal-500 transition-colors" strokeWidth={1.5} />
-                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Flex</span>
+                <Briefcase className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Flex</span>
               </Link>
             </div>
 
