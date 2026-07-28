@@ -89,22 +89,6 @@ export async function searchSimilarProperties(query: string, lat?: number, lng?:
 
     return { success: true, properties, fallbackTriggered: false };
   } catch (error: any) {
-    if (error?.error?.code === 'insufficient_quota' || error?.code === 'insufficient_quota' || error?.message?.includes('quota') || error?.status === 401 || error?.message?.includes('API key')) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn("OpenAI API unavailable (quota or missing key). Returning mock fallback results to preview UI.");
-        return { 
-          success: true, 
-          fallbackTriggered: true,
-          properties: [
-            {
-              id: 'mock-1',
-              title: "Creative Film Studio with Soundproofing",
-              description: "Spacious studio perfect for film production, equipped with green screens and soundproofing. Matches: " + query,
-              propertyType: "FLEX",
-              sizeSqft: 2500,
-              pricePerMonth: 2800,
-              address: "Seattle, WA",
-              isExternal: true,
               similarity: 0.99,
             },
             {
