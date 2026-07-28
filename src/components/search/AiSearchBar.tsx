@@ -70,9 +70,9 @@ export default function AiSearchBar() {
       } else if (!res.success) {
         setError(res.error || "Search couldn't be completed. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Search failed", err);
-      setError("An unexpected error occurred. Please try again.");
+      setError(err?.message || "An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

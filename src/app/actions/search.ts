@@ -166,7 +166,10 @@ async function ingestExternalPropertiesFallback(query: string) {
     const searchBody = new URLSearchParams({
       q: query + " commercial real estate for lease",
       kl: "us-en"
-    });
+    }).toString();
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
 
     const res = await fetch(searchUrl, {
       method: 'POST',
@@ -175,8 +178,10 @@ async function ingestExternalPropertiesFallback(query: string) {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      signal: AbortSignal.timeout(4000)
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (!res.ok) throw new Error("Search engine blocked request");
     
