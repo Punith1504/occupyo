@@ -89,27 +89,18 @@ export async function searchSimilarProperties(query: string, lat?: number, lng?:
 
     return { success: true, properties, fallbackTriggered: false };
   } catch (error: any) {
-              similarity: 0.99,
-            },
-            {
-              id: 'mock-2',
-              title: "Industrial Flex Space for Shoots",
-              description: "High ceilings and industrial vibe. Great for sets and large productions.",
-              propertyType: "WAREHOUSE",
-              sizeSqft: 3200,
-              pricePerMonth: 2950,
-              address: "Seattle, WA",
-              isExternal: true,
-              similarity: 0.96,
-            }
-          ] 
-        };
-      } else {
-        return { success: false, error: "Search is temporarily unavailable" };
-      }
+    console.error("Semantic search or database failed, engaging ultimate fallback:", error);
+    
+    // Instead of showing an error to the user, we will ALWAYS return the external web scraping fallback
+    // This ensures 24/7 100% uptime for the search bar, even if OpenAI is down, quota is exceeded,
+    // or the database connection drops.
+    try {
+      const fallbackProperties = await ingestExternalPropertiesFallback(query);
+      return { success: true, properties: fallbackProperties, fallbackTriggered: true };
+    } catch (fallbackError) {
+      console.error("Even the ultimate fallback threw an error (should never happen):", fallbackError);
+      return { success: false, error: "System is temporarily unavailable." };
     }
-    console.error("Semantic search failed:", error);
-    return { success: false, error: "Internal server error" };
   }
 }
 
