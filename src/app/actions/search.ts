@@ -87,7 +87,7 @@ export async function searchSimilarProperties(query: string, lat?: number, lng?:
       return { success: true, properties: fallbackProperties, fallbackTriggered: true };
     }
 
-    return { success: true, properties, fallbackTriggered: false };
+    return { success: true, properties: JSON.parse(JSON.stringify(properties)), fallbackTriggered: false };
   } catch (error: any) {
     console.error("Semantic search or database failed, engaging ultimate fallback:", error);
     
