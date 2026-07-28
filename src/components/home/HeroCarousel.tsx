@@ -30,7 +30,7 @@ export function HeroCarousel() {
           }}
         />
       ))}
-      <div className="absolute inset-0 bg-black/40 z-[1] pointer-events-none" />
+      <div className="absolute inset-0 bg-white/60 z-[1] pointer-events-none" />
     </>
   );
 }

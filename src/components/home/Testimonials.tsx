@@ -50,35 +50,35 @@ export function Testimonials() {
   };
 
   return (
-    <section className="py-24 bg-black border-t border-white/10 relative overflow-hidden">
+    <section className="py-24 bg-transparent border-t border-gray-200 relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-teal-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
-          <h2 className="text-4xl font-bold text-white mb-4 tracking-tight">Don't just take our word for it</h2>
-          <p className="text-xl text-white/50 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 tracking-tight">Don't just take our word for it</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Join hundreds of forward-thinking companies who have already found their perfect space.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial) => (
-            <div key={testimonial.id} className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors duration-300">
+            <div key={testimonial.id} className="bg-white border border-gray-200 p-8 rounded-[2rem] shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex gap-1 mb-6">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-cyan-400 text-cyan-400" />
+                  <Star key={i} className="w-5 h-5 fill-teal-400 text-teal-400" />
                 ))}
               </div>
-              <p className="text-white/80 text-lg leading-relaxed mb-8">
+              <p className="text-gray-700 text-lg leading-relaxed mb-8">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
           {/* eslint-disable-next-line react/no-unescaped-entities */}
                 "{testimonial.content}"
               </p>
               <div>
-                <p className="font-semibold text-white">{testimonial.author}</p>
-                <p className="text-white/50 text-sm">{testimonial.role}</p>
+                <p className="font-semibold text-gray-900">{testimonial.author}</p>
+                <p className="text-gray-500 text-sm">{testimonial.role}</p>
               </div>
             </div>
           ))}

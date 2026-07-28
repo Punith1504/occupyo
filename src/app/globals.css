@@ -2,44 +2,44 @@
 /* Google Fonts loaded via next/font in layout.tsx for zero render-blocking */
 
 :root {
-  /* ====== CINEMATIC DARK THEME ====== */
-  --background: #060608;
-  --foreground: #f4f4f5;
+  /* ====== CREAM-WHITE PASTEL THEME ====== */
+  --background: #FAFAF7; /* Soft cream white */
+  --foreground: #111827; /* Dark gray for maximum readability */
   
-  /* ====== iOS 26 LIQUID GLASS SYSTEM ====== */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-bg-heavy: rgba(255, 255, 255, 0.08);
-  --glass-bg-tinted: rgba(180, 230, 255, 0.04);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-highlight: rgba(255, 255, 255, 0.25);
-  --glass-border-active: rgba(180, 230, 255, 0.4);
-  --glass-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
-  --glass-shadow-deep: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+  /* ====== LIQUID GLASS SYSTEM (LIGHT MODE) ====== */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.85);
+  --glass-bg-tinted: rgba(180, 230, 255, 0.3);
+  --glass-border: rgba(255, 255, 255, 1);
+  --glass-border-highlight: rgba(180, 230, 255, 0.8);
+  --glass-border-active: rgba(180, 230, 255, 0.9);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  --glass-shadow-deep: 0 16px 48px -12px rgba(0, 0, 0, 0.1);
   --glass-blur: 40px;
-  --glass-saturation: 200%;
-  --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
-  --glass-specular-strong: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+  --glass-saturation: 150%;
+  --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+  --glass-specular-strong: inset 0 1px 0 0 rgba(255, 255, 255, 1), inset 0 -1px 0 0 rgba(0, 0, 0, 0.02);
   
   /* Pastel Accents */
-  --accent: #b4e6ff;
-  --accent-hover: #c8edff;
+  --accent: #7CB3D8;
+  --accent-hover: #5A9BC5;
   --pastel-pink: #fbc2eb;
-  --pastel-mint: #a1ebd6;
-  --pastel-purple: #cbb4ff;
+  --pastel-mint: #86d4bf;
+  --pastel-purple: #bba2f5;
   
-  --neon-glow: 0 0 15px rgba(180, 230, 255, 0.3), 0 0 30px rgba(180, 230, 255, 0.15);
-  --neon-glow-strong: 0 0 20px rgba(180, 230, 255, 0.4), 0 0 40px rgba(180, 230, 255, 0.2), 0 0 60px rgba(180, 230, 255, 0.1);
-  --destructive: #ff5b7b;
-  --success: #60ff8e;
-  --warning: #ffe45e;
-  --separator: rgba(255, 255, 255, 0.08);
-  --secondary-bg: rgba(255, 255, 255, 0.05);
-  --tertiary-label: rgba(255, 255, 255, 0.4);
+  --neon-glow: 0 0 15px rgba(124, 179, 216, 0.2);
+  --neon-glow-strong: 0 0 20px rgba(124, 179, 216, 0.3);
+  --destructive: #EF4444;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --separator: rgba(0, 0, 0, 0.06);
+  --secondary-bg: rgba(0, 0, 0, 0.03);
+  --tertiary-label: rgba(0, 0, 0, 0.4);
   
-  /* iOS 26 Depth Layers */
-  --depth-1: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --depth-2: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --depth-3: 0 16px 48px rgba(0, 0, 0, 0.5);
+  /* Depth Layers */
+  --depth-1: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --depth-2: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --depth-3: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
 @theme inline {
@@ -107,17 +107,16 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--glass-specular), var(--glass-shadow);
 }
 
-/* True iOS 26 Liquid Glass — multi-layer refraction effect */
 .liquid-glass {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.02) 40%,
-    rgba(180, 230, 255, 0.03) 60%,
-    rgba(255, 255, 255, 0.04) 100%
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0.9) 100%
   );
-  backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
-  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
+  backdrop-filter: blur(40px) saturate(150%) brightness(1.05);
+  -webkit-backdrop-filter: blur(40px) saturate(150%) brightness(1.05);
   border: 1px solid var(--glass-border);
   box-shadow:
     var(--glass-specular-strong),
@@ -157,19 +156,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .fluted-glass {
-  background-color: rgba(10, 10, 15, 0.45); /* Lower opacity so blur is visible, but dark enough for text */
+  background-color: rgba(255, 255, 255, 0.6); 
   background-image: repeating-linear-gradient(
     to right,
-    rgba(255, 255, 255, 0.15) 0px,
-    rgba(255, 255, 255, 0.03) 4px,
-    rgba(0, 0, 0, 0.2) 12px,
-    rgba(255, 255, 255, 0.03) 20px,
-    rgba(255, 255, 255, 0.15) 24px
+    rgba(255, 255, 255, 0.8) 0px,
+    rgba(255, 255, 255, 0.4) 4px,
+    rgba(0, 0, 0, 0.03) 12px,
+    rgba(255, 255, 255, 0.4) 20px,
+    rgba(255, 255, 255, 0.8) 24px
   );
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
   border: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.2), var(--glass-shadow-deep);
+  box-shadow: inset 0 1px 0 0 rgba(255,255,255,1), var(--glass-shadow-deep);
   border-radius: 32px !important;
   position: relative;
   overflow: hidden;
@@ -549,14 +548,14 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Form inputs always use white text in this dark theme */
+/* Form inputs always use dark text in this light theme */
 input, select, textarea {
-  color: #fff !important;
+  color: #1a1a1a !important;
 }
 
 select option {
-  background: #1c1c1e; /* Dark background for dropdown options */
-  color: #fff;
+  background: #ffffff; /* Light background for dropdown options */
+  color: #1a1a1a;
 }
 
 /* ====== iOS 26 Focus Rings ====== */
