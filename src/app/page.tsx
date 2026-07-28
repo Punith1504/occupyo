@@ -26,8 +26,8 @@ export default async function Home() {
       <header className="sticky top-0 z-50 fluted-glass !rounded-none !border-x-0 !border-t-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div className="max-w-7xl mx-auto px-6 py-6 md:px-10 flex flex-col md:flex-row items-center gap-6 justify-between">
           <div className="flex items-center justify-between w-full md:w-auto">
-            <Link href="/" className="text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-3 drop-shadow-sm">
-              <Building2 className="text-teal-600 h-8 w-8" /> Occupyo
+            <Link href="/" className="text-xl md:text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2 md:gap-3 drop-shadow-sm">
+              <Building2 className="text-teal-600 h-6 w-6 md:h-8 md:w-8" /> Occupyo
             </Link>
           </div>
           
@@ -39,7 +39,7 @@ export default async function Home() {
       </header>
 
       {/* 2. Massive Hero Image Banner with Central Search Widget */}
-      <div className="relative w-full h-[85vh] min-h-[600px] md:min-h-[750px] flex flex-col items-center justify-center overflow-hidden py-12 md:py-16">
+      <div className="relative w-full h-auto min-h-[100vh] md:min-h-[85vh] flex flex-col items-center justify-center overflow-hidden pt-32 pb-24 md:py-16">
         <HeroCarousel />
 
         <div className="relative z-10 text-center px-4 w-full mb-12 md:mb-16 mt-16 md:mt-8 flex flex-col items-center">
@@ -77,7 +77,7 @@ export default async function Home() {
             </div>
 
             {/* Property Types - Minimalist Icons */}
-            <div className="flex items-center justify-start md:justify-start gap-8 md:gap-12 w-full mt-8 mb-10 overflow-x-auto pb-4 relative z-20">
+            <div className="flex items-center justify-start md:justify-start gap-6 md:gap-12 w-full mt-6 md:mt-8 mb-8 md:mb-10 overflow-x-auto pb-4 relative z-20">
               <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-3 cursor-pointer group">
                 <Building2 className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
                 <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Office</span>
