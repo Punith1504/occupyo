@@ -460,7 +460,6 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                   multiple: true,
                   maxFileSize: 15000000, // 15MB
                   clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
-                  allowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
                   resourceType: 'image'
                 }}
               >

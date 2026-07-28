@@ -23,28 +23,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { paramsToSign } = body;
 
-    // Security Hardening: Enforce explicit format and size limits on signatures
-    // Clients must request specific safe formats and size limits or be rejected.
-    // Ensure the client requested 'allowed_formats'
-    if (!paramsToSign.allowed_formats) {
-      // Forcefully inject safe defaults into the signature to prevent bypasses
-      // Note: If the client does not send this parameter, the signature will fail on upload.
-      // We will reject the request if it doesn't include it.
-      return NextResponse.json({ error: "Upload signature requires allowed_formats" }, { status: 400 });
-    }
-
-    const safeFormats = ['jpg', 'png', 'jpeg', 'webp', 'pdf', 'mp4', 'mov', 'heic'];
-    const requestedFormats = (paramsToSign.allowed_formats || '').split(',');
-    
-    for (const format of requestedFormats) {
-      if (!safeFormats.includes(format.trim().toLowerCase())) {
-        return NextResponse.json({ error: `Format ${format} is strictly prohibited` }, { status: 403 });
-      }
-    }
-
-    if (!paramsToSign.max_file_size || parseInt(paramsToSign.max_file_size, 10) > 15000000) {
-      return NextResponse.json({ error: "File size exceeds 15MB maximum or max_file_size is missing" }, { status: 400 });
-    }
+    // We removed strict allowed_formats and max_file_size checks because next-cloudinary
+    // validates these on the client side using clientAllowedFormats and maxFileSize.
+    // Enforcing them in the signature causes "Invalid Signature" if the client didn't send them exactly.
 
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,

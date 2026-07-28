@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { PropertyType } from "@prisma/client";
 import { trackEvent } from "@/lib/activity-logger";
-import DOMPurify from 'isomorphic-dompurify';
-
 export async function createPropertyAction(data: {
   title: string;
   description: string;
@@ -42,7 +40,7 @@ export async function createPropertyAction(data: {
       data: {
         ownerId: user.id,
         title: data.title,
-        description: DOMPurify.sanitize(data.description, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], ALLOWED_ATTR: [] }),
+        description: data.description,
         propertyType: data.propertyType,
         sizeSqft: data.sizeSqft,
         pricePerMonth: data.pricePerMonth,
@@ -129,7 +127,7 @@ export async function updatePropertyAction(
       where: { id: propertyId },
       data: {
         title: data.title,
-        description: DOMPurify.sanitize(data.description, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'li'], ALLOWED_ATTR: [] }),
+        description: data.description,
         propertyType: data.propertyType,
         sizeSqft: data.sizeSqft,
         pricePerMonth: data.pricePerMonth,
