@@ -176,7 +176,7 @@ export default function AiSearchBar() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Describe your ideal space (e.g. 'Creative warehouse in Brooklyn')"
             style={{ boxShadow: 'none' }}
-            className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-gray-900 placeholder-gray-400 py-3 px-2 text-sm md:text-lg w-full font-medium"
+            className="flex-1 bg-transparent border-0 border-transparent outline-none focus:outline-none focus:ring-0 focus:border-transparent text-gray-900 placeholder-gray-400 py-3 px-2 text-base md:text-lg w-full font-medium"
           />
           <input 
             type="file" 

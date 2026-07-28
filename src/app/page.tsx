@@ -43,7 +43,7 @@ export default async function Home() {
         <HeroCarousel />
 
         <div className="relative z-10 text-center px-4 w-full mb-12 md:mb-16 mt-16 md:mt-8 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-sm font-semibold mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-xs md:text-sm font-semibold mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400"></span>
@@ -51,7 +51,7 @@ export default async function Home() {
             Next Generation Commercial Real Estate
           </div>
           
-          <h1 className="text-4xl md:text-6xl lg:text-8xl font-extrabold mb-6 tracking-tight leading-[1.1] text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-extrabold mb-6 tracking-tight leading-[1.1] text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
             The <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]">Intelligent</span><br className="hidden md:block"/> CRE Marketplace
           </h1>
           
@@ -62,12 +62,12 @@ export default async function Home() {
 
         {/* The Central Pristine Glass Widget */}
         <div className="relative z-10 w-full max-w-6xl px-4 md:px-8 md:mt-8">
-          <div className="bg-white/60 backdrop-blur-3xl rounded-[32px] p-6 md:p-14 lg:p-20 flex flex-col border border-white shadow-2xl shadow-teal-900/5 relative overflow-hidden ring-1 ring-black/5">
+          <div className="bg-white/60 backdrop-blur-3xl rounded-2xl md:rounded-[32px] p-5 md:p-14 lg:p-20 flex flex-col border border-white shadow-2xl shadow-teal-900/5 relative overflow-hidden ring-1 ring-black/5">
             {/* Subtle inner highlight for true glass feel */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none rounded-[32px]"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none rounded-2xl md:rounded-[32px]"></div>
             
             {/* Tabs - Match uploaded image style */}
-            <div className="flex flex-wrap items-center gap-6 md:gap-10 w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-full px-8 py-4 md:px-10 mb-8 shadow-sm relative z-20">
+            <div className="flex flex-wrap justify-center items-center gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-4 py-3 md:px-10 md:py-4 mb-6 md:mb-8 shadow-sm relative z-20">
               <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer">
                 <span className="text-gray-900 font-bold text-xs md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
                 <div className="w-full h-[3px] bg-teal-500 rounded-full shadow-[0_0_8px_rgba(20,184,166,0.4)] mt-[2px]"></div>
