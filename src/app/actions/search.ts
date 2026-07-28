@@ -7,46 +7,39 @@ import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import * as cheerio from "cheerio";
+// Removed top-level cheerio import to prevent Vercel Server Action module-load crashes
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build",
-});
+// Lazy instantiation functions to prevent top-level runtime crashes on Vercel
+let openaiInstance: OpenAI | null = null;
+let ratelimitInstance: Ratelimit | null | undefined = undefined;
 
-const redis = process.env.UPSTASH_REDIS_REST_URL ? new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-}) : null;
+function getOpenAI() {
+  if (!openaiInstance) {
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build",
+    });
+  }
+  return openaiInstance;
+}
 
-const ratelimit = redis ? new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(10, "1 m"), // 10 requests per minute
-}) : null;
-
-if (process.env.NODE_ENV === 'production' && !ratelimit) {
-  console.warn("[WARN] UPSTASH_REDIS_REST_URL is missing. Rate limiting is disabled in PRODUCTION.");
+function getRateLimit() {
+  if (ratelimitInstance === undefined) {
+    const redis = process.env.UPSTASH_REDIS_REST_URL ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    }) : null;
+    
+    ratelimitInstance = redis ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, "1 m"),
+    }) : null;
+  }
+  return ratelimitInstance;
 }
 
 export async function searchSimilarProperties(query: string, lat?: number, lng?: number, radiusMiles: number = 10) {
-  // DEBUG SHORT CIRCUIT: IMMEDIATELY return a serializable mock object.
-  // If the error STILL happens after this, then Vercel Server Actions are fundamentally broken 
-  // (e.g. an import in this file is failing at runtime).
-  return { 
-    success: true, 
-    fallbackTriggered: true, 
-    properties: [{
-      id: 'mock-debug-1',
-      title: "Debug Mode Active",
-      description: `Testing Vercel Server Action environment. Query: ${query}`,
-      propertyType: "FLEX",
-      address: "Web Search",
-      isExternal: true,
-      sourceUrl: `https://www.loopnet.com/`,
-      similarity: 0.99
-    }] 
-  };
-  
   try {
+    const ratelimit = getRateLimit();
     if (ratelimit) {
       const { userId } = await auth();
       const ip = (await headers()).get("x-forwarded-for") || "anonymous";
@@ -58,6 +51,7 @@ export async function searchSimilarProperties(query: string, lat?: number, lng?:
       }
     }
     // 1. Convert natural language to embedding
+    const openai = getOpenAI();
     const response = await openai.embeddings.create({
       model: "text-embedding-3-small",
       input: query,
@@ -190,6 +184,8 @@ async function ingestExternalPropertiesFallback(query: string) {
     if (!res.ok) throw new Error("Search engine blocked request");
     
     const html = await res.text();
+    // Dynamically import cheerio ONLY when needed so it doesn't crash the Server Action on Vercel initialization
+    const cheerio = await import("cheerio");
     const $ = cheerio.load(html);
     
     const mockProperties: any[] = [];
