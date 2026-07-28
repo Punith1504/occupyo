@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { searchSimilarProperties } from "@/app/actions/search";
 import { searchByImage } from "@/app/actions/vision-search";
 import Link from "next/link";
 import { Search, Loader2, ExternalLink, Image as ImageIcon, AlertCircle } from "lucide-react";
@@ -63,7 +62,16 @@ export default function AiSearchBar() {
     setError(null);
 
     try {
-      const res = await searchSimilarProperties(currentQuery);
+      const response = await fetch('/api/semantic-search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: currentQuery }),
+      });
+      
+      const res = await response.json();
+      
       if (res.success && res.properties) {
         setResults(res.properties);
         setFallbackTriggered(res.fallbackTriggered || false);
