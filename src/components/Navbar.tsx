@@ -29,7 +29,7 @@ export function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-50 fluted-glass !rounded-none !border-x-0 !border-t-0 shadow-[0_4px_30px_rgba(0,0,0,0.05)] bg-white/60 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 md:px-10 py-4 md:py-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-10 py-3 md:py-6 flex items-center justify-between">
           <Link href="/" className="text-xl md:text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2 drop-shadow-sm z-50">
             <Building2 className="text-teal-600 h-6 w-6 md:h-8 md:w-8" /> Occupyo
           </Link>
