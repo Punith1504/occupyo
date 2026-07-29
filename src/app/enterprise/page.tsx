@@ -82,7 +82,7 @@ export default function EnterpriseSolutionsPage() {
               <span className="text-sm font-medium tracking-wide text-[#b4e6ff]">OCCUPYO FOR ENTERPRISE</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
               Scale Your Logistics <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b4e6ff] via-white to-[#cbb4ff]">
                 Without Boundaries
@@ -98,14 +98,14 @@ export default function EnterpriseSolutionsPage() {
                 <div className="absolute -inset-1 bg-gradient-to-r from-[#b4e6ff] to-[#cbb4ff] rounded-full blur opacity-40 group-hover:opacity-70 transition duration-500" />
                 <Link 
                   href="mailto:sales@occupyo.com" 
-                  className="relative flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 active:scale-95 transition-all duration-300"
+                  className="relative flex items-center justify-center gap-2 bg-white text-black px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto"
                 >
                   Contact Sales <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
               <Link 
                 href="/sign-in" 
-                className="flex items-center gap-2 bg-white/5 border border-white/10 text-white px-8 py-4 rounded-full font-semibold hover:bg-white/10 active:scale-95 transition-all duration-300 backdrop-blur-sm"
+                className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-white/10 active:scale-95 transition-all duration-300 backdrop-blur-sm w-full sm:w-auto"
               >
                 Sign In to Portal
               </Link>

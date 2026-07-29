@@ -6,6 +6,7 @@ import { TrustSignals } from "@/components/home/TrustSignals";
 import { Testimonials } from "@/components/home/Testimonials";
 import { PropertyCard } from "@/components/search/PropertyCard";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
+import { Navbar } from "@/components/Navbar";
 
 export const dynamic = "force-dynamic";
 
@@ -23,20 +24,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#FAFAF7]">
       {/* 1. Navigation Bar (Liquid Glass) */}
-      <header className="sticky top-0 z-50 fluted-glass !rounded-none !border-x-0 !border-t-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-        <div className="max-w-7xl mx-auto px-6 py-6 md:px-10 flex flex-col md:flex-row items-center gap-6 justify-between">
-          <div className="flex items-center justify-between w-full md:w-auto">
-            <Link href="/" className="text-xl md:text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2 md:gap-3 drop-shadow-sm">
-              <Building2 className="text-teal-600 h-6 w-6 md:h-8 md:w-8" /> Occupyo
-            </Link>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/dashboard/owner" className="px-5 py-3 text-base font-bold text-gray-600 hover:text-gray-900 transition-colors">Post Space</Link>
-            <Link href="/dashboard/tenant" className="px-6 py-3 text-base font-bold bg-white/60 border border-gray-200 text-gray-900 rounded-xl hover:bg-white transition-colors backdrop-blur-md shadow-sm">Rent Space</Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* 2. Massive Hero Image Banner with Central Search Widget */}
       <div className="relative w-full h-auto min-h-[100vh] md:min-h-[85vh] flex flex-col items-center justify-center overflow-hidden pt-32 pb-24 md:py-16">
@@ -51,11 +39,11 @@ export default async function Home() {
             Next Generation Commercial Real Estate
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-extrabold mb-6 tracking-tight leading-[1.1] text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-extrabold mb-6 tracking-tight leading-[1.1] text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
             The <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]">Intelligent</span><br className="hidden md:block"/> CRE Marketplace
           </h1>
           
-          <p className="text-gray-100 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
+          <p className="text-gray-100 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)] px-4">
             Discover the perfect space for your business with AI-powered matching and premium flex occupancy.
           </p>
         </div>
@@ -67,7 +55,7 @@ export default async function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none rounded-2xl md:rounded-[32px]"></div>
             
             {/* Tabs - Match uploaded image style */}
-            <div className="flex flex-wrap justify-center items-center gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-4 py-3 md:px-10 md:py-4 mb-6 md:mb-8 shadow-sm relative z-20">
+            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-3 py-3 md:px-10 md:py-4 mb-6 md:mb-8 shadow-sm relative z-20">
               <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer">
                 <span className="text-gray-900 font-bold text-xs md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
                 <div className="w-full h-[3px] bg-teal-500 rounded-full shadow-[0_0_8px_rgba(20,184,166,0.4)] mt-[2px]"></div>
@@ -77,22 +65,22 @@ export default async function Home() {
             </div>
 
             {/* Property Types - Minimalist Icons */}
-            <div className="flex items-center justify-start md:justify-start gap-6 md:gap-12 w-full mt-6 md:mt-8 mb-8 md:mb-10 overflow-x-auto pb-4 relative z-20">
-              <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Building2 className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Office</span>
+            <div className="flex items-center justify-start md:justify-start gap-6 md:gap-12 w-full mt-6 md:mt-8 mb-8 md:mb-10 overflow-x-auto pb-4 relative z-20 scrollbar-hide snap-x snap-mandatory">
+              <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
+                <Building2 className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Office</span>
               </Link>
-              <Link href="/search?type=RETAIL" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Store className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Retail</span>
+              <Link href="/search?type=RETAIL" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
+                <Store className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Retail</span>
               </Link>
-              <Link href="/search?type=INDUSTRIAL" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Factory className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Industrial</span>
+              <Link href="/search?type=INDUSTRIAL" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
+                <Factory className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Industrial</span>
               </Link>
-              <Link href="/search?type=FLEX" className="flex flex-col items-center gap-3 cursor-pointer group">
-                <Briefcase className="w-10 h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Flex</span>
+              <Link href="/search?type=FLEX" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
+                <Briefcase className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
+                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Flex</span>
               </Link>
             </div>
 
@@ -106,9 +94,9 @@ export default async function Home() {
       </div>
 
       {/* 3. Featured Properties Section */}
-      <div className="w-full py-32 px-4 sm:px-6 lg:px-12 relative z-10">
+      <div className="w-full py-16 md:py-32 px-4 sm:px-6 lg:px-12 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-20">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-12 md:mb-20">
             <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight drop-shadow-sm">Featured Spaces</h2>
             <Link href="/search" className="text-teal-600 font-semibold hover:text-teal-800 flex items-center gap-1 transition-colors text-lg">
               View All <span aria-hidden="true">&rarr;</span>
