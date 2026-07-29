@@ -12,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Occupyo - Global Flex Occupancy Marketplace",
-  description: "List and discover commercial real estate worldwide. Premium B2B flex occupancy marketplace.",
+  title: "Occupyo - Minnesota Flex Occupancy Marketplace",
+  description: "List and discover commercial real estate in Minnesota. Premium B2B flex occupancy marketplace.",
   metadataBase: new URL("https://occupyo.com"),
   appleWebApp: {
     capable: true,
@@ -28,8 +28,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
   themeColor: "#f2f2f7",
 };

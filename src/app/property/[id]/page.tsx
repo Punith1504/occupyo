@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { MapPin, Building2, Calendar, DollarSign, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { getOptimizedImageUrl } from "@/lib/cloudinary";
 import { BookingForm } from "./BookingForm";
 import { PricingBreakdown } from "@/components/property/PricingBreakdown";
 import CreFinancialCalculator from "@/components/property/CreFinancialCalculator";
@@ -59,16 +60,16 @@ export default async function PropertyPage(
           </div>
         ) : property.images.length === 1 ? (
           <div className="h-[400px] md:h-[500px] rounded-3xl overflow-hidden relative">
-             <img src={property.images[0].url} alt={property.title} className="w-full h-full object-cover" />
+             <img src={getOptimizedImageUrl(property.images[0].url, { width: 1200, height: 800 })} alt={property.title} className="w-full h-full object-cover" />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[400px] md:h-[500px]">
             <div className="md:col-span-2 md:row-span-2 rounded-3xl overflow-hidden relative cursor-pointer group">
-              <img src={property.images[0].url} alt={property.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src={getOptimizedImageUrl(property.images[0].url, { width: 1200, height: 800 })} alt={property.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
             {property.images.slice(1, 5).map((img, idx) => (
               <div key={img.id} className="hidden md:block rounded-3xl overflow-hidden relative cursor-pointer group">
-                <img src={img.url} alt={`${property.title} ${idx + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img src={getOptimizedImageUrl(img.url, { width: 600, height: 400 })} alt={`${property.title} ${idx + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 {idx === 3 && property.images.length > 5 && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px] transition-colors group-hover:bg-black/50">
                     <span className="text-white font-semibold text-lg">+{property.images.length - 5} More</span>

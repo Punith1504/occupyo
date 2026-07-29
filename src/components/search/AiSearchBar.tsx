@@ -196,10 +196,10 @@ export default function AiSearchBar() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 md:p-3 text-teal-600 hover:text-teal-800 transition-colors bg-teal-50 hover:bg-teal-100 rounded-full mr-2"
+            className="p-3 md:p-3 text-teal-600 hover:text-teal-800 transition-colors bg-teal-50 hover:bg-teal-100 rounded-full mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
             title="Search by Image"
           >
-            <ImageIcon size={20} className="w-5 h-5 md:w-5 md:h-5" />
+            <ImageIcon size={20} className="w-5 h-5" />
           </button>
         </div>
         <button

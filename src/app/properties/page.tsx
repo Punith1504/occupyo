@@ -118,7 +118,7 @@ export default async function PublicPropertiesPage(props: {
       <div className="p-8 flex-1 max-w-7xl mx-auto w-full">
         <div className="flex justify-between items-center mb-8">
           <p className="text-gray-500 font-semibold text-lg">
-            Showing <span className="text-black font-black">{properties.length}</span> global properties
+            Showing <span className="text-black font-black">{properties.length}</span> Minnesota properties
           </p>
           <button className="flex items-center gap-2 font-bold text-gray-500 hover:text-black transition-colors">
             <Filter className="h-5 w-5" />
@@ -132,7 +132,7 @@ export default async function PublicPropertiesPage(props: {
             <h3 className="text-2xl font-black text-gray-900 mb-2">No properties found</h3>
             <p className="text-gray-500 max-w-md mx-auto font-medium">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
-              We couldn't find any spaces matching your criteria globally. Try adjusting your filters or check back later!
+              We couldn't find any spaces matching your criteria in Minnesota. Try adjusting your filters or check back later!
             </p>
           </div>
         ) : (

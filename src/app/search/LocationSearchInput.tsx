@@ -195,7 +195,7 @@ export default function LocationSearchInput() {
           onFocus={() => {
              if (predictions.length > 0) setShowDropdown(true);
           }}
-          placeholder="Global predictive search..."
+          placeholder="Minnesota predictive search..."
           className="w-full pl-12 pr-12 py-3.5 glass-input outline-none appearance-none font-semibold text-gray-900 transition-all duration-300 shadow-sm focus:shadow-[var(--neon-glow)]"
         />
 

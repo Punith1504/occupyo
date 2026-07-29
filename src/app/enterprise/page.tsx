@@ -18,7 +18,7 @@ const EnterpriseFeatures = [
   {
     icon: <Globe className="w-8 h-8 text-[#b4e6ff]" />,
     title: "Multi-Location Portfolio Management",
-    description: "Manage hundreds of warehouse locations from a single pane of glass. Standardize your procurement and leasing processes globally."
+    description: "Manage hundreds of warehouse locations from a single pane of glass. Standardize your procurement and leasing processes across Minnesota."
   },
   {
     icon: <Zap className="w-8 h-8 text-[#cbb4ff]" />,
@@ -121,7 +121,7 @@ export default function EnterpriseSolutionsPage() {
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Built for scale, designed for speed</h2>
               <p className="text-white/50 max-w-2xl mx-auto">
-                Everything you need to manage a massive global footprint of industrial spaces in one unified platform.
+                Everything you need to manage a massive Minnesota footprint of industrial spaces in one unified platform.
               </p>
             </div>
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Building2, MapPin, CheckCircle2 } from "lucide-react";
 import { PropertyType } from "@prisma/client";
+import { getOptimizedImageUrl } from "@/lib/cloudinary";
 
 interface PropertyCardProps {
   property: {
@@ -30,7 +31,7 @@ export function PropertyCard({ property, variant = 'search', isHorizontal = fals
           <div className={`${isHorizontal ? 'md:w-2/5 h-56 md:h-auto' : 'h-56'} bg-gray-50 relative overflow-hidden flex-shrink-0 border-b md:border-b-0 ${isHorizontal ? 'md:border-r border-gray-100' : ''}`}>
             {property.images && property.images.length > 0 && property.images[0].url ? (
               <img 
-                src={property.images[0].url} 
+                src={getOptimizedImageUrl(property.images[0].url, { width: 600, height: 400 })} 
                 alt={property.title}
                 className={`w-full h-full ${isHelloCard ? 'object-contain p-6' : 'object-cover'} transition-transform duration-700 group-hover:scale-105 opacity-90`} 
               />
@@ -83,7 +84,7 @@ export function PropertyCard({ property, variant = 'search', isHorizontal = fals
         <div className="h-48 bg-gray-50 relative overflow-hidden flex-shrink-0">
           {property.images && property.images.length > 0 && property.images[0].url ? (
             <img 
-              src={property.images[0].url} 
+              src={getOptimizedImageUrl(property.images[0].url, { width: 400, height: 300 })} 
               alt={property.title}
               className={`w-full h-full ${isHelloCard ? 'object-contain p-6' : 'object-cover'} transition-transform duration-700 group-hover:scale-105`} 
             />

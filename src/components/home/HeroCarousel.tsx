@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getOptimizedImageUrl } from "@/lib/cloudinary";
 
 const IMAGES = [
   "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
@@ -25,7 +26,7 @@ export function HeroCarousel() {
           key={src}
           className="absolute inset-0 z-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out pointer-events-none"
           style={{
-            backgroundImage: `url('${src}')`,
+            backgroundImage: `url('${getOptimizedImageUrl(src, { width: 1200 })}')`,
             opacity: index === currentIndex ? 1 : 0,
           }}
         />

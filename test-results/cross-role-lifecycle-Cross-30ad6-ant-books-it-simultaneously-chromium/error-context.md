@@ -58,12 +58,6 @@ Test timeout of 30000ms exceeded.
             - /url: https://go.clerk.com/components
         - paragraph [ref=e55]: Development mode
   - button [ref=e57]
-  - button "Open Next.js Dev Tools" [ref=e66] [cursor=pointer]:
-    - generic [ref=e69]:
-      - text: Rendering
-      - generic [ref=e70]:
-        - generic [ref=e71]: .
-        - generic [ref=e72]: .
-        - generic [ref=e73]: .
-  - alert [ref=e74]
+  - button "Open Next.js Dev Tools" [ref=e66] [cursor=pointer]
+  - alert [ref=e70]
 ```
