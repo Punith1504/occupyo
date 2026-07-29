@@ -27,10 +27,10 @@ export default async function Home() {
       <Navbar />
 
       {/* 2. Massive Hero Image Banner with Central Search Widget */}
-      <div className="relative w-full h-auto min-h-[100vh] md:min-h-[85vh] flex flex-col items-center justify-center overflow-hidden pt-32 pb-24 md:py-16">
+      <div className="relative w-full h-auto min-h-[80vh] md:min-h-[85vh] flex flex-col items-center justify-center overflow-hidden pt-12 pb-16 md:py-16">
         <HeroCarousel />
 
-        <div className="relative z-10 text-center px-4 w-full mb-12 md:mb-16 mt-16 md:mt-8 flex flex-col items-center">
+        <div className="relative z-10 text-center px-4 w-full mb-8 md:mb-16 mt-6 md:mt-8 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-xs md:text-sm font-semibold mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75"></span>
@@ -55,7 +55,7 @@ export default async function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none rounded-2xl md:rounded-[32px]"></div>
             
             {/* Tabs - Match uploaded image style */}
-            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-3 py-3 md:px-10 md:py-4 mb-6 md:mb-8 shadow-sm relative z-20">
+            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-3 py-3 md:px-10 md:py-4 mb-4 md:mb-8 shadow-sm relative z-20">
               <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer">
                 <span className="text-gray-900 font-bold text-xs md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
                 <div className="w-full h-[3px] bg-teal-500 rounded-full shadow-[0_0_8px_rgba(20,184,166,0.4)] mt-[2px]"></div>
@@ -65,7 +65,7 @@ export default async function Home() {
             </div>
 
             {/* Property Types - Minimalist Icons */}
-            <div className="flex items-center justify-start md:justify-start gap-6 md:gap-12 w-full mt-6 md:mt-8 mb-8 md:mb-10 overflow-x-auto pb-4 relative z-20 scrollbar-hide snap-x snap-mandatory">
+            <div className="flex items-center justify-start md:justify-start gap-6 md:gap-12 w-full mt-4 md:mt-8 mb-5 md:mb-10 overflow-x-auto pb-2 relative z-20 scrollbar-hide snap-x snap-mandatory">
               <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
                 <Building2 className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
                 <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Office</span>
