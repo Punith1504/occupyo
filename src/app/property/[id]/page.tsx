@@ -38,16 +38,7 @@ export default async function PropertyPage(
   const amenities = property.amenities as string[] || [];
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] pb-20 font-sans">
-      {/* Header / Nav */}
-      <header className="glass-panel sticky top-0 z-50 rounded-none border-t-0 border-x-0 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-white tracking-tight">Occupyo</Link>
-          <div className="flex gap-4">
-            <Link href="/dashboard" className="neu-button px-4 py-2 text-sm font-medium">Dashboard</Link>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-transparent pb-20 font-sans">
 
       {/* Image Gallery Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
@@ -85,57 +76,57 @@ export default async function PropertyPage(
         <div className="flex flex-col lg:flex-row gap-8 md:gap-12">
           
           {/* Main Content */}
-          <div className="flex-1 space-y-8 md:space-y-10 liquid-glass p-5 md:p-12 border border-white/20 relative">
+          <div className="flex-1 space-y-8 md:space-y-10 bg-white/60 backdrop-blur-md shadow-sm rounded-3xl p-5 md:p-12 border border-gray-200 relative">
             <div className="flex justify-between items-start gap-6">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="bg-white/10 text-[#a1ebd6] px-3 py-1 rounded text-xs font-bold tracking-widest uppercase shadow-sm border border-white/10">
+                  <span className="bg-teal-50 text-teal-700 px-3 py-1 rounded text-xs font-bold tracking-widest uppercase shadow-sm border border-teal-100">
                     {property.propertyType}
                   </span>
-                  <span className={`px-3 py-1 rounded text-xs font-bold tracking-widest uppercase border shadow-sm ${property.status === "AVAILABLE" ? "bg-green-500/20 text-green-300 border-green-500/30" : "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"}`}>
+                  <span className={`px-3 py-1 rounded text-xs font-bold tracking-widest uppercase border shadow-sm ${property.status === "AVAILABLE" ? "bg-green-50 text-green-700 border-green-200" : "bg-yellow-50 text-yellow-700 border-yellow-200"}`}>
                     {property.status}
                   </span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4 break-words leading-tight drop-shadow-md">{property.title}</h1>
-                <div className="flex items-center text-gray-300 gap-2 text-base md:text-lg font-medium">
-                  <MapPin className="h-5 w-5 shrink-0 text-[#a1ebd6]" />
+                <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4 break-words leading-tight">{property.title}</h1>
+                <div className="flex items-center text-gray-600 gap-2 text-base md:text-lg font-medium">
+                  <MapPin className="h-5 w-5 shrink-0 text-teal-600" />
                   <span>{property.address}</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 py-6 md:py-8 border-y border-white/10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 py-6 md:py-8 border-y border-gray-100">
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Size</p>
-                <p className="text-xl md:text-2xl font-bold text-white">{property.sizeSqft.toLocaleString()} sqft</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Size</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">{property.sizeSqft.toLocaleString()} sqft</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Price</p>
-                <p className="text-xl md:text-2xl font-bold text-white">${property.pricePerMonth.toLocaleString()}<span className="text-sm font-normal text-gray-400">/mo</span></p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Price</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">${property.pricePerMonth.toLocaleString()}<span className="text-sm font-normal text-gray-500">/mo</span></p>
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Cap Rate</p>
-                <p className="text-2xl font-bold text-white">{property.capRate ? `${property.capRate}%` : 'N/A'}</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Cap Rate</p>
+                <p className="text-2xl font-bold text-gray-900">{property.capRate ? `${property.capRate}%` : 'N/A'}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">NOI</p>
-                <p className="text-2xl font-bold text-white">{property.noi ? `$${property.noi.toLocaleString()}` : 'N/A'}</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">NOI</p>
+                <p className="text-2xl font-bold text-gray-900">{property.noi ? `$${property.noi.toLocaleString()}` : 'N/A'}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Lease Type</p>
-                <p className="text-2xl font-bold text-white">{property.leaseType || 'N/A'}</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Lease Type</p>
+                <p className="text-2xl font-bold text-gray-900">{property.leaseType || 'N/A'}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Duration</p>
-                <p className="text-2xl font-bold text-white">{property.minDuration}-{property.maxDuration} {property.durationUnit.toLowerCase()}</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Duration</p>
+                <p className="text-2xl font-bold text-gray-900">{property.minDuration}-{property.maxDuration} {property.durationUnit.toLowerCase()}</p>
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-md">Executive Summary</h2>
-              <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Executive Summary</h2>
+              <p className="text-gray-600 leading-relaxed text-lg whitespace-pre-line">
                 {property.description || "No description provided."}
               </p>
             </div>
@@ -143,12 +134,12 @@ export default async function PropertyPage(
             {/* Amenities */}
             {amenities.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-md">Amenities & Features</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Amenities & Features</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {amenities.map((amenity, idx) => (
                     <div key={idx} className="flex items-center gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-[#a1ebd6] shrink-0" />
-                      <span className="text-gray-300 font-medium text-lg">{amenity}</span>
+                      <CheckCircle2 className="h-5 w-5 text-teal-600 shrink-0" />
+                      <span className="text-gray-700 font-medium text-lg">{amenity}</span>
                     </div>
                   ))}
                 </div>
@@ -157,17 +148,17 @@ export default async function PropertyPage(
 
             {property.suites && property.suites.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-md">Available Suites (Rent Roll)</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Available Suites (Rent Roll)</h2>
                 <div className="grid grid-cols-1 gap-2">
                   {property.suites.map(suite => (
-                    <div key={suite.id} className="p-4 rounded-lg bg-white/5 border border-white/5 flex justify-between items-center hover:bg-white/10 transition-colors cursor-pointer">
+                    <div key={suite.id} className="p-4 rounded-lg bg-gray-50 border border-gray-100 flex justify-between items-center hover:bg-gray-100 transition-colors cursor-pointer">
                       <div>
-                        <h4 className="font-bold text-white">{suite.title}</h4>
-                        <p className="text-sm text-gray-300">{suite.sizeSqft.toLocaleString()} sqft</p>
+                        <h4 className="font-bold text-gray-900">{suite.title}</h4>
+                        <p className="text-sm text-gray-500">{suite.sizeSqft.toLocaleString()} sqft</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-white">${suite.pricePerMonth.toLocaleString()}/mo</p>
-                        <span className="text-[10px] font-mono font-bold bg-gray-200 text-gray-700 px-2 py-0.5 rounded-sm uppercase tracking-widest">{suite.status}</span>
+                        <p className="font-bold text-gray-900">${suite.pricePerMonth.toLocaleString()}/mo</p>
+                        <span className="text-[10px] font-mono font-bold bg-white border border-gray-200 text-gray-700 px-2 py-0.5 rounded-sm uppercase tracking-widest">{suite.status}</span>
                       </div>
                     </div>
                   ))}

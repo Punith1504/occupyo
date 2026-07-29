@@ -89,10 +89,10 @@ export default async function PropertySearchPage(props: {
   }
 
   return (
-    <div className="h-screen bg-[#060608] flex flex-col font-sans overflow-hidden">
+    <div className="h-screen bg-transparent flex flex-col font-sans overflow-hidden">
       {/* Search Header - Glassmorphic */}
-      <div className="glass-panel mx-4 mt-4 px-8 py-6 z-10 shrink-0">
-        <h1 className="text-2xl font-bold text-white mb-6">Find Your Perfect Space</h1>
+      <div className="glass-panel mx-4 mt-4 px-8 py-6 z-10 shrink-0 bg-white/60 border border-gray-200">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Find Your Perfect Space</h1>
         
         {/* Simple Search Form - Neumorphic inputs */}
         <form className="flex flex-col md:flex-row gap-4 max-w-4xl">
@@ -114,7 +114,7 @@ export default async function PropertySearchPage(props: {
              </select>
           </div>
           
-          <button type="submit" className="neu-button px-6 py-3 font-medium flex items-center justify-center gap-2 shrink-0 min-h-[44px]">
+          <button type="submit" className="px-6 py-3 font-medium flex items-center justify-center gap-2 shrink-0 min-h-[44px] bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors">
             <Search className="h-4 w-4" />
             Search
           </button>
@@ -128,7 +128,7 @@ export default async function PropertySearchPage(props: {
               key={tag}
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
               href={`/search?${new URLSearchParams({...searchParams as any, niche: tag}).toString()}`}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 min-h-[44px] flex items-center ${niche === tag ? 'neu-button-active' : 'neu-button'}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 min-h-[44px] flex items-center ${niche === tag ? 'bg-teal-600 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
             >
               {tag}
             </Link>
@@ -160,9 +160,9 @@ export default async function PropertySearchPage(props: {
 
         {properties.length === 0 ? (
           <div className="glass-panel p-16 text-center mt-4 mx-2">
-            <Building2 className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No properties found</h3>
-            <p className="text-gray-400 max-w-md mx-auto">
+            <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No properties found</h3>
+            <p className="text-gray-500 max-w-md mx-auto">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
               We couldn't find any spaces matching your criteria. Try adjusting your filters.
             </p>
@@ -179,7 +179,7 @@ export default async function PropertySearchPage(props: {
         </div>
         
         {/* Right: Interactive Discovery Map */}
-        <div className="hidden md:block md:w-[40%] lg:w-[55%] h-full pb-4">
+        <div className="hidden md:block w-[40%] lg:w-[55%] rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-gray-200 sticky top-0">
           <DiscoveryMap initialProperties={properties} />
         </div>
       </div>

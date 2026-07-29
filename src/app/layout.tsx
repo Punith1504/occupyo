@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import TelemetryTracker from "@/components/TelemetryTracker";
 import ChatBot from "@/components/ChatBot";
+import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 const inter = Inter({
@@ -43,9 +44,12 @@ export default function RootLayout({
         lang="en"
         className={`h-full antialiased ${inter.variable}`}
       >
-        <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] font-[var(--font-inter)]">
+        <body className="min-h-full flex flex-col bg-[#FAFAF7] text-[var(--foreground)] font-[var(--font-inter)]">
           <TelemetryTracker />
-          {children}
+          <Navbar />
+          <div className="flex-1 flex flex-col h-full w-full">
+            {children}
+          </div>
           <ChatBot />
         </body>
       </html>

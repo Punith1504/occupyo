@@ -6,7 +6,6 @@ import { TrustSignals } from "@/components/home/TrustSignals";
 import { Testimonials } from "@/components/home/Testimonials";
 import { PropertyCard } from "@/components/search/PropertyCard";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
-import { Navbar } from "@/components/Navbar";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const dynamic = "force-dynamic";
@@ -23,9 +22,7 @@ export default async function Home() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-[#FAFAF7]">
-      {/* 1. Navigation Bar (Liquid Glass) */}
-      <Navbar />
+    <div className="flex flex-col font-sans bg-[#FAFAF7]">
 
       {/* 2. Massive Hero Image Banner with Central Search Widget */}
       <div className="relative w-full h-auto min-h-[45vh] md:min-h-[85vh] flex flex-col items-center justify-center overflow-hidden pt-4 pb-6 md:py-16">

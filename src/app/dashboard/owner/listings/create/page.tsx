@@ -350,20 +350,20 @@ export default function CreateListingPage() {
     <div className="max-w-4xl mx-auto p-6 lg:p-8">
       {/* Background artifacts */}
       <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute top-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#cbb4ff] opacity-8 rounded-full blur-[140px] mix-blend-screen animate-float" />
-        <div className="absolute bottom-1/4 left-1/3 w-[25rem] h-[25rem] bg-[#b4e6ff] opacity-6 rounded-full blur-[120px] mix-blend-screen animate-float" style={{ animationDelay: '-3s' }} />
+        <div className="absolute top-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#cbb4ff] opacity-20 rounded-full blur-[140px] mix-blend-screen animate-float" />
+        <div className="absolute bottom-1/4 left-1/3 w-[25rem] h-[25rem] bg-teal-500 opacity-20 rounded-full blur-[120px] mix-blend-screen animate-float" style={{ animationDelay: '-3s' }} />
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight">List Your Space</h1>
-        <p className="text-white/60 mt-1">Reach thousands of flex-occupancy tenants.</p>
+        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">List Your Space</h1>
+        <p className="text-gray-500 mt-1">Reach thousands of flex-occupancy tenants.</p>
       </div>
 
       {/* Progress Stepper */}
       <div className="flex items-center justify-between mb-10 relative">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-white/10 rounded-full z-0"></div>
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 rounded-full z-0"></div>
         <div 
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[#b4e6ff] shadow-[0_0_15px_#b4e6ff] rounded-full z-0 transition-all duration-500"
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.5)] rounded-full z-0 transition-all duration-500"
           style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
         ></div>
         
@@ -376,12 +376,12 @@ export default function CreateListingPage() {
             <div key={step.id} className="relative z-10 flex flex-col items-center">
               <div 
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 backdrop-blur-md
-                  ${isActive ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[var(--neon-glow)]" : 
-                    isCompleted ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[var(--neon-glow)]" : "bg-black/50 border-white/20 text-white/40"}`}
+                  ${isActive ? "bg-teal-500 border-teal-500 text-black shadow-md" : 
+                    isCompleted ? "bg-teal-500 border-teal-500 text-black shadow-md" : "bg-white border-gray-300 text-gray-400"}`}
               >
                 {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
               </div>
-              <span className={`text-xs mt-3 font-medium tracking-wide ${isActive || isCompleted ? "text-white" : "text-white/40"}`}>
+              <span className={`text-xs mt-3 font-medium tracking-wide ${isActive || isCompleted ? "text-gray-900" : "text-gray-400"}`}>
                 {step.title}
               </span>
             </div>
@@ -389,7 +389,7 @@ export default function CreateListingPage() {
         })}
       </div>
 
-      <div className="liquid-glass p-6 md:p-10 mb-8 min-h-[400px]">
+      <div className="bg-white/60 backdrop-blur-md shadow-sm border border-gray-200 rounded-3xl p-6 md:p-10 mb-8 min-h-[400px]">
         {error && (
           <div className="bg-red-500/20 text-red-300 p-4 rounded-xl mb-6 text-sm font-medium border border-red-500/30 animate-elasticBounce">
             {error}
@@ -406,23 +406,23 @@ export default function CreateListingPage() {
         {currentStep === 0 && (
           <div className="space-y-6 animate-staggerFadeUp">
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Listing Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Listing Title</label>
               <input 
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
                 placeholder="e.g. Premium Flex Space in Downtown"
-                className="w-full glass-input"
+                className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
               />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Property Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
                 <select 
                   value={formData.propertyType}
                   onChange={(e) => setFormData({...formData, propertyType: e.target.value})}
-                  className="w-full glass-input"
+                  className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                 >
                   <option value="WAREHOUSE">Warehouse</option>
                   <option value="FLEX">Flex Industrial</option>
@@ -431,11 +431,11 @@ export default function CreateListingPage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-white/80">Total Size (Sqft)</label>
+                  <label className="block text-sm font-medium text-gray-700">Total Size (Sqft)</label>
                   <button 
                     type="button" 
                     onClick={handleLiDARScan}
-                    className="text-xs flex items-center gap-1 text-[#b4e6ff] font-medium hover:underline bg-[#b4e6ff]/10 px-3 py-1.5 rounded-lg border border-[#b4e6ff]/20 active:scale-95 transition-transform"
+                    className="text-xs flex items-center gap-1 text-teal-600 font-medium hover:underline bg-teal-500/10 px-3 py-1.5 rounded-lg border border-teal-500/20 active:scale-95 transition-transform"
                   >
                     <Camera className="w-3 h-3" /> Scan with LiDAR AR
                   </button>
@@ -445,18 +445,18 @@ export default function CreateListingPage() {
                   value={formData.sizeSqft}
                   onChange={(e) => setFormData({...formData, sizeSqft: e.target.value})}
                   placeholder="5000"
-                  className="w-full glass-input"
+                  className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Duration Unit</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Duration Unit</label>
                 <select 
                   value={formData.durationUnit}
                   onChange={(e) => setFormData({...formData, durationUnit: e.target.value})}
-                  className="w-full glass-input"
+                  className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                 >
                   <option value="HOURS">Hours (Hourly)</option>
                   <option value="DAYS">Days (Daily)</option>
@@ -465,23 +465,23 @@ export default function CreateListingPage() {
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-white/80 mb-2">Min {formData.durationUnit.toLowerCase()}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Min {formData.durationUnit.toLowerCase()}</label>
                   <input 
                     type="number"
                     value={formData.minDuration}
                     onChange={(e) => setFormData({...formData, minDuration: e.target.value})}
                     placeholder="1"
-                    className="w-full glass-input"
+                    className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-white/80 mb-2">Max {formData.durationUnit.toLowerCase()}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Max {formData.durationUnit.toLowerCase()}</label>
                   <input 
                     type="number"
                     value={formData.maxDuration}
                     onChange={(e) => setFormData({...formData, maxDuration: e.target.value})}
                     placeholder="12"
-                    className="w-full glass-input"
+                    className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
               </div>
@@ -489,53 +489,53 @@ export default function CreateListingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Price / Hour ($)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Price / Hour ($)</label>
                 <input 
                   type="number"
                   value={formData.pricePerHour}
                   onChange={(e) => setFormData({...formData, pricePerHour: e.target.value})}
                   placeholder="Optional"
-                  className="w-full glass-input"
+                  className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Price / Day ($)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Price / Day ($)</label>
                 <input 
                   type="number"
                   value={formData.pricePerDay}
                   onChange={(e) => setFormData({...formData, pricePerDay: e.target.value})}
                   placeholder="Optional"
-                  className="w-full glass-input"
+                  className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Price / Month ($)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Price / Month ($)</label>
                 <input 
                   type="number"
                   value={formData.pricePerMonth}
                   onChange={(e) => setFormData({...formData, pricePerMonth: e.target.value})}
                   placeholder="2500"
-                  className="w-full glass-input"
+                  className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
               <textarea 
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={4}
                 placeholder="Describe the space, access hours, and suitability..."
-                className="w-full glass-input resize-none"
+                className="w-full w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all text-gray-900 placeholder-gray-400 resize-none"
               ></textarea>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-3">Amenities & Features</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Amenities & Features</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {["Wi-Fi", "Loading Dock", "Forklift", "HVAC", "24/7 Access", "Security Cameras", "Meeting Rooms", "Parking"].map((amenity) => (
-                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-200 active:scale-[0.98]">
+                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-gray-200 transition-all duration-200 active:scale-[0.98]">
                     <input 
                       type="checkbox" 
                       className="accent-[#b4e6ff] w-4 h-4"
@@ -549,7 +549,7 @@ export default function CreateListingPage() {
                         }
                       }}
                     />
-                    <span className="text-sm text-white/90">{amenity}</span>
+                    <span className="text-sm text-gray-900/90">{amenity}</span>
                   </label>
                 ))}
               </div>
@@ -562,11 +562,11 @@ export default function CreateListingPage() {
           <div className="space-y-6 animate-staggerFadeUp">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-white/80">Property Address</label>
+                <label className="block text-sm font-medium text-gray-700">Property Address</label>
                 <button 
                   type="button" 
                   onClick={handleCurrentLocation}
-                  className="text-xs flex items-center gap-1 text-[#b4e6ff] font-medium hover:underline bg-[#b4e6ff]/10 px-3 py-1.5 rounded-lg border border-[#b4e6ff]/20 active:scale-95 transition-transform"
+                  className="text-xs flex items-center gap-1 text-teal-600 font-medium hover:underline bg-teal-500/10 px-3 py-1.5 rounded-lg border border-teal-500/20 active:scale-95 transition-transform"
                 >
                   <Navigation className="w-3 h-3" /> Use Current Location
                 </button>
@@ -574,7 +574,7 @@ export default function CreateListingPage() {
               <div className="relative">
                 <div 
                   ref={autocompleteContainerRef}
-                  className="w-full min-h-[52px] bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] overflow-hidden flex items-center px-4 transition-all duration-300 focus-within:border-[#b4e6ff]/50 focus-within:shadow-[0_0_15px_rgba(180,230,255,0.2),inset_0_2px_4px_rgba(0,0,0,0.1)]"
+                  className="w-full min-h-[52px] bg-gray-200 backdrop-blur-md border border-gray-300 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] overflow-hidden flex items-center px-4 transition-all duration-300 focus-within:border-teal-500/50 focus-within:shadow-[0_0_15px_rgba(180,230,255,0.2),inset_0_2px_4px_rgba(0,0,0,0.1)]"
                   style={{
                      // Hide default borders in the web component wrapper
                      '--gmpx-border-color-base': 'transparent',
@@ -582,7 +582,7 @@ export default function CreateListingPage() {
                   } as React.CSSProperties}
                 ></div>
               </div>
-              <p className="text-xs text-white/50 mt-2">
+              <p className="text-xs text-gray-900/50 mt-2">
                 Select an address from the dropdown to verify its location.
               </p>
             </div>
@@ -597,9 +597,9 @@ export default function CreateListingPage() {
                 />
               ) : (
                 <div className="bg-white/5 w-full h-full flex flex-col items-center justify-center">
-                  <MapPin className="h-10 w-10 text-white/30 mb-2" />
-                  <p className="text-white/60 font-medium">Map Preview</p>
-                  <p className="text-sm text-white/40">Map will center on selected address</p>
+                  <MapPin className="h-10 w-10 text-gray-900/30 mb-2" />
+                  <p className="text-gray-500 font-medium">Map Preview</p>
+                  <p className="text-sm text-gray-400">Map will center on selected address</p>
                 </div>
               )}
             </div>
@@ -610,11 +610,11 @@ export default function CreateListingPage() {
         {currentStep === 2 && (
           <div className="space-y-6 animate-staggerFadeUp">
             <div className="text-center">
-              <h3 className="text-xl font-medium text-white">Upload Property Photos</h3>
-              <p className="text-sm text-white/60 mt-1">High-quality images increase inquiries by up to 40%.</p>
+              <h3 className="text-xl font-medium text-gray-900">Upload Property Photos</h3>
+              <p className="text-sm text-gray-500 mt-1">High-quality images increase inquiries by up to 40%.</p>
               <div className="flex items-center justify-center gap-2 mt-3">
-                <ImageIcon className="w-4 h-4 text-white/40" />
-                <span className={`text-sm font-semibold ${imageUrls.length >= MAX_IMAGES ? 'text-red-400' : 'text-[#b4e6ff]'}`}>
+                <ImageIcon className="w-4 h-4 text-gray-400" />
+                <span className={`text-sm font-semibold ${imageUrls.length >= MAX_IMAGES ? 'text-red-400' : 'text-teal-600'}`}>
                   {imageUrls.length}/{MAX_IMAGES} photos
                 </span>
               </div>
@@ -636,7 +636,7 @@ export default function CreateListingPage() {
               >
                 {({ open }) => (
                   <div 
-                    className="relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-[#b4e6ff]/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                    className="relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-teal-500/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
                     onClick={(e) => {
                       e.preventDefault();
                       if (imageUrls.length >= MAX_IMAGES) {
@@ -651,13 +651,13 @@ export default function CreateListingPage() {
                     
                     <div className="relative z-10 flex flex-col items-center">
                       <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-white/10 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                        <UploadCloud className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
+                        <UploadCloud className="h-10 w-10 text-teal-600 drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
                       </div>
                       
-                      <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors">
+                      <h4 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight group-hover:text-teal-600 transition-colors">
                         Click to Upload securely
                       </h4>
-                      <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-4">
+                      <p className="text-sm text-gray-900/50 max-w-sm leading-relaxed mb-4">
                         Supported formats: JPG, PNG, WEBP (Max 10MB per file)
                       </p>
                     </div>
@@ -669,7 +669,7 @@ export default function CreateListingPage() {
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
               <>
-                <p className="text-xs text-white/50 text-center">
+                <p className="text-xs text-gray-900/50 text-center">
                   Drag images to reorder • First image is the cover photo • Click to preview
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -677,7 +677,7 @@ export default function CreateListingPage() {
                     <div 
                       key={`${url.slice(0, 30)}-${idx}`}
                       className={`aspect-square bg-white/5 rounded-xl border relative group overflow-hidden cursor-pointer transition-all duration-300
-                        ${dragOverIndex === idx ? 'border-[#b4e6ff] bg-[#b4e6ff]/10 scale-105' : 'border-white/10'}
+                        ${dragOverIndex === idx ? 'border-teal-500 bg-teal-500/10 scale-105' : 'border-white/10'}
                         ${draggedIndex === idx ? 'opacity-40 scale-95' : 'opacity-100'}
                       `}
                       draggable
@@ -692,7 +692,7 @@ export default function CreateListingPage() {
                       
                       {/* Drag handle */}
                       <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 cursor-grab active:cursor-grabbing">
-                        <GripVertical className="w-3 h-3 text-white/70" />
+                        <GripVertical className="w-3 h-3 text-gray-900/70" />
                       </div>
 
                       {/* Remove button */}
@@ -707,7 +707,7 @@ export default function CreateListingPage() {
                       {idx !== 0 && (
                         <button 
                           onClick={(e) => { e.stopPropagation(); setAsCover(idx); }}
-                          className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-[#b4e6ff] hover:text-white border border-white/10 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider hover:bg-[#b4e6ff]/20"
+                          className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-teal-600 hover:text-gray-900 border border-white/10 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider hover:bg-teal-500/20"
                         >
                           <Star className="w-3 h-3" /> Cover
                         </button>
@@ -715,7 +715,7 @@ export default function CreateListingPage() {
 
                       {/* Cover badge */}
                       {idx === 0 && (
-                        <span className="absolute bottom-2 left-2 bg-[#b4e6ff]/90 text-black text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider flex items-center gap-1 shadow-lg">
+                        <span className="absolute bottom-2 left-2 bg-teal-500/90 text-black text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider flex items-center gap-1 shadow-lg">
                           <Star className="w-3 h-3 fill-current" /> Cover
                         </span>
                       )}
@@ -732,37 +732,37 @@ export default function CreateListingPage() {
         {currentStep === 3 && (
           <div className="space-y-6 animate-staggerFadeUp">
             <div className="text-center">
-              <h3 className="text-xl font-medium text-white">Occupancy Agreement</h3>
-              <p className="text-sm text-white/60 mt-1">Upload your standard agreement or use our digital template.</p>
+              <h3 className="text-xl font-medium text-gray-900">Occupancy Agreement</h3>
+              <p className="text-sm text-gray-500 mt-1">Upload your standard agreement or use our digital template.</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <label className="border-2 border-[#b4e6ff] bg-[#b4e6ff]/5 rounded-2xl p-6 cursor-pointer relative hover:bg-[#b4e6ff]/10 transition-colors">
-                <div className="absolute top-4 right-4 bg-[#b4e6ff] text-black rounded-full p-1 shadow-[var(--neon-glow)]">
+              <label className="border-2 border-teal-500 bg-teal-500/5 rounded-2xl p-6 cursor-pointer relative hover:bg-teal-500/10 transition-colors">
+                <div className="absolute top-4 right-4 bg-teal-500 text-black rounded-full p-1 shadow-md">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
-                <FileText className="w-8 h-8 text-[#b4e6ff] mb-4" />
-                <h4 className="font-semibold text-white mb-2">Occupyo Standard</h4>
-                <p className="text-sm text-white/60">Use our vetted, flexible occupancy agreement template. Recommended for fast onboarding.</p>
+                <FileText className="w-8 h-8 text-teal-600 mb-4" />
+                <h4 className="font-semibold text-gray-900 mb-2">Occupyo Standard</h4>
+                <p className="text-sm text-gray-500">Use our vetted, flexible occupancy agreement template. Recommended for fast onboarding.</p>
               </label>
               
-              <label className="border border-white/20 bg-white/5 rounded-2xl p-6 cursor-pointer hover:border-white/30 hover:bg-white/10 transition-colors">
-                <UploadCloud className="w-8 h-8 text-white/40 mb-4" />
-                <h4 className="font-semibold text-white mb-2">Custom Agreement</h4>
-                <p className="text-sm text-white/50 mb-4">Upload your own legal terms and conditions (PDF only).</p>
+              <label className="border border-gray-300 bg-white/5 rounded-2xl p-6 cursor-pointer hover:border-white/30 hover:bg-gray-200 transition-colors">
+                <UploadCloud className="w-8 h-8 text-gray-400 mb-4" />
+                <h4 className="font-semibold text-gray-900 mb-2">Custom Agreement</h4>
+                <p className="text-sm text-gray-900/50 mb-4">Upload your own legal terms and conditions (PDF only).</p>
                 <div className="glass-button-secondary text-xs !px-3 !py-2 text-center font-medium">
                   Upload PDF
                 </div>
               </label>
             </div>
 
-            <div className="bg-[#b4e6ff]/10 border border-[#b4e6ff]/20 p-5 rounded-2xl flex items-start gap-3 mt-6">
-              <div className="bg-[#b4e6ff]/20 text-[#b4e6ff] rounded-full p-1.5 mt-0.5 border border-[#b4e6ff]/30">
+            <div className="bg-teal-500/10 border border-teal-500/20 p-5 rounded-2xl flex items-start gap-3 mt-6">
+              <div className="bg-teal-500/20 text-teal-600 rounded-full p-1.5 mt-0.5 border border-teal-500/30">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#b4e6ff]">Stripe Connect Integration</p>
-                <p className="text-xs text-white/70 mt-1 leading-relaxed">Payments will be routed directly to your account. A 5% platform fee will be deducted automatically from successful bookings.</p>
+                <p className="text-sm font-semibold text-teal-600">Stripe Connect Integration</p>
+                <p className="text-xs text-gray-900/70 mt-1 leading-relaxed">Payments will be routed directly to your account. A 5% platform fee will be deducted automatically from successful bookings.</p>
               </div>
             </div>
           </div>
@@ -796,21 +796,21 @@ export default function CreateListingPage() {
         >
           {/* Close button */}
           <button 
-            className="absolute top-6 right-6 text-white hover:text-gray-300 bg-white/10 backdrop-blur-md rounded-full p-2.5 border border-white/20 hover:bg-white/20 transition-all z-10"
+            className="absolute top-6 right-6 text-gray-900 hover:text-gray-300 bg-gray-200 backdrop-blur-md rounded-full p-2.5 border border-gray-300 hover:bg-white/20 transition-all z-10"
             onClick={() => setPreviewImage(null)}
           >
             <X className="w-6 h-6" />
           </button>
 
           {/* Image counter */}
-          <div className="absolute top-6 left-6 text-white/70 text-sm font-medium bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 z-10">
+          <div className="absolute top-6 left-6 text-gray-900/70 text-sm font-medium bg-gray-200 backdrop-blur-md px-4 py-2 rounded-full border border-gray-300 z-10">
             {previewImage + 1} / {imageUrls.length}
           </div>
           
           {/* Previous button */}
           {previewImage > 0 && (
             <button 
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/20 hover:bg-white/20 transition-all z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-200 backdrop-blur-md rounded-full p-3 border border-gray-300 hover:bg-white/20 transition-all z-10"
               onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage - 1); }}
             >
               <ChevronLeft className="w-6 h-6" />
@@ -820,7 +820,7 @@ export default function CreateListingPage() {
           {/* Next button */}
           {previewImage < imageUrls.length - 1 && (
             <button 
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/20 hover:bg-white/20 transition-all z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-200 backdrop-blur-md rounded-full p-3 border border-gray-300 hover:bg-white/20 transition-all z-10"
               onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage + 1); }}
             >
               <ChevronRight className="w-6 h-6" />
