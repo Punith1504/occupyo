@@ -6,6 +6,9 @@ import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import DOMPurify from 'isomorphic-dompurify';
+import { zodResponseFormat } from "openai/helpers/zod";
+import { z } from "zod";
 
 // Lazy instantiation functions
 let openaiInstance: OpenAI | null = null;
@@ -64,11 +67,15 @@ export async function POST(request: Request) {
       }
     }
     
-    // 1. Convert natural language to embedding
+    // 1. Convert natural language to embedding, scoped to Minnesota
     const openai = getOpenAI();
+    const queryWithContext = query.toLowerCase().includes('minnesota') || query.toLowerCase().includes('mn') 
+      ? query 
+      : `${query} in Minnesota`;
+
     const response = await openai.embeddings.create({
       model: "text-embedding-3-small",
-      input: query,
+      input: queryWithContext,
       encoding_format: "float",
     });
     
@@ -121,7 +128,11 @@ export async function POST(request: Request) {
       const fallbackProperties = await ingestExternalPropertiesFallback(query);
       return NextResponse.json({ success: true, properties: fallbackProperties, fallbackTriggered: true });
     } catch (fallbackError) {
-      console.error("Even the ultimate fallback threw an error (should never happen):", fallbackError);
+      console.error("Even the ultimate fallback threw an error:", fallbackError);
+      if (process.env.NODE_ENV === 'production') {
+        return NextResponse.json({ success: false, error: "Search temporarily unavailable. Please try again." }, { status: 503 });
+      }
+      
       return NextResponse.json({ 
         success: true, 
         fallbackTriggered: true, 
@@ -130,9 +141,9 @@ export async function POST(request: Request) {
           title: "Ultimate Failsafe Match",
           description: `We couldn't connect to our live servers. Click to search externally for: ${query}`,
           propertyType: "FLEX",
-          address: "Web Search",
+          address: "Minnesota Web Search",
           isExternal: true,
-          sourceUrl: `https://www.loopnet.com/search/commercial-real-estate/for-lease/?sk=${encodeURIComponent(query)}`,
+          sourceUrl: `https://www.loopnet.com/search/commercial-real-estate/minnesota/for-lease/?sk=${encodeURIComponent(query)}`,
           similarity: 0.99
         }] 
       });
@@ -140,16 +151,23 @@ export async function POST(request: Request) {
   }
 }
 
+const ExtractSchema = z.object({
+  pricePerMonth: z.number().nullable().describe("Monthly rent extracted from text, or null if not found"),
+  sizeSqft: z.number().nullable().describe("Square footage extracted from text, or null if not found"),
+  address: z.string().describe("Address or location extracted from text, must be in MN"),
+  description: z.string().describe("A clean summary of the listing")
+});
+
 async function ingestExternalPropertiesFallback(query: string) {
   try {
     const searchUrl = `https://lite.duckduckgo.com/lite/`;
     const searchBody = new URLSearchParams({
-      q: query + " commercial real estate for lease",
+      q: query + " Minnesota commercial real estate for lease",
       kl: "us-en"
     }).toString();
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const timeoutId = setTimeout(() => controller.abort(), 4500);
 
     const res = await fetch(searchUrl, {
       method: 'POST',
@@ -170,10 +188,13 @@ async function ingestExternalPropertiesFallback(query: string) {
     const $ = cheerio.load(html);
     
     const mockProperties: any[] = [];
+    const openai = getOpenAI();
     
-    $("tr").each((i, el) => {
-      if (mockProperties.length >= 3) return;
+    const rows = $("tr").toArray();
+    for (let i = 0; i < rows.length; i++) {
+      if (mockProperties.length >= 3) break;
       
+      const el = rows[i];
       const titleEl = $(el).find(".result-snippet");
       if (titleEl.length > 0) {
         const prevRow = $(el).prev();
@@ -183,20 +204,54 @@ async function ingestExternalPropertiesFallback(query: string) {
         const url = linkEl.attr("href") || "";
         const snippet = titleEl.text().trim();
         
-        if (title && url) {
-          mockProperties.push({
-            id: `external-${Math.random().toString(36).substring(7)}`,
-            title: title.replace(/\|.*/, "").trim(),
-            description: snippet,
-            propertyType: title.toLowerCase().includes("warehouse") ? "WAREHOUSE" : title.toLowerCase().includes("retail") ? "RETAIL" : "OFFICE",
-            address: "Web Listing",
-            isExternal: true,
-            sourceUrl: url,
-            similarity: 0.95
-          });
+        const fullText = \`\${title} \${snippet}\`.toLowerCase();
+        const isMN = fullText.includes('minnesota') || 
+                     fullText.includes(' mn') || 
+                     fullText.includes(', mn') || 
+                     fullText.includes('minneapolis') || 
+                     fullText.includes('st. paul') ||
+                     fullText.includes('st paul') ||
+                     fullText.includes('rochester') ||
+                     fullText.includes('duluth') ||
+                     fullText.includes('bloomington');
+
+        if (title && url && isMN) {
+          let extracted = null;
+          try {
+            const llmResponse = await openai.beta.chat.completions.parse({
+                model: "gpt-4o-mini",
+                messages: [
+                  { role: "system", content: "You are a commercial real estate data extraction assistant. Extract structured fields from the search result snippet. If a field is not present, return null." },
+                  { role: "user", content: \`Title: \${title}\\nSnippet: \${snippet}\` }
+                ],
+                response_format: zodResponseFormat(ExtractSchema, "property_extraction"),
+            });
+            extracted = llmResponse.choices[0].message.parsed;
+          } catch (llmErr) {
+            console.error("LLM Extraction failed for snippet", llmErr);
+          }
+          
+          if (extracted) {
+            const safeTitle = DOMPurify.sanitize(title.replace(/\\|.*/, "").trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+            const safeDescription = DOMPurify.sanitize(extracted.description, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+            const safeAddress = DOMPurify.sanitize(extracted.address || "Minnesota", { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+            
+            mockProperties.push({
+              id: \`external-\${Math.random().toString(36).substring(7)}\`,
+              title: safeTitle,
+              description: safeDescription,
+              propertyType: title.toLowerCase().includes("warehouse") ? "WAREHOUSE" : title.toLowerCase().includes("retail") ? "RETAIL" : "OFFICE",
+              address: safeAddress,
+              pricePerMonth: extracted.pricePerMonth || null,
+              sizeSqft: extracted.sizeSqft || null,
+              isExternal: true,
+              sourceUrl: url,
+              similarity: 0.95
+            });
+          }
         }
       }
-    });
+    }
 
     if (mockProperties.length > 0) {
       return mockProperties;
@@ -205,17 +260,6 @@ async function ingestExternalPropertiesFallback(query: string) {
     throw new Error("No results parsed from scraper");
   } catch (err) {
     console.error("Live Web Scraping Fallback failed:", err);
-    return [
-        {
-          id: 'mock-1',
-          title: "Web Listing Match",
-          description: `External listing found matching: ${query}. Click to search LoopNet.`,
-          propertyType: "FLEX",
-          address: "External Listing",
-          isExternal: true,
-          sourceUrl: `https://www.loopnet.com/search/commercial-real-estate/for-lease/?sk=${encodeURIComponent(query)}`,
-          similarity: 0.90,
-        }
-      ];
+    throw err; // Let the caller handle the failure and determine the fallback mechanism
   }
 }
