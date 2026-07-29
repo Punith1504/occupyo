@@ -3,9 +3,11 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Search, MapPin, Building2, Filter } from "lucide-react";
+import { Suspense } from "react";
 import LocationSearchInput from "./LocationSearchInput";
 import { DiscoveryMap } from "@/components/dashboard/DiscoveryMap";
 import { PropertyCard } from "@/components/search/PropertyCard";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -103,7 +105,7 @@ export default async function PropertySearchPage(props: {
              <select 
                name="type"
                defaultValue={type || "ALL"}
-               className="neu-input w-full pl-10 pr-4 py-3 appearance-none cursor-pointer"
+               className="neu-input w-full pl-10 pr-4 py-3 appearance-none cursor-pointer min-h-[44px]"
              >
                <option value="ALL">All Property Types</option>
                <option value="WAREHOUSE">Warehouse</option>
@@ -112,7 +114,7 @@ export default async function PropertySearchPage(props: {
              </select>
           </div>
           
-          <button type="submit" className="neu-button px-6 py-3 font-medium flex items-center justify-center gap-2 shrink-0">
+          <button type="submit" className="neu-button px-6 py-3 font-medium flex items-center justify-center gap-2 shrink-0 min-h-[44px]">
             <Search className="h-4 w-4" />
             Search
           </button>
@@ -126,7 +128,7 @@ export default async function PropertySearchPage(props: {
               key={tag}
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
               href={`/search?${new URLSearchParams({...searchParams as any, niche: tag}).toString()}`}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${niche === tag ? 'neu-button-active' : 'neu-button'}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 min-h-[44px] flex items-center ${niche === tag ? 'neu-button-active' : 'neu-button'}`}
             >
               {tag}
             </Link>
@@ -166,11 +168,13 @@ export default async function PropertySearchPage(props: {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-12">
-            {properties.map(property => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
+          <ErrorBoundary>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-12">
+              {properties.map(property => (
+                <PropertyCard key={property.id} property={property as any} />
+              ))}
+            </div>
+          </ErrorBoundary>
         )}
         </div>
         

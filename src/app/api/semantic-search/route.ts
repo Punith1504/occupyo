@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import DOMPurify from 'isomorphic-dompurify';
+
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
@@ -201,10 +201,16 @@ async function ingestExternalPropertiesFallback(query: string) {
         const linkEl = prevRow.find(".result-link");
         
         const title = linkEl.text().trim();
-        const url = linkEl.attr("href") || "";
+        let url = linkEl.attr("href") || "";
+        if (url.includes('uddg=')) {
+          const match = url.match(/uddg=([^&]+)/);
+          if (match && match[1]) {
+            url = decodeURIComponent(match[1]);
+          }
+        }
         const snippet = titleEl.text().trim();
         
-        const fullText = \`\${title} \${snippet}\`.toLowerCase();
+        const fullText = `${title} ${snippet}`.toLowerCase();
         const isMN = fullText.includes('minnesota') || 
                      fullText.includes(' mn') || 
                      fullText.includes(', mn') || 
@@ -218,11 +224,11 @@ async function ingestExternalPropertiesFallback(query: string) {
         if (title && url && isMN) {
           let extracted = null;
           try {
-            const llmResponse = await openai.beta.chat.completions.parse({
+            const llmResponse = await openai.chat.completions.parse({
                 model: "gpt-4o-mini",
                 messages: [
-                  { role: "system", content: "You are a commercial real estate data extraction assistant. Extract structured fields from the search result snippet. If a field is not present, return null." },
-                  { role: "user", content: \`Title: \${title}\\nSnippet: \${snippet}\` }
+                  { role: "system", content: "You are a commercial real estate data extraction assistant. Extract structured fields from the search result snippet. If a field is not present, return null. If rent is given per square foot annually (e.g. $20/SF/yr), you MUST calculate the approximate pricePerMonth by doing (pricePerSF * sizeSqft) / 12." },
+                  { role: "user", content: `Title: ${title}\nSnippet: ${snippet}` }
                 ],
                 response_format: zodResponseFormat(ExtractSchema, "property_extraction"),
             });
@@ -232,12 +238,21 @@ async function ingestExternalPropertiesFallback(query: string) {
           }
           
           if (extracted) {
-            const safeTitle = DOMPurify.sanitize(title.replace(/\\|.*/, "").trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-            const safeDescription = DOMPurify.sanitize(extracted.description, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-            const safeAddress = DOMPurify.sanitize(extracted.address || "Minnesota", { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+            const safeTitle = title.replace(/\|.*/, "").trim();
+            const safeDescription = extracted.description;
+            const safeAddress = extracted.address || "Minnesota";
+            
+            const fallbackImages = [
+              "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop",
+              "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
+              "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop",
+              "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=1200&auto=format&fit=crop",
+              "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop"
+            ];
+            const randomImg = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
             
             mockProperties.push({
-              id: \`external-\${Math.random().toString(36).substring(7)}\`,
+              id: `external-${Math.random().toString(36).substring(7)}`,
               title: safeTitle,
               description: safeDescription,
               propertyType: title.toLowerCase().includes("warehouse") ? "WAREHOUSE" : title.toLowerCase().includes("retail") ? "RETAIL" : "OFFICE",
@@ -246,6 +261,7 @@ async function ingestExternalPropertiesFallback(query: string) {
               sizeSqft: extracted.sizeSqft || null,
               isExternal: true,
               sourceUrl: url,
+              images: [{ url: randomImg }],
               similarity: 0.95
             });
           }

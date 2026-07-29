@@ -7,6 +7,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { PropertyCard } from "@/components/search/PropertyCard";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { Navbar } from "@/components/Navbar";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -55,13 +56,13 @@ export default async function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none rounded-2xl md:rounded-[32px]"></div>
             
             {/* Tabs - Match uploaded image style */}
-            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-2 py-2 md:px-10 md:py-4 mb-2 md:mb-8 shadow-sm relative z-20">
-              <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer">
+            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-2 py-2 md:px-10 md:py-4 mb-2 md:mb-8 shadow-sm relative z-20 min-h-[44px]">
+              <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer min-h-[44px] justify-center">
                 <span className="text-gray-900 font-bold text-xs md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
                 <div className="w-full h-[3px] bg-teal-500 rounded-full shadow-[0_0_8px_rgba(20,184,166,0.4)] mt-[2px]"></div>
               </Link>
-              <Link href="/dashboard/owner" className="text-gray-500 font-medium text-xs md:text-base whitespace-nowrap hover:text-gray-900 transition-colors pb-[5px]">Post Space</Link>
-              <Link href="/enterprise" className="text-gray-500 font-medium text-xs md:text-base whitespace-nowrap hover:text-gray-900 transition-colors pb-[5px]">Enterprise Solutions</Link>
+              <Link href="/dashboard/owner" className="flex flex-col justify-center text-gray-500 font-medium text-xs md:text-base whitespace-nowrap hover:text-gray-900 transition-colors pb-[5px] min-h-[44px]">Post Space</Link>
+              <Link href="/enterprise" className="flex flex-col justify-center text-gray-500 font-medium text-xs md:text-base whitespace-nowrap hover:text-gray-900 transition-colors pb-[5px] min-h-[44px]">Enterprise Solutions</Link>
             </div>
 
             {/* Property Types - Minimalist Icons */}
@@ -94,7 +95,7 @@ export default async function Home() {
       </div>
 
       {/* 3. Featured Properties Section */}
-      <div className="w-full py-16 md:py-32 px-4 sm:px-6 lg:px-12 relative z-10">
+      <div className="w-full py-8 md:py-32 px-4 sm:px-6 lg:px-12 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-12 md:mb-20">
             <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight drop-shadow-sm">Featured Spaces</h2>
@@ -110,17 +111,19 @@ export default async function Home() {
               <p className="mt-2 text-base text-gray-500">Check back later for new listings.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {properties.map((property, index) => {
-                // Make the first item and the 6th item span 2 columns to create a dynamic masonry/bento layout
-                const isHorizontal = index === 0 || index === 5;
-                return (
-                  <div key={property.id} className={isHorizontal ? "col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2" : "col-span-1"}>
-                    <PropertyCard property={property} variant="home" isHorizontal={isHorizontal} />
-                  </div>
-                );
-              })}
-            </div>
+            <ErrorBoundary>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {properties.map((property, index) => {
+                  // Make the first item and the 6th item span 2 columns to create a dynamic masonry/bento layout
+                  const isHorizontal = index === 0 || index === 5;
+                  return (
+                    <div key={property.id} className={isHorizontal ? "col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2" : "col-span-1"}>
+                      <PropertyCard property={property as any} variant="home" isHorizontal={isHorizontal} />
+                    </div>
+                  );
+                })}
+              </div>
+            </ErrorBoundary>
           )}
         </div>
       </div>

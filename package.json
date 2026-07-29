@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "test:security": "vitest run tests/security",
     "test:integration": "vitest run tests/integration",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "seed:demo": "npx tsx scripts/seed-demo-mn.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.4",

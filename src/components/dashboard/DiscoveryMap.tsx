@@ -112,7 +112,7 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
       mapInstance.current.data.setStyle((feature) => {
         const type = feature.getProperty('type');
         if (type === 'isochrone') {
-          const contour = feature.getProperty('contour');
+          const contour = feature.getProperty('contour') as number;
           let color = '#22c55e'; // 5 min
           if (contour === 10) color = '#eab308';
           if (contour === 15) color = '#ef4444';
@@ -127,7 +127,7 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
         }
         
         if (type === 'foot_traffic') {
-          const intensity = feature.getProperty('intensity');
+          const intensity = feature.getProperty('intensity') as number;
           return {
             icon: {
               path: window.google.maps.SymbolPath.CIRCLE,
