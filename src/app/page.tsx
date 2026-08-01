@@ -11,15 +11,21 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const properties = await prisma.property.findMany({
-    where: { status: "AVAILABLE" },
-    include: {
-      images: {
-        orderBy: { isHero: 'desc' }
-      }
-    },
-    take: 12,
-  });
+  let properties: any[] = [];
+  try {
+    properties = await prisma.property.findMany({
+      where: { status: "AVAILABLE" },
+      include: {
+        images: {
+          orderBy: { isHero: 'desc' }
+        }
+      },
+      take: 12,
+    });
+  } catch (error: any) {
+    console.error("Homepage DB error:", error.message);
+    // properties stays as empty array, page still renders
+  }
 
   return (
     <div className="flex flex-col font-sans bg-[#FAFAF7]">
