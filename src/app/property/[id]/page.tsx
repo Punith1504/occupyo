@@ -15,21 +15,33 @@ export default async function PropertyPage(
   }
 ) {
   const params = await props.params;
-  const property = await prisma.property.findUnique({
-    where: { id: params.id },
-    include: {
-      owner: {
-        select: {
-          companyName: true,
-          clerkUserId: true,
-        }
-      },
-      images: {
-        orderBy: { isHero: 'desc' }
-      },
-      suites: true
-    }
-  });
+  let property;
+  try {
+    property = await prisma.property.findUnique({
+      where: { id: params.id },
+      include: {
+        owner: {
+          select: {
+            companyName: true,
+            clerkUserId: true,
+          }
+        },
+        images: {
+          orderBy: { isHero: 'desc' }
+        },
+        suites: true
+      }
+    });
+  } catch (error: any) {
+    return (
+      <div className="p-10 text-red-500 bg-white border border-red-500 rounded m-10 font-mono">
+        <h1 className="text-2xl font-bold mb-4">CRITICAL VERCEL ERROR:</h1>
+        <pre className="whitespace-pre-wrap">{error.message}</pre>
+        <pre className="whitespace-pre-wrap text-sm mt-4 text-gray-600">{error.stack}</pre>
+        <p className="mt-6 text-black font-bold">Please screenshot this and send it back to the AI!</p>
+      </div>
+    );
+  }
 
   if (!property) {
     notFound();
