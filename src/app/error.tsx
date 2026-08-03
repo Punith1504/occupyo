@@ -26,12 +26,7 @@ export default function Error({
         <h2 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Something went wrong</h2>
         
         <p className="text-gray-600 mb-8 leading-relaxed">
-          {error.message.includes("Can't reach database server") || 
-           error.message.includes("PrismaClient") ||
-           error.message.includes("Server Components render") ||
-           error.digest != null
-            ? "Our database is currently waking up from sleep mode, or your Vercel Environment Variables are missing. Please wait a few seconds and try again, or check your Vercel settings."
-            : "We encountered an unexpected error while rendering this page."}
+          {error.message || "We encountered an unexpected error while rendering this page."}
         </p>
 
         <div className="flex flex-col gap-3">

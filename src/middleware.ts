@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   '/onboarding',
   '/property(.*)',
   '/search(.*)',
+  '/commercial-space(.*)',
   '/api/telemetry',
   '/api/properties/search',
   '/api/vision-search',

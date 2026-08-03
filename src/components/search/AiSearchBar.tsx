@@ -246,7 +246,7 @@ export default function AiSearchBar() {
             const matchPercentage = Math.round((property.similarity || 0) * 100);
             return (
               <Link 
-                href={property.isExternal ? (property.sourceUrl || '#') : `/properties/${property.id}`} 
+                href={property.isExternal ? (property.sourceUrl || '#') : `/property/${property.id}`} 
                 target={property.isExternal ? "_blank" : undefined}
                 key={property.id} 
                 className="block group/card"
