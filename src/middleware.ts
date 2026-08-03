@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/properties/search',
   '/api/vision-search',
   '/api/semantic-search',
+  '/api/cron/keepalive',
 
   '/api/webhooks/clerk',
   '/api/webhooks/stripe',
