@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Occupyo</string>
+    <string name="title_activity_main">Occupyo</string>
+    <string name="package_name">com.occupyo.app</string>
+    <string name="custom_url_scheme">com.occupyo.app</string>
+</resources>
