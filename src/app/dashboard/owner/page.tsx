@@ -153,7 +153,7 @@ export default async function OwnerDashboardOverview() {
         </div>
       )}
 
-      <PropertyTimeline events={activityLogs} />
+      <PropertyTimeline events={JSON.parse(JSON.stringify(activityLogs))} />
 
       <CommunityCard />
     </div>

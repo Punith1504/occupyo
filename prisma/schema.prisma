@@ -5,7 +5,168 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
-  extensions = [vector, postgis]
+  extensions = [postgis, vector]
+}
+
+model User {
+  id               String         @id @default(cuid())
+  clerkUserId      String         @unique
+  role             Role?
+  email            String         @unique
+  companyName      String?
+  einVerified      Boolean        @default(false)
+  coiUploaded      Boolean        @default(false)
+  phone            String?
+  createdAt        DateTime       @default(now())
+  referralCode     String?        @unique
+  referredBy       String?
+  activityLogs     ActivityLog[]
+  brokerDeals      Deal[]         @relation("BrokerDeals")
+  tenantDeals      Deal[]         @relation("TenantDeals")
+  leases           Lease[]
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  sentMessages     Message[]      @relation("SentMessages")
+  properties       Property[]
+  spaceRequests    SpaceRequest[]
+}
+
+model Property {
+  id             String                    @id @default(cuid())
+  ownerId        String
+  title          String
+  description    String
+  propertyType   PropertyType
+  sizeSqft       Int
+  pricePerMonth  Float
+  address        String
+  lat            Float?
+  lng            Float?
+  amenities      Json                      @default("[]")
+  status         String                    @default("AVAILABLE")
+  createdAt      DateTime                  @default(now())
+  durationUnit   String                    @default("MONTHS")
+  maxDuration    Int                       @default(12)
+  minDuration    Int                       @default(1)
+  pricePerDay    Float?
+  pricePerHour   Float?
+  embedding      Unsupported("vector")?
+  isExternal     Boolean                   @default(false)
+  sourceUrl      String?
+  location       Unsupported("geography")?
+  imageEmbedding Unsupported("vector")?
+  capRate        Float?
+  leaseType      String?
+  noi            Float?
+  activityLogs   ActivityLog[]
+  deals          Deal[]
+  images         Image[]
+  leases         Lease[]
+  owner          User                      @relation(fields: [ownerId], references: [id])
+  suites         Suite[]
+}
+
+model Image {
+  id         String   @id @default(cuid())
+  propertyId String
+  url        String
+  isHero     Boolean  @default(false)
+  property   Property @relation(fields: [propertyId], references: [id])
+}
+
+model Lease {
+  id              String      @id @default(cuid())
+  propertyId      String
+  tenantId        String
+  startDate       DateTime
+  endDate         DateTime
+  totalAmount     Float
+  status          LeaseStatus @default(PENDING)
+  stripePaymentId String?
+  createdAt       DateTime    @default(now())
+  bookingType     String      @default("MONTHLY")
+  property        Property    @relation(fields: [propertyId], references: [id])
+  tenant          User        @relation(fields: [tenantId], references: [id])
+}
+
+model SpaceRequest {
+  id             String       @id @default(cuid())
+  tenantId       String
+  requiredType   PropertyType
+  minSqft        Int
+  maxBudget      Float
+  durationMonths Int
+  city           String
+  status         String       @default("OPEN")
+  createdAt      DateTime     @default(now())
+  tenant         User         @relation(fields: [tenantId], references: [id])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  senderId   String
+  receiverId String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+}
+
+model UserEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  eventType String
+  eventData Json     @default("{}")
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String    @id @default(cuid())
+  userId      String
+  propertyId  String?
+  type        String
+  title       String
+  description String
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  property    Property? @relation(fields: [propertyId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Deal {
+  id              String     @id @default(cuid())
+  propertyId      String
+  tenantId        String
+  brokerId        String?
+  status          DealStatus @default(INQUIRY)
+  commissionFee   Float?
+  loiDocumentUrl  String?
+  proposedRent    Float?
+  leaseTermMonths Int?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  broker          User?      @relation("BrokerDeals", fields: [brokerId], references: [id])
+  property        Property   @relation(fields: [propertyId], references: [id])
+  tenant          User       @relation("TenantDeals", fields: [tenantId], references: [id])
+}
+
+model Suite {
+  id            String   @id @default(cuid())
+  propertyId    String
+  title         String
+  sizeSqft      Int
+  pricePerMonth Float
+  status        String   @default("AVAILABLE")
+  property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
 }
 
 enum Role {
@@ -35,158 +196,4 @@ enum DealStatus {
   LOI_SUBMITTED
   LEASE_SIGNED
   CLOSED
-}
-
-model User {
-  id             String    @id @default(cuid())
-  clerkUserId    String    @unique
-  role           Role?     
-  email          String    @unique
-  companyName    String?
-  einVerified    Boolean   @default(false)
-  coiUploaded    Boolean   @default(false)
-  phone          String?
-  referralCode   String?   @unique
-  referredBy     String?
-  createdAt      DateTime  @default(now())
-  
-  properties     Property[]
-  leases         Lease[]
-  spaceRequests  SpaceRequest[]
-  sentMessages   Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
-  activityLogs   ActivityLog[]
-  tenantDeals    Deal[]    @relation("TenantDeals")
-  brokerDeals    Deal[]    @relation("BrokerDeals")
-}
-
-model Property {
-  id               String       @id @default(cuid())
-  ownerId          String
-  owner            User         @relation(fields: [ownerId], references: [id])
-  title            String
-  description      String
-  propertyType     PropertyType
-  sizeSqft         Int
-  pricePerHour     Float?
-  pricePerDay      Float?
-  pricePerMonth    Float
-  minDuration      Int      @default(1)
-  maxDuration      Int      @default(12)
-  durationUnit     String   @default("MONTHS") // "HOURS", "DAYS", "MONTHS"
-  address          String
-  lat              Float?
-  lng              Float?
-  amenities        Json         @default("[]")
-  status           String       @default("AVAILABLE")
-  createdAt        DateTime     @default(now())
-  embedding        Unsupported("vector(1536)")?
-  location         Unsupported("geography(Point, 4326)")?
-  imageEmbedding   Unsupported("vector(512)")?
-  isExternal       Boolean      @default(false)
-  sourceUrl        String?
-  capRate          Float?
-  noi              Float?
-  leaseType        String?
-  
-  images           Image[]
-  leases           Lease[]
-  activityLogs     ActivityLog[]
-  deals            Deal[]
-  suites           Suite[]
-}
-
-model Image {
-  id         String   @id @default(cuid())
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id])
-  url        String   @db.Text
-  isHero     Boolean  @default(false)
-}
-
-model Lease {
-  id              String      @id @default(cuid())
-  propertyId      String
-  property        Property    @relation(fields: [propertyId], references: [id])
-  tenantId        String
-  tenant          User        @relation(fields: [tenantId], references: [id])
-  startDate       DateTime
-  endDate         DateTime
-  totalAmount     Float
-  bookingType     String      @default("MONTHLY") // "HOURLY", "DAILY", "MONTHLY"
-  status          LeaseStatus @default(PENDING)
-  stripePaymentId String?
-  createdAt       DateTime    @default(now())
-}
-
-model SpaceRequest {
-  id             String       @id @default(cuid())
-  tenantId       String
-  tenant         User         @relation(fields: [tenantId], references: [id])
-  requiredType   PropertyType
-  minSqft        Int
-  maxBudget      Float
-  durationMonths Int
-  city           String
-  status         String       @default("OPEN")
-  createdAt      DateTime     @default(now())
-}
-
-model Message {
-  id         String   @id @default(cuid())
-  content    String
-  senderId   String
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
-  receiverId String
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  read       Boolean  @default(false)
-  createdAt  DateTime @default(now())
-}
-
-model UserEvent {
-  id        String   @id @default(cuid())
-  userId    String?
-  eventType String   // e.g., 'SEARCH', 'VIEW_PROPERTY', 'CLICK'
-  eventData Json     @default("{}") // Store query, propertyId, etc.
-  createdAt DateTime @default(now())
-}
-
-model ActivityLog {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  propertyId  String?
-  property    Property? @relation(fields: [propertyId], references: [id])
-  type        String   // "PAYMENT_RECEIVED", "PROPERTY_CREATED", "LEASE_APPROVED"
-  title       String
-  description String
-  metadata    Json     @default("{}")
-  createdAt   DateTime @default(now())
-}
-
-model Deal {
-  id              String      @id @default(cuid())
-  propertyId      String
-  property        Property    @relation(fields: [propertyId], references: [id])
-  tenantId        String
-  tenant          User        @relation("TenantDeals", fields: [tenantId], references: [id])
-  brokerId        String?
-  broker          User?       @relation("BrokerDeals", fields: [brokerId], references: [id])
-  status          DealStatus  @default(INQUIRY)
-  commissionFee   Float?
-  loiDocumentUrl  String?
-  proposedRent    Float?
-  leaseTermMonths Int?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-}
-
-model Suite {
-  id              String      @id @default(cuid())
-  propertyId      String
-  property        Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  title           String
-  sizeSqft        Int
-  pricePerMonth   Float
-  status          String      @default("AVAILABLE")
 }

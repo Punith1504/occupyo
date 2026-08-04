@@ -34,7 +34,10 @@ export default async function EditPropertyPage({ params }: { params: Promise<{ i
 
   return (
     <ErrorBoundary>
-      <EditPropertyClient property={property} initialImages={property.images} />
+      <EditPropertyClient 
+        property={JSON.parse(JSON.stringify(property))} 
+        initialImages={property.images} 
+      />
     </ErrorBoundary>
   );
 }
