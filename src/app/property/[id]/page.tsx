@@ -47,7 +47,20 @@ export default async function PropertyPage(
     notFound();
   }
 
-  const amenities = property.amenities as string[] || [];
+  let parsedAmenities: string[] = [];
+  try {
+    if (typeof property.amenities === 'string') {
+      parsedAmenities = JSON.parse(property.amenities);
+      if (typeof parsedAmenities === 'string') {
+        parsedAmenities = JSON.parse(parsedAmenities); // Handle double-stringified
+      }
+    } else if (Array.isArray(property.amenities)) {
+      parsedAmenities = property.amenities as string[];
+    }
+  } catch (e) {
+    parsedAmenities = [];
+  }
+  const amenities = Array.isArray(parsedAmenities) ? parsedAmenities : [];
 
   return (
     <div className="min-h-screen bg-transparent pb-20 font-sans">

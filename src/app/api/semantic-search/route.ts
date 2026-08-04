@@ -108,13 +108,13 @@ export async function POST(request: Request) {
         AND "embedding" IS NOT NULL
         ${spatialFilter}
       ORDER BY "embedding" <=> ${embeddingString}::vector
-      LIMIT 5;
+      LIMIT 10;
     `;
 
     // 4. Threshold Check: Fallback Scraper Engine
     const bestSimilarity = properties.length > 0 ? (properties[0].similarity as number) : 0;
     
-    if (properties.length === 0 || bestSimilarity < 0.65) {
+    if (properties.length === 0 || bestSimilarity < 0.50) {
       console.log("Triggering Fallback Scraper Engine. Best similarity was:", bestSimilarity);
       const fallbackProperties = await ingestExternalPropertiesFallback(query);
       return NextResponse.json({ success: true, properties: fallbackProperties, fallbackTriggered: true });
