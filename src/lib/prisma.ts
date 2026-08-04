@@ -11,7 +11,7 @@ connectionString = connectionString.replace('?sslmode=require', '?').replace('&s
 
 const pool = new Pool({ 
   connectionString,
-  ssl: process.env.NODE_ENV === 'production' ? true : { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false }
 })
 const adapter = new PrismaPg(pool)
 
