@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createPropertyListing } from '@/app/actions/property';
-import { authMock } from '../setup';
+import { authMock, prismaMock } from '../setup';
 import { z } from 'zod';
 
 // Assuming we add a Zod schema to the action, we test its interception here.
@@ -9,6 +9,7 @@ import { z } from 'zod';
 describe('Server Action Isolation: Schema Validation', () => {
   it('should intercept malformed payloads before database execution', async () => {
     authMock.mockResolvedValue({ userId: 'valid_user_123' });
+    prismaMock.user.findUnique.mockResolvedValue({ id: 'valid_user_123', role: 'OWNER' } as any);
 
     // Payload missing required fields and containing negative numbers
     const malformedPayload: any = {
