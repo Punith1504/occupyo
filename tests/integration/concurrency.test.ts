@@ -6,6 +6,7 @@ import { DealStatus } from '@prisma/client';
 describe('Concurrency & Race Condition Audit: Transaction Locks', () => {
   it('should prevent duplicate deals from being created for the same property simultaneously', async () => {
     authMock.mockResolvedValue({ userId: 'tenant_uuid_123' });
+    prismaMock.user.findUnique.mockResolvedValue({ id: 'tenant_uuid_123', role: 'TENANT' } as any);
 
     // Mock Prisma to simulate a unique constraint violation or successful insert
     let insertCount = 0;
