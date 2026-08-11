@@ -132,11 +132,11 @@ export default async function Home() {
       </div>
 
       {/* 4. Trust Signals & Testimonials */}
-      <div className="w-full border-t border-gray-200 py-24 px-4 bg-white/40 backdrop-blur-md">
+      <div className="w-full border-t border-gray-200 py-12 md:py-16 px-4 bg-white/40 backdrop-blur-md">
         <TrustSignals />
       </div>
 
-      <div className="w-full py-28 bg-[#FAFAF7]">
+      <div className="w-full py-12 md:py-16 bg-[#FAFAF7]">
         <Testimonials />
       </div>
     </div>
