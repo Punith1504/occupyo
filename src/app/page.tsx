@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   let properties: any[] = [];
+  let dbError: string | null = null;
   try {
     properties = await prisma.property.findMany({
       where: { status: "AVAILABLE" },
@@ -24,7 +25,7 @@ export default async function Home() {
     });
   } catch (error: any) {
     console.error("Homepage DB error:", error.message);
-    // properties stays as empty array, page still renders
+    dbError = error.message;
   }
 
   return (
@@ -112,6 +113,12 @@ export default async function Home() {
               <Building2 className="mx-auto h-16 w-16 text-gray-300" />
               <h3 className="mt-4 text-lg font-semibold text-gray-900">No properties</h3>
               <p className="mt-2 text-base text-gray-500">Check back later for new listings.</p>
+              {dbError && (
+                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm max-w-xl mx-auto overflow-auto text-left">
+                  <p className="font-bold mb-1">Database Error:</p>
+                  <pre className="whitespace-pre-wrap">{dbError}</pre>
+                </div>
+              )}
             </div>
           ) : (
             <ErrorBoundary>
