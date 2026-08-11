@@ -587,7 +587,7 @@ export default function CreateListingPage() {
               </p>
             </div>
             
-            <div className="h-64 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden relative">
+            <div className="h-64 rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden relative shadow-sm">
               {formData.address && formData.address.length > 5 ? (
                 <InteractiveMap 
                   lat={formData.lat || 0} 
@@ -596,8 +596,8 @@ export default function CreateListingPage() {
                   className="w-full h-full"
                 />
               ) : (
-                <div className="bg-white/5 w-full h-full flex flex-col items-center justify-center">
-                  <MapPin className="h-10 w-10 text-gray-900/30 mb-2" />
+                <div className="bg-gray-50 w-full h-full flex flex-col items-center justify-center">
+                  <MapPin className="h-10 w-10 text-gray-300 mb-2" />
                   <p className="text-gray-500 font-medium">Map Preview</p>
                   <p className="text-sm text-gray-400">Map will center on selected address</p>
                 </div>
@@ -636,7 +636,7 @@ export default function CreateListingPage() {
               >
                 {({ open }) => (
                   <div 
-                    className="relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-teal-500/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                    className="relative overflow-hidden border-2 border-dashed border-gray-300 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-300 ease-out bg-gray-50 hover:bg-teal-50 hover:border-teal-400"
                     onClick={(e) => {
                       e.preventDefault();
                       if (imageUrls.length >= MAX_IMAGES) {
@@ -647,17 +647,16 @@ export default function CreateListingPage() {
                       open();
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[#b4e6ff]/0 via-[#b4e6ff]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
                     
                     <div className="relative z-10 flex flex-col items-center">
-                      <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-white/10 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                        <UploadCloud className="h-10 w-10 text-teal-600 drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
+                      <div className="bg-white p-5 rounded-2xl mb-6 shadow-sm border border-gray-200 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300">
+                        <UploadCloud className="h-10 w-10 text-teal-600" strokeWidth={1.5} />
                       </div>
                       
-                      <h4 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight group-hover:text-teal-600 transition-colors">
+                      <h4 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight group-hover:text-teal-700 transition-colors">
                         Click to Upload securely
                       </h4>
-                      <p className="text-sm text-gray-900/50 max-w-sm leading-relaxed mb-4">
+                      <p className="text-sm text-gray-500 max-w-sm leading-relaxed mb-4">
                         Supported formats: JPG, PNG, WEBP (Max 10MB per file)
                       </p>
                     </div>

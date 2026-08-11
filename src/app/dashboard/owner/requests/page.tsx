@@ -18,7 +18,7 @@ export default async function OwnerSpaceRequestsPage() {
     where: { clerkUserId: userId || '' }
   });
 
-  if (!user || (user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN" && (user.role as string) !== "ADMIN") {
+  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) {
     if (process.env.NODE_ENV === "production" && !userId) return <div>Loading...</div>;
     redirect("/onboarding");
   }
@@ -88,6 +88,21 @@ export default async function OwnerSpaceRequestsPage() {
                   <Calendar className="w-4 h-4 text-gray-400" />
                   <span>Expected term: <strong>{req.durationMonths} months</strong></span>
                 </div>
+                {req.description ? (
+                  <div className="mt-4">
+                    <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Description / Needs</h4>
+                    <p className="text-sm text-gray-700 leading-relaxed bg-white border border-gray-200 p-4 rounded-lg italic">
+                      "{req.description}"
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-4">
+                    <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Description / Needs</h4>
+                    <p className="text-sm text-gray-400 leading-relaxed bg-white border border-gray-100 border-dashed p-4 rounded-lg italic">
+                      No detailed description provided.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 border-t border-gray-100 mt-auto">

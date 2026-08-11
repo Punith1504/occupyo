@@ -96,9 +96,19 @@ export default async function TenantRequestsPage() {
                     <span className="text-sm font-medium text-gray-700">{req.durationMonths} months</span>
                   </div>
                 </div>
+                
+                {req.description ? (
+                  <div className="bg-gray-50 rounded-lg p-3 mt-4 border border-gray-100">
+                    <p className="text-sm text-gray-700 line-clamp-3">{req.description}</p>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 rounded-lg p-3 mt-4 border border-gray-100 border-dashed">
+                    <p className="text-sm text-gray-400 italic">No detailed description provided.</p>
+                  </div>
+                )}
               </div>
               
-              <div className="text-right">
+              <div className="text-right flex-shrink-0 self-start md:self-center mt-4 md:mt-0">
                 <div className="text-xs text-gray-500 mb-1">Minimum Size</div>
                 <div className="text-xl font-bold text-gray-900">{req.minSqft.toLocaleString()} <span className="text-sm text-gray-500 font-normal">sqft</span></div>
               </div>

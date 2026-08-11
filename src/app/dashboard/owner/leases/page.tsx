@@ -18,7 +18,7 @@ export default async function OwnerLeasesPage() {
     where: { clerkUserId: userId || '' }
   });
 
-  if (!user || (user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN" && (user.role as string) !== "ADMIN") {
+  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) {
     if (process.env.NODE_ENV === "production" && !userId) return <div>Loading...</div>;
     redirect("/onboarding");
   }

@@ -11,6 +11,7 @@ export async function createSpaceRequest(data: {
   maxBudget: number;
   durationMonths: number;
   city: string;
+  description?: string;
 }) {
   const { userId } = await auth();
 
@@ -35,6 +36,7 @@ export async function createSpaceRequest(data: {
         maxBudget: data.maxBudget,
         durationMonths: data.durationMonths,
         city: data.city,
+        description: data.description,
         status: "OPEN",
       }
     });

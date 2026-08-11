@@ -18,6 +18,7 @@ export default function NewSpaceRequestPage() {
     maxBudget: "",
     durationMonths: "6",
     city: "",
+    description: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +32,7 @@ export default function NewSpaceRequestPage() {
       maxBudget: parseFloat(formData.maxBudget) || 0,
       durationMonths: parseInt(formData.durationMonths) || 6,
       city: formData.city,
+      description: formData.description,
     });
 
     setLoading(false);
@@ -136,6 +138,20 @@ export default function NewSpaceRequestPage() {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Describe your needs in detail
+            </label>
+            <p className="text-xs text-gray-500 mb-2">Owners are more likely to respond to detailed requests. E.g. "HVAC contractor looking for 3,000 SF with 2 roll-up doors and office buildout."</p>
+            <textarea 
+              rows={4}
+              value={formData.description}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              placeholder="Tell landlords exactly what you're looking for, your timeline, and any specific requirements..."
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black outline-none resize-none"
+            />
           </div>
 
           <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">

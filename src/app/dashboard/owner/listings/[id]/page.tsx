@@ -17,7 +17,7 @@ export default async function EditPropertyPage({ params }: { params: Promise<{ i
     where: { clerkUserId: userId },
   });
 
-  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
+  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) {
     redirect("/dashboard");
   }
 

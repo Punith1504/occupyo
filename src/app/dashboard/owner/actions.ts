@@ -32,7 +32,7 @@ export async function createPropertyAction(data: {
       where: { clerkUserId: userId }
     });
 
-    if (!user || (user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN") {
+    if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) {
       return { success: false, error: "Unauthorized. Must be an owner." };
     }
 
@@ -111,7 +111,7 @@ export async function updatePropertyAction(
       where: { clerkUserId: userId },
     });
 
-    if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
+    if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) {
       return { success: false, error: "Unauthorized. Must be an owner." };
     }
 
@@ -182,7 +182,7 @@ export async function updatePropertyImagesAction(propertyId: string, imageUrls: 
       where: { clerkUserId: userId },
     });
 
-    if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
+    if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) {
       return { success: false, error: "Unauthorized. Must be an owner." };
     }
 

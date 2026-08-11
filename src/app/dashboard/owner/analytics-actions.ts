@@ -32,7 +32,7 @@ export async function getOwnerAnalytics(): Promise<AnalyticsData | null> {
     }
   });
 
-  if (!user || (user.role as string) !== "OWNER") return null;
+  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) return null;
 
   const properties = user.properties;
 

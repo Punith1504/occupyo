@@ -24,7 +24,7 @@ export default async function OwnerSettingsPage() {
     console.error("Database connection failed:", error);
   }
 
-  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "ADMIN")) {
+  if (!user || ((user.role as string) !== "OWNER" && (user.role as string) !== "BROKER" && (user.role as string) !== "ADMIN")) {
     if (process.env.NODE_ENV === "production" && !userId) {
        return <div>Loading...</div>; 
     }

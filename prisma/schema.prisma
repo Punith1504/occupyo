@@ -96,6 +96,7 @@ model SpaceRequest {
   maxBudget      Float
   durationMonths Int
   city           String
+  description    String?
   status         String       @default("OPEN")
   createdAt      DateTime     @default(now())
   tenant         User         @relation(fields: [tenantId], references: [id])
