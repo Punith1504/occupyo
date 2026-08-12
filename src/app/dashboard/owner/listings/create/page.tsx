@@ -75,55 +75,10 @@ export default function CreateListingPage() {
     }
   };
 
-  // Initialize standard Google Maps Autocomplete
+  // Use Nominatim for Autocomplete (Optional future improvement)
   useEffect(() => {
-    if (currentStep === 1 && autocompleteContainerRef.current && !autocompleteInstanceRef.current) {
-      const initAutocomplete = () => {
-        if (!window.google) return;
-        
-        if (window.google?.maps?.places?.Autocomplete) {
-          const autocomplete = new window.google.maps.places.Autocomplete(
-            autocompleteContainerRef.current as HTMLInputElement,
-            { componentRestrictions: { country: ["us"] }, fields: ['formatted_address', 'geometry', 'name'] }
-          );
-          
-          autocomplete.addListener('place_changed', () => {
-            const place = autocomplete.getPlace();
-            
-            setFormData(prev => ({
-              ...prev,
-              address: place.formatted_address || place.name || "",
-              lat: place.geometry?.location?.lat() || null,
-              lng: place.geometry?.location?.lng() || null,
-            }));
-            hapticMedium();
-          });
-          
-          autocompleteInstanceRef.current = autocomplete;
-        }
-      };
-
-      if (!window.google) {
-        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-        if (!existingScript) {
-          const script = document.createElement("script");
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-          script.async = true;
-          script.defer = true;
-          document.head.appendChild(script);
-          script.onload = () => initAutocomplete();
-        } else {
-          const checkGoogle = setInterval(() => {
-            if (window.google && window.google.maps) {
-              clearInterval(checkGoogle);
-              initAutocomplete();
-            }
-          }, 100);
-        }
-      } else {
-        initAutocomplete();
-      }
-    }
+    // We removed Google Maps to fix the grey error box.
+    // Address can be typed manually for now or use 'Current Location'.
   }, [currentStep]);
 
   useEffect(() => {

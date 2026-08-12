@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import Map, { Marker } from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 interface InteractiveMapProps {
   lat: number | null;
@@ -11,259 +12,42 @@ interface InteractiveMapProps {
   className?: string;
 }
 
-// Cinematic Dark Mode Map Style
-const darkMapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-  {
-    featureType: "administrative.country",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#4b6878" }],
-  },
-  {
-    featureType: "administrative.land_parcel",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#64779e" }],
-  },
-  {
-    featureType: "administrative.province",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#4b6878" }],
-  },
-  {
-    featureType: "landscape.man_made",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#334e87" }],
-  },
-  {
-    featureType: "landscape.natural",
-    elementType: "geometry",
-    stylers: [{ color: "#021019" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "geometry",
-    stylers: [{ color: "#283d6a" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#6f9ba5" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#1d2c4d" }],
-  },
-  {
-    featureType: "poi.park",
-    elementType: "geometry.fill",
-    stylers: [{ color: "#023e58" }],
-  },
-  {
-    featureType: "poi.park",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#3C7680" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#304a7d" }],
-  },
-  {
-    featureType: "road",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#98a5be" }],
-  },
-  {
-    featureType: "road",
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#1d2c4d" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#2c6675" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#255763" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#b0d5ce" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#023e58" }],
-  },
-  {
-    featureType: "transit",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#98a5be" }],
-  },
-  {
-    featureType: "transit",
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#1d2c4d" }],
-  },
-  {
-    featureType: "transit.line",
-    elementType: "geometry.fill",
-    stylers: [{ color: "#283d6a" }],
-  },
-  {
-    featureType: "transit.station",
-    elementType: "geometry",
-    stylers: [{ color: "#3a4762" }],
-  },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#0e1626" }],
-  },
-  {
-    featureType: "water",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#4e6d70" }],
-  },
-];
-
 export default function InteractiveMap({ lat, lng, address, zoom = 14, className = "" }: InteractiveMapProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<google.maps.Map | null>(null);
-  const markerInstance = useRef<google.maps.Marker | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [loadError, setLoadError] = useState(false);
+  const [viewState, setViewState] = useState({
+    longitude: lng || -122.4194,
+    latitude: lat || 37.7749,
+    zoom: lat && lng ? zoom : 4,
+  });
 
   useEffect(() => {
-    const initMap = () => {
-      if (!mapRef.current || !window.google) return;
-      setIsLoaded(true);
-  
-      const defaultLocation = { lat: 37.7749, lng: -122.4194 }; // SF default
-      const position = lat && lng ? { lat, lng } : defaultLocation;
-  
-      mapInstance.current = new window.google.maps.Map(mapRef.current, {
-        center: position,
-        zoom: lat && lng ? zoom : 4, // zoom out if no location
-        styles: darkMapStyle,
-        disableDefaultUI: true, // cleaner look
-        zoomControl: true,
-        gestureHandling: "cooperative",
-        backgroundColor: "#0e1626",
+    if (lat && lng) {
+      setViewState({
+        longitude: lng,
+        latitude: lat,
+        zoom: zoom
       });
-  
-      if (lat && lng) {
-        markerInstance.current = new window.google.maps.Marker({
-          position,
-          map: mapInstance.current,
-          animation: window.google.maps.Animation.DROP,
-          icon: {
-            path: window.google.maps.SymbolPath.CIRCLE,
-            scale: 10,
-            fillColor: "#b4e6ff", // Pastel Accent
-            fillOpacity: 1,
-            strokeColor: "#ffffff",
-            strokeWeight: 2,
-          }
-        });
-      }
-
-      // Detect "ApiNotActivatedMapError" or other internal GMaps errors 
-      // which inject a gray "Oops!" box directly into the div without throwing exceptions
-      const observer = new MutationObserver(() => {
-        if (mapRef.current?.innerText.includes("Oops! Something went wrong") || 
-            mapRef.current?.querySelector('.gm-err-container')) {
-          setLoadError(true);
-          observer.disconnect();
-        }
-      });
-      observer.observe(mapRef.current, { childList: true, subtree: true });
-    };
-
-    // If maps api is already loaded, init right away
-    if (window.google && window.google.maps) {
-      initMap();
-      return;
-    }
-
-    // Otherwise, it might be loading from PredictiveAddressInput, or we need to load it
-    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      // Catch Google Maps Auth/Billing failures globally
-      (window as any).gm_authFailure = () => setLoadError(true);
-      script.onload = () => initMap();
-      script.onerror = () => setLoadError(true);
-      document.head.appendChild(script);
-    } else {
-      // Script is there, just wait for it to execute
-      const checkGoogle = setInterval(() => {
-        if (window.google && window.google.maps) {
-          clearInterval(checkGoogle);
-          initMap();
-        }
-      }, 100);
-      return () => clearInterval(checkGoogle);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    // Update map when lat/lng changes
-    if (mapInstance.current && lat && lng) {
-      const pos = { lat, lng };
-      mapInstance.current.panTo(pos);
-      mapInstance.current.setZoom(zoom);
-      
-      if (!markerInstance.current) {
-        markerInstance.current = new window.google.maps.Marker({
-          position: pos,
-          map: mapInstance.current,
-          animation: window.google.maps.Animation.DROP,
-          icon: {
-            path: window.google.maps.SymbolPath.CIRCLE,
-            scale: 10,
-            fillColor: "#b4e6ff", 
-            fillOpacity: 1,
-            strokeColor: "#ffffff",
-            strokeWeight: 2,
-          }
-        });
-      } else {
-        markerInstance.current.setPosition(pos);
-      }
     }
   }, [lat, lng, zoom]);
 
-  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || loadError) {
-    const query = address ? encodeURIComponent(address) : (lat && lng ? `${lat},${lng}` : "");
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+
+  if (!mapboxToken) {
+    // Default to a central US coordinate if none provided
+    const displayLat = lat || 39.8283;
+    const displayLng = lng || -98.5795;
+    
     return (
       <div className={`relative overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[#0e1626] ${className}`}>
-        {lat && lng ? (
-          <iframe 
-            width="100%" 
-            height="100%" 
-            style={{ border: 0, filter: 'grayscale(100%) invert(90%) hue-rotate(180deg)' }} 
-            loading="lazy" 
-            src={`https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.02},${lat-0.02},${lng+0.02},${lat+0.02}&layer=mapnik&marker=${lat},${lng}`}
-          ></iframe>
-        ) : query ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0e1626] p-4 text-center">
-            <p className="text-gray-400 text-sm font-medium mb-2">Map cannot be loaded.</p>
-            <p className="text-gray-500 text-xs">Please check your Google Maps API Key or enable the Maps Embed API in Google Cloud Console.</p>
-          </div>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#0e1626]">
-            <p className="text-gray-400 text-sm font-medium">No location provided.</p>
+        <iframe 
+          width="100%" 
+          height="100%" 
+          style={{ border: 0, filter: 'grayscale(100%) invert(90%) hue-rotate(180deg)', pointerEvents: 'none' }} 
+          loading="lazy" 
+          src={`https://www.openstreetmap.org/export/embed.html?bbox=${displayLng-0.02},${displayLat-0.02},${displayLng+0.02},${displayLat+0.02}&layer=mapnik&marker=${displayLat},${displayLng}`}
+        ></iframe>
+        {!lat && !lng && (
+          <div className="absolute inset-0 bg-[#0e1626]/50 flex items-center justify-center backdrop-blur-[2px]">
+            <p className="text-gray-200 text-sm font-medium bg-black/60 px-4 py-2 rounded-xl">Enter an address to place marker</p>
           </div>
         )}
       </div>
@@ -272,15 +56,19 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
 
   return (
     <div className={`relative overflow-hidden rounded-2xl border border-[var(--glass-border)] ${className}`}>
-      {!isLoaded && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0e1626] backdrop-blur-md">
-          <Loader2 className="w-8 h-8 text-[var(--accent)] animate-spin mb-4" />
-          <p className="text-gray-500 text-sm font-medium tracking-wide">Initializing Map Protocol...</p>
-        </div>
-      )}
-      <div ref={mapRef} className="w-full h-full bg-[#0e1626]" />
-      
-      {/* Liquid Glass Overlay Effect on Map Edges (Optional but cinematic) */}
+      <Map
+        {...viewState}
+        onMove={evt => setViewState(evt.viewState)}
+        style={{width: '100%', height: '100%'}}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
+        mapboxAccessToken={mapboxToken}
+      >
+        {lat && lng && (
+          <Marker longitude={lng} latitude={lat} anchor="bottom">
+            <div className="w-5 h-5 bg-[#b4e6ff] rounded-full border-2 border-white shadow-[0_0_10px_rgba(180,230,255,0.8)]" />
+          </Marker>
+        )}
+      </Map>
       <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_40px_rgba(6,6,8,0.8)]" />
     </div>
   );
