@@ -87,7 +87,7 @@ function CheckoutInnerForm({ amount, leaseId }: { amount: number, leaseId: strin
         )}
       </button>
 
-      <div className="flex items-center justify-center gap-2 text-xs text-white/40">
+      <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
         <ShieldCheck className="w-4 h-4" />
         <span>Payments are processed securely by Stripe.</span>
       </div>
@@ -138,25 +138,25 @@ export default function CheckoutForm({
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#b4e6ff] to-transparent opacity-50" />
       
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2">Payment Details</h2>
-        <p className="text-white/50 text-sm flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Details</h2>
+        <p className="text-gray-400 text-sm flex items-center gap-2">
           <CreditCard className="w-4 h-4" /> Secure payment for {propertyName}
         </p>
       </div>
 
       {/* Cost Breakdown */}
       <div className="space-y-4 mb-8">
-        <div className="flex justify-between font-medium text-white/80">
+        <div className="flex justify-between font-medium text-gray-500">
           <span>Security Deposit (First Month)</span>
           <span>${amount.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between font-medium text-white/80">
+        <div className="flex justify-between font-medium text-gray-500">
           <span>Platform Fee (2%)</span>
           <span>${(amount * 0.02).toLocaleString()}</span>
         </div>
-        <div className="flex justify-between text-2xl font-bold text-white pt-4 border-t border-white/10">
+        <div className="flex justify-between text-2xl font-bold text-gray-900 pt-4 border-t border-gray-100">
           <span>Total</span>
-          <span className="text-[#b4e6ff]">${(amount * 1.02).toLocaleString()}</span>
+          <span className="text-sky-700">${(amount * 1.02).toLocaleString()}</span>
         </div>
       </div>
 
@@ -166,8 +166,8 @@ export default function CheckoutForm({
         </div>
       ) : !clientSecret ? (
         <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#b4e6ff] animate-spin mb-4" />
-          <p className="text-white/50 text-sm animate-pulse">Initializing secure connection...</p>
+          <Loader2 className="w-8 h-8 text-sky-700 animate-spin mb-4" />
+          <p className="text-gray-400 text-sm animate-pulse">Initializing secure connection...</p>
         </div>
       ) : (
         <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>

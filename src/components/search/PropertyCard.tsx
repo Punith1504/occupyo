@@ -53,7 +53,7 @@ export function PropertyCard({ property, variant = 'search', isHorizontal = fals
                 {property.propertyType}
               </div>
               {property.isExternal && (
-                <div className="bg-orange-500/90 backdrop-blur-md px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-white shadow-sm border border-orange-400 w-fit">
+                <div className="bg-orange-500/90 backdrop-blur-md px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-gray-900 shadow-sm border border-orange-400 w-fit">
                   External Listing
                 </div>
               )}
@@ -124,7 +124,7 @@ export function PropertyCard({ property, variant = 'search', isHorizontal = fals
               {property.propertyType}
             </div>
             {property.isExternal && (
-              <div className="bg-orange-500/90 backdrop-blur-md px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest text-white shadow-sm border border-orange-400 w-fit">
+              <div className="bg-orange-500/90 backdrop-blur-md px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest text-gray-900 shadow-sm border border-orange-400 w-fit">
                 External Listing
               </div>
             )}

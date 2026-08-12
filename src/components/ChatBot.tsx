@@ -60,7 +60,7 @@ export default function ChatBot() {
             setIsOpen(true);
           }}
           onPointerDown={hapticTap}
-          className="relative bg-black text-white p-4 rounded-full shadow-[var(--neon-glow)] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group border border-white/10"
+          className="relative bg-black text-white p-4 rounded-full shadow-[var(--neon-glow)] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group border border-gray-100"
         >
           {/* Pulse ring */}
           <span className="absolute inset-0 rounded-full border-2 border-[#b4e6ff]/30 animate-[pulseRing_2s_ease-out_infinite]" />
@@ -72,17 +72,17 @@ export default function ChatBot() {
       {isOpen && (
         <div className="liquid-glass w-80 sm:w-96 !rounded-2xl shadow-[var(--neon-glow-strong)] overflow-hidden flex flex-col animate-elasticBounce !p-0">
           {/* Header */}
-          <div className="bg-black/80 backdrop-blur-xl text-white p-4 flex justify-between items-center border-b border-white/10">
+          <div className="bg-black/80 backdrop-blur-xl text-white p-4 flex justify-between items-center border-b border-gray-100">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#b4e6ff]/30 to-[#cbb4ff]/30 flex items-center justify-center border border-white/20">
-                  <Sparkles className="w-4 h-4 text-[#b4e6ff]" />
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#b4e6ff]/30 to-[#cbb4ff]/30 flex items-center justify-center border border-gray-200">
+                  <Sparkles className="w-4 h-4 text-sky-700" />
                 </div>
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[var(--success)] rounded-full border-2 border-black"></div>
               </div>
               <div>
-                <h3 className="font-bold text-sm text-white">Occupyo AI</h3>
-                <p className="text-[10px] text-white/50">Always online</p>
+                <h3 className="font-bold text-sm text-gray-900">Occupyo AI</h3>
+                <p className="text-[10px] text-gray-400">Always online</p>
               </div>
             </div>
             <button 
@@ -91,7 +91,7 @@ export default function ChatBot() {
                 setIsOpen(false);
               }} 
               onPointerDown={hapticTap}
-              className="text-white/40 hover:text-white active:scale-90 transition-all p-1 rounded-lg hover:bg-white/10"
+              className="text-gray-400 hover:text-gray-900 active:scale-90 transition-all p-1 rounded-lg hover:bg-gray-100"
             >
               <X className="w-5 h-5" />
             </button>
@@ -110,7 +110,7 @@ export default function ChatBot() {
                 <div className={`max-w-[80%] p-3 rounded-2xl text-sm font-medium transition-all ${
                   msg.sender === "user" 
                     ? "bg-gradient-to-br from-[#b4e6ff] to-[#9dd8ff] text-black rounded-br-sm shadow-md" 
-                    : "bg-white/8 backdrop-blur-md text-white/90 rounded-bl-sm border border-white/10"
+                    : "bg-white/8 backdrop-blur-md text-white/90 rounded-bl-sm border border-gray-100"
                 }`}>
                   {msg.text}
                 </div>
@@ -120,7 +120,7 @@ export default function ChatBot() {
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex justify-start animate-fadeIn">
-                <div className="bg-white/8 backdrop-blur-md rounded-2xl rounded-bl-sm border border-white/10">
+                <div className="bg-white/8 backdrop-blur-md rounded-2xl rounded-bl-sm border border-gray-100">
                   <div className="typing-indicator">
                     <span></span>
                     <span></span>
@@ -134,14 +134,14 @@ export default function ChatBot() {
           </div>
 
           {/* Input Area */}
-          <div className="p-3 bg-black/40 backdrop-blur-xl border-t border-white/10">
+          <div className="p-3 bg-black/40 backdrop-blur-xl border-t border-gray-100">
             <form onSubmit={handleSend} className="flex gap-2">
               <input 
                 type="text" 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask something..."
-                className="flex-1 bg-white/8 backdrop-blur-md rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/30 border border-white/10 focus:border-[#b4e6ff]/40 focus:bg-white/10 outline-none transition-all"
+                className="flex-1 bg-white/8 backdrop-blur-md rounded-xl py-2.5 px-4 text-sm text-gray-900 placeholder-white/30 border border-gray-100 focus:border-[#b4e6ff]/40 focus:bg-gray-100 outline-none transition-all"
               />
               <button 
                 type="submit"

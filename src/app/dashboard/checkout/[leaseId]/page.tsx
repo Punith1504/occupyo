@@ -46,8 +46,8 @@ export default async function CheckoutPage(
 
       <div className="w-full max-w-6xl mx-auto z-10 flex flex-col">
         <header className="mb-10 flex items-center">
-          <Link href="/dashboard/tenant/leases" className="text-2xl font-bold text-white tracking-tight">
-            Occupyo <span className="font-light text-white/40">| Secure Checkout</span>
+          <Link href="/dashboard/tenant/leases" className="text-2xl font-bold text-gray-900 tracking-tight">
+            Occupyo <span className="font-light text-gray-400">| Secure Checkout</span>
           </Link>
         </header>
 
@@ -55,45 +55,45 @@ export default async function CheckoutPage(
           
           {/* Order Summary */}
           <div className="flex-1 lg:max-w-md animate-fadeRight">
-            <h1 className="text-3xl font-bold text-white mb-6 tracking-tight">Complete Booking</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-6 tracking-tight">Complete Booking</h1>
             
             <div className="liquid-glass rounded-3xl p-6 md:p-8 mb-6">
               <div className="flex items-start gap-4 mb-8">
-                <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0">
-                  <Building2 className="w-8 h-8 text-[#b4e6ff]" />
+                <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center shrink-0">
+                  <Building2 className="w-8 h-8 text-sky-700" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-white leading-tight mb-1">{lease.property.title}</h3>
-                  <p className="text-sm text-white/50 flex items-center gap-1.5">
+                  <h3 className="font-semibold text-lg text-gray-900 leading-tight mb-1">{lease.property.title}</h3>
+                  <p className="text-sm text-gray-400 flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5" /> {lease.property.address}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4 text-sm">
-                <div className="flex justify-between items-center py-4 border-t border-white/10">
-                  <span className="text-white/60 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-[#b4e6ff]" /> Start Date
+                <div className="flex justify-between items-center py-4 border-t border-gray-100">
+                  <span className="text-gray-500 flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-sky-700" /> Start Date
                   </span>
-                  <span className="font-medium text-white">
+                  <span className="font-medium text-gray-900">
                     {new Date(lease.startDate).toLocaleDateString()}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-4 border-t border-white/10 border-b">
-                  <span className="text-white/60 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-[#b4e6ff]" /> End Date
+                <div className="flex justify-between items-center py-4 border-t border-gray-100 border-b">
+                  <span className="text-gray-500 flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-sky-700" /> End Date
                   </span>
-                  <span className="font-medium text-white">
+                  <span className="font-medium text-gray-900">
                     {new Date(lease.endDate).toLocaleDateString()}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[#b4e6ff]/10 border border-[#b4e6ff]/20 p-5 rounded-2xl text-[#b4e6ff] text-sm leading-relaxed backdrop-blur-md flex items-start gap-3 shadow-[0_0_20px_rgba(180,230,255,0.1)]">
+            <div className="bg-[#b4e6ff]/10 border border-[#b4e6ff]/20 p-5 rounded-2xl text-sky-700 text-sm leading-relaxed backdrop-blur-md flex items-start gap-3 shadow-[0_0_20px_rgba(180,230,255,0.1)]">
               <Lock className="w-5 h-5 shrink-0 mt-0.5" />
               <div>
-                <strong className="block text-white mb-1">Escrow Protection Guarantee</strong>
+                <strong className="block text-gray-900 mb-1">Escrow Protection Guarantee</strong>
                 The security deposit is held securely by Stripe. Once paid, the lease is officially Active and your space is secured.
               </div>
             </div>

@@ -173,6 +173,17 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
           }
         });
       }
+
+      // Detect "ApiNotActivatedMapError" or other internal GMaps errors 
+      // which inject a gray "Oops!" box directly into the div without throwing exceptions
+      const observer = new MutationObserver(() => {
+        if (mapRef.current?.innerText.includes("Oops! Something went wrong") || 
+            mapRef.current?.querySelector('.gm-err-container')) {
+          setLoadError(true);
+          observer.disconnect();
+        }
+      });
+      observer.observe(mapRef.current, { childList: true, subtree: true });
     };
 
     // If maps api is already loaded, init right away
@@ -237,19 +248,22 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
     const query = address ? encodeURIComponent(address) : (lat && lng ? `${lat},${lng}` : "");
     return (
       <div className={`relative overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[#0e1626] ${className}`}>
-        {query ? (
+        {lat && lng ? (
           <iframe 
             width="100%" 
             height="100%" 
-            style={{ border: 0 }} 
+            style={{ border: 0, filter: 'grayscale(100%) invert(90%) hue-rotate(180deg)' }} 
             loading="lazy" 
-            allowFullScreen 
-            referrerPolicy="no-referrer-when-downgrade" 
-            src={`https://www.google.com/maps?q=${query}&output=embed`}
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.02},${lat-0.02},${lng+0.02},${lat+0.02}&layer=mapnik&marker=${lat},${lng}`}
           ></iframe>
+        ) : query ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0e1626] p-4 text-center">
+            <p className="text-gray-400 text-sm font-medium mb-2">Map cannot be loaded.</p>
+            <p className="text-gray-500 text-xs">Please check your Google Maps API Key or enable the Maps Embed API in Google Cloud Console.</p>
+          </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-[#0e1626]">
-            <p className="text-white/50 text-sm font-medium">No location provided.</p>
+            <p className="text-gray-400 text-sm font-medium">No location provided.</p>
           </div>
         )}
       </div>
@@ -261,7 +275,7 @@ export default function InteractiveMap({ lat, lng, address, zoom = 14, className
       {!isLoaded && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0e1626] backdrop-blur-md">
           <Loader2 className="w-8 h-8 text-[var(--accent)] animate-spin mb-4" />
-          <p className="text-white/70 text-sm font-medium tracking-wide">Initializing Map Protocol...</p>
+          <p className="text-gray-500 text-sm font-medium tracking-wide">Initializing Map Protocol...</p>
         </div>
       )}
       <div ref={mapRef} className="w-full h-full bg-[#0e1626]" />

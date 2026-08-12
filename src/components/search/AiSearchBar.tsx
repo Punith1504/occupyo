@@ -205,9 +205,9 @@ export default function AiSearchBar() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full md:w-auto mt-2 md:mt-0 ml-0 md:ml-2 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl md:rounded-full px-6 md:px-10 py-3 md:py-3.5 text-sm md:text-lg font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
+          className="w-full md:w-auto mt-2 md:mt-0 ml-0 md:ml-2 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-500 hover:to-emerald-500 text-gray-900 rounded-xl md:rounded-full px-6 md:px-10 py-3 md:py-3.5 text-sm md:text-lg font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
         >
-          {isLoading ? <Loader2 className="animate-spin text-white" size={22} /> : "Discover"}
+          {isLoading ? <Loader2 className="animate-spin text-gray-900" size={22} /> : "Discover"}
         </button>
       </form>
 
@@ -251,7 +251,7 @@ export default function AiSearchBar() {
                 key={property.id} 
                 className="block group/card"
               >
-                <div className="h-full bg-white/40 dark:bg-black/40 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 shadow-lg relative">
+                <div className="h-full bg-white/40 dark:bg-black/40 backdrop-blur-md border border-white/40 dark:border-gray-100 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 shadow-lg relative">
                   {property.isExternal && (
                      <div className="absolute top-4 right-4 z-10 bg-black/70 backdrop-blur-md text-white text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full flex items-center gap-1">
                        <ExternalLink size={12} /> Web Scrape
@@ -263,7 +263,7 @@ export default function AiSearchBar() {
                         <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-indigo-700 bg-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-300">
                           {property.propertyType}
                         </span>
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-1 group-hover/card:text-indigo-600 dark:group-hover/card:text-indigo-400 transition-colors">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900 line-clamp-1 group-hover/card:text-indigo-600 dark:group-hover/card:text-indigo-400 transition-colors">
                           {property.title}
                         </h3>
                       </div>

@@ -88,7 +88,7 @@ export default async function PropertyPage(
                 <img src={getOptimizedImageUrl(img.url, { width: 600, height: 400 })} alt={`${property.title} ${idx + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 {idx === 3 && property.images.length > 5 && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px] transition-colors group-hover:bg-black/50">
-                    <span className="text-white font-semibold text-lg">+{property.images.length - 5} More</span>
+                    <span className="text-gray-900 font-semibold text-lg">+{property.images.length - 5} More</span>
                   </div>
                 )}
               </div>
@@ -205,11 +205,9 @@ export default async function PropertyPage(
                  <iframe 
                    width="100%" 
                    height="100%" 
-                   style={{ border: '1px solid #9ca3af' }} 
+                   style={{ border: 0, filter: 'grayscale(100%) invert(90%) hue-rotate(180deg)' }} 
                    loading="lazy" 
-                   allowFullScreen 
-                   referrerPolicy="no-referrer-when-downgrade" 
-                   src={`https://www.google.com/maps?q=${encodeURIComponent(property.address)}&output=embed`}
+                   src={`https://www.openstreetmap.org/export/embed.html?bbox=${property.lng-0.02},${property.lat-0.02},${property.lng+0.02},${property.lat+0.02}&layer=mapnik&marker=${property.lat},${property.lng}`}
                  ></iframe>
                </div>
             </div>

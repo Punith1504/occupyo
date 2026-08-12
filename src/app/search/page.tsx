@@ -150,9 +150,9 @@ export default async function PropertySearchPage(props: {
         <div className="w-full md:w-[60%] lg:w-[45%] flex flex-col h-full overflow-y-auto custom-scrollbar pr-2">
           <div className="flex justify-between items-center mb-6 px-2">
             <p className="text-gray-400 font-medium text-sm">
-              Showing <span className="text-white font-semibold">{properties.length}</span> properties
+              Showing <span className="text-gray-900 font-semibold">{properties.length}</span> properties
             </p>
-            <button className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
+            <button className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-900 transition-colors">
               <Filter className="h-4 w-4" />
               More Filters
             </button>

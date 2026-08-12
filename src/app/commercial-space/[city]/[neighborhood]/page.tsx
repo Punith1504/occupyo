@@ -69,7 +69,7 @@ export default async function LocationPage({ params }: Props) {
           <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
             Premium Commercial Space in {neighborhood}
           </h1>
-          <p className="text-xl text-white/70 max-w-2xl mb-10">
+          <p className="text-xl text-gray-500 max-w-2xl mb-10">
             Discover friction-free commercial real estate. From modern co-working hubs to expansive warehouses, find your perfect space in {neighborhood}.
           </p>
           
