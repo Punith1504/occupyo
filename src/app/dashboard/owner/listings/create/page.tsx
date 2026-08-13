@@ -589,9 +589,9 @@ export default function CreateListingPage() {
                 options={{
                   maxFiles: MAX_IMAGES - imageUrls.length,
                   multiple: true,
-                  maxFileSize: 15000000, // 15MB
-                  clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
-                  resourceType: 'image'
+                  maxFileSize: 50000000, // 50MB
+                  clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic', 'mp4', 'mov', 'webm'],
+                  resourceType: 'auto'
                 }}
               >
                 {({ open }) => (
@@ -617,7 +617,7 @@ export default function CreateListingPage() {
                         Click to Upload securely
                       </h4>
                       <p className="text-sm text-gray-500 max-w-sm leading-relaxed mb-4">
-                        Supported formats: JPG, PNG, WEBP (Max 10MB per file)
+                        Supported formats: JPG, PNG, WEBP, MP4, MOV (Max 50MB per file)
                       </p>
                     </div>
                   </div>
@@ -647,7 +647,11 @@ export default function CreateListingPage() {
                       onDragEnd={handleDragEnd}
                       onClick={() => setPreviewImage(idx)}
                     >
-                      <img src={url} alt={`Property photo ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      {url.match(/\\.(mp4|mov|webm)$/i) ? (
+                        <video src={url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" muted loop playsInline onMouseEnter={(e) => (e.target as HTMLVideoElement).play()} onMouseLeave={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0; }} />
+                      ) : (
+                        <img src={url} alt={`Property media ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      )}
                       
                       {/* Drag handle */}
                       <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 cursor-grab active:cursor-grabbing">
@@ -786,12 +790,22 @@ export default function CreateListingPage() {
             </button>
           )}
 
-          <img 
-            src={imageUrls[previewImage]} 
-            alt={`HQ Preview ${previewImage + 1}`} 
-            className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl animate-scaleIn"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {imageUrls[previewImage]?.match(/\\.(mp4|mov|webm)$/i) ? (
+            <video 
+              src={imageUrls[previewImage]} 
+              controls
+              autoPlay
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl animate-scaleIn"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img 
+              src={imageUrls[previewImage]} 
+              alt={`HQ Preview ${previewImage + 1}`} 
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl animate-scaleIn"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
         </div>
       )}
     </div>
