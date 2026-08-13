@@ -36,7 +36,7 @@ export default async function Home() {
         <HeroCarousel />
 
         <div className="relative z-10 text-center px-4 w-full mb-2 md:mb-16 mt-1 md:mt-8 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-gray-100/50 backdrop-blur-md border border-white/40 text-gray-900 text-[10px] md:text-sm font-semibold mb-4 md:mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-[10px] md:text-sm font-semibold mb-4 md:mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400"></span>
@@ -44,7 +44,7 @@ export default async function Home() {
             Next Generation Commercial Real Estate
           </div>
           
-          <h1 className="text-[2rem] leading-tight sm:text-5xl md:text-6xl lg:text-8xl font-extrabold mb-2 md:mb-6 tracking-tight text-gray-900 drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
+          <h1 className="text-[2rem] leading-tight sm:text-5xl md:text-6xl lg:text-8xl font-extrabold mb-2 md:mb-6 tracking-tight text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
             The <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]">Intelligent</span><br className="hidden md:block"/> CRE Marketplace
           </h1>
           

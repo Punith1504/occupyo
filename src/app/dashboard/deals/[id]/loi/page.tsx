@@ -103,7 +103,7 @@ export default async function DigitalLOIPage(props: { params: Promise<{ id: stri
             </div>
             <p className="text-gray-500 font-mono text-sm uppercase tracking-widest">Authorized Signature</p>
             
-            <button className="neu-button px-10 py-4 rounded-xl font-bold text-lg flex items-center gap-3 mt-4 hover:text-teal-700">
+            <button className="neu-button px-10 py-4 rounded-xl font-bold text-lg flex items-center gap-3 mt-4 hover:text-[#a1ebd6]">
               <CheckCircle2 className="w-6 h-6" /> Digitally Sign & Execute
             </button>
             <p className="text-gray-400 text-xs italic">By executing, you agree to transmit this document to the ownership group.</p>

@@ -219,13 +219,13 @@ export default function EditPropertyClient({ property, initialImages }: { proper
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Edit Your Space</h1>
-        <p className="text-gray-500 mt-1">Update the details for this property.</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Edit Your Space</h1>
+        <p className="text-white/60 mt-1">Update the details for this property.</p>
       </div>
 
       {/* Progress Stepper */}
       <div className="flex items-center justify-between mb-10 relative">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-100 rounded-full z-0"></div>
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-white/10 rounded-full z-0"></div>
         <div 
           className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[#b4e6ff] shadow-[0_0_15px_#b4e6ff] rounded-full z-0 transition-all duration-500"
           style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
@@ -241,11 +241,11 @@ export default function EditPropertyClient({ property, initialImages }: { proper
               <div 
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 backdrop-blur-md
                   ${isActive ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[var(--neon-glow)]" : 
-                    isCompleted ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[var(--neon-glow)]" : "bg-black/50 border-gray-200 text-white/40"}`}
+                    isCompleted ? "bg-[#b4e6ff] border-[#b4e6ff] text-black shadow-[var(--neon-glow)]" : "bg-black/50 border-white/20 text-white/40"}`}
               >
                 {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
               </div>
-              <span className={`text-xs mt-3 font-medium tracking-wide ${isActive || isCompleted ? "text-gray-900" : "text-gray-400"}`}>
+              <span className={`text-xs mt-3 font-medium tracking-wide ${isActive || isCompleted ? "text-white" : "text-white/40"}`}>
                 {step.title}
               </span>
             </div>
@@ -263,10 +263,10 @@ export default function EditPropertyClient({ property, initialImages }: { proper
         {saveSuccess && (
           <div className="flex flex-col items-center justify-center py-12 animate-scaleIn min-h-[400px]">
             <div className="bg-[#b4e6ff]/20 p-4 rounded-full border border-[#b4e6ff]/30 mb-6 shadow-[0_0_30px_#b4e6ff40] pulse-ring">
-              <CheckCircle2 className="w-16 h-16 text-sky-700" />
+              <CheckCircle2 className="w-16 h-16 text-[#b4e6ff]" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Property Updated</h2>
-            <p className="text-gray-500 mb-10 text-center text-lg">Your changes have been saved successfully.</p>
+            <h2 className="text-3xl font-bold text-white mb-2">Property Updated</h2>
+            <p className="text-white/60 mb-10 text-center text-lg">Your changes have been saved successfully.</p>
             <div className="flex gap-4 w-full max-w-sm">
               <button 
                 onClick={() => { hapticTap(); router.push("/dashboard/owner"); }}
@@ -290,7 +290,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             {currentStep === 0 && (
           <div className="space-y-6 animate-staggerFadeUp">
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">Listing Title</label>
+              <label className="block text-sm font-medium text-white/80 mb-2">Listing Title</label>
               <input 
                 type="text"
                 value={formData.title}
@@ -302,7 +302,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-2">Property Type</label>
+                <label className="block text-sm font-medium text-white/80 mb-2">Property Type</label>
                 <select 
                   value={formData.propertyType}
                   onChange={(e) => setFormData({...formData, propertyType: e.target.value})}
@@ -314,7 +314,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-2">Total Size (Sqft)</label>
+                <label className="block text-sm font-medium text-white/80 mb-2">Total Size (Sqft)</label>
                 <input 
                   type="number"
                   value={formData.sizeSqft}
@@ -327,7 +327,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-2">Duration Unit</label>
+                <label className="block text-sm font-medium text-white/80 mb-2">Duration Unit</label>
                 <select 
                   value={formData.durationUnit}
                   onChange={(e) => setFormData({...formData, durationUnit: e.target.value})}
@@ -340,7 +340,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-500 mb-2">Min {formData.durationUnit.toLowerCase()}</label>
+                  <label className="block text-sm font-medium text-white/80 mb-2">Min {formData.durationUnit.toLowerCase()}</label>
                   <input 
                     type="number"
                     value={formData.minDuration}
@@ -350,7 +350,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-500 mb-2">Max {formData.durationUnit.toLowerCase()}</label>
+                  <label className="block text-sm font-medium text-white/80 mb-2">Max {formData.durationUnit.toLowerCase()}</label>
                   <input 
                     type="number"
                     value={formData.maxDuration}
@@ -364,7 +364,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-2">Price / Hour ($)</label>
+                <label className="block text-sm font-medium text-white/80 mb-2">Price / Hour ($)</label>
                 <input 
                   type="number"
                   value={formData.pricePerHour}
@@ -374,7 +374,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-2">Price / Day ($)</label>
+                <label className="block text-sm font-medium text-white/80 mb-2">Price / Day ($)</label>
                 <input 
                   type="number"
                   value={formData.pricePerDay}
@@ -384,7 +384,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-2">Price / Month ($)</label>
+                <label className="block text-sm font-medium text-white/80 mb-2">Price / Month ($)</label>
                 <input 
                   type="number"
                   value={formData.pricePerMonth}
@@ -396,7 +396,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">Description</label>
+              <label className="block text-sm font-medium text-white/80 mb-2">Description</label>
               <textarea 
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -407,10 +407,10 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-3">Amenities & Features</label>
+              <label className="block text-sm font-medium text-white/80 mb-3">Amenities & Features</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {["Wi-Fi", "Loading Dock", "Forklift", "HVAC", "24/7 Access", "Security Cameras", "Meeting Rooms", "Parking"].map((amenity) => (
-                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-all duration-200 active:scale-[0.98]">
+                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-200 active:scale-[0.98]">
                     <input 
                       type="checkbox" 
                       className="accent-[#b4e6ff] w-4 h-4"
@@ -436,11 +436,11 @@ export default function EditPropertyClient({ property, initialImages }: { proper
         {currentStep === 1 && (
           <div className="space-y-6 animate-staggerFadeUp">
             <div className="text-center">
-              <h3 className="text-xl font-medium text-gray-900">Upload Property Photos</h3>
-              <p className="text-sm text-gray-500 mt-1">High-quality images increase inquiries by up to 40%.</p>
+              <h3 className="text-xl font-medium text-white">Upload Property Photos</h3>
+              <p className="text-sm text-white/60 mt-1">High-quality images increase inquiries by up to 40%.</p>
               <div className="flex items-center justify-center gap-2 mt-3">
-                <ImageIcon className="w-4 h-4 text-gray-400" />
-                <span className={`text-sm font-semibold ${imageUrls.length >= MAX_IMAGES ? 'text-red-400' : 'text-sky-700'}`}>
+                <ImageIcon className="w-4 h-4 text-white/40" />
+                <span className={`text-sm font-semibold ${imageUrls.length >= MAX_IMAGES ? 'text-red-400' : 'text-[#b4e6ff]'}`}>
                   {imageUrls.length}/{MAX_IMAGES} photos
                 </span>
               </div>
@@ -465,7 +465,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
               >
                 {({ open }) => (
                   <div 
-                    className="relative overflow-hidden border border-gray-100 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-[#b4e6ff]/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                    className="relative overflow-hidden border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_-15px_rgba(180,230,255,0.15)] hover:border-[#b4e6ff]/40 bg-gradient-to-b from-white/[0.03] to-white/[0.01] hover:from-[#b4e6ff]/[0.08] hover:to-transparent backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
                     onClick={(e) => {
                       e.preventDefault();
                       if (imageUrls.length >= MAX_IMAGES) {
@@ -479,14 +479,14 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                     <div className="absolute inset-0 bg-gradient-to-tr from-[#b4e6ff]/0 via-[#b4e6ff]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
                     
                     <div className="relative z-10 flex flex-col items-center">
-                      <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-gray-100 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                        <UploadCloud className="h-10 w-10 text-sky-700 drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
+                      <div className="bg-gradient-to-br from-white/10 to-white/5 p-5 rounded-2xl mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.4)] border border-white/10 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+                        <UploadCloud className="h-10 w-10 text-[#b4e6ff] drop-shadow-[0_0_15px_rgba(180,230,255,0.5)] group-hover:animate-pulse" strokeWidth={1.5} />
                       </div>
                       
-                      <h4 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight group-hover:text-sky-700 transition-colors">
+                      <h4 className="text-xl font-semibold text-white mb-2 tracking-tight group-hover:text-[#b4e6ff] transition-colors">
                         Click to Upload securely
                       </h4>
-                      <p className="text-sm text-gray-400 max-w-sm leading-relaxed mb-4">
+                      <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-4">
                         Supported formats: JPG, PNG, WEBP (Max 10MB per file)
                       </p>
                     </div>
@@ -497,15 +497,15 @@ export default function EditPropertyClient({ property, initialImages }: { proper
             {/* Image Grid with Drag and Drop */}
             {imageUrls.length > 0 && (
               <>
-                <p className="text-xs text-gray-400 text-center">
+                <p className="text-xs text-white/50 text-center">
                   Drag images to reorder • First image is the cover photo • Click to preview
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {imageUrls.map((url, idx) => (
                     <div 
                       key={`${url.slice(0, 30)}-${idx}`}
-                      className={`aspect-square bg-gray-50 rounded-xl border relative group overflow-hidden cursor-pointer transition-all duration-300
-                        ${dragOverIndex === idx ? 'border-[#b4e6ff] bg-[#b4e6ff]/10 scale-105' : 'border-gray-100'}
+                      className={`aspect-square bg-white/5 rounded-xl border relative group overflow-hidden cursor-pointer transition-all duration-300
+                        ${dragOverIndex === idx ? 'border-[#b4e6ff] bg-[#b4e6ff]/10 scale-105' : 'border-white/10'}
                         ${draggedIndex === idx ? 'opacity-40 scale-95' : 'opacity-100'}
                       `}
                       draggable
@@ -519,14 +519,14 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                       <img src={url} alt={`Property photo ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       
                       {/* Drag handle */}
-                      <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity border border-gray-100 cursor-grab active:cursor-grabbing">
-                        <GripVertical className="w-3 h-3 text-gray-500" />
+                      <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 cursor-grab active:cursor-grabbing">
+                        <GripVertical className="w-3 h-3 text-white/70" />
                       </div>
 
                       {/* Remove button */}
                       <button 
                         onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
-                        className="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 border border-gray-100 hover:bg-red-500/20"
+                        className="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 border border-white/10 hover:bg-red-500/20"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -535,7 +535,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
                       {idx !== 0 && (
                         <button 
                           onClick={(e) => { e.stopPropagation(); setAsCover(idx); }}
-                          className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-sky-700 hover:text-white border border-gray-100 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider hover:bg-[#b4e6ff]/20"
+                          className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-[#b4e6ff] hover:text-white border border-white/10 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider hover:bg-[#b4e6ff]/20"
                         >
                           <Star className="w-3 h-3" /> Cover
                         </button>
@@ -561,7 +561,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
 
       {/* Navigation Buttons */}
       {!saveSuccess && (
-        <div className="flex justify-between border-t border-gray-100 pt-6">
+        <div className="flex justify-between border-t border-white/10 pt-6">
           <button
             onClick={handleBack}
             disabled={currentStep === 0 || loading}
@@ -588,21 +588,21 @@ export default function EditPropertyClient({ property, initialImages }: { proper
         >
           {/* Close button */}
           <button 
-            className="absolute top-6 right-6 text-gray-900 hover:text-gray-300 bg-gray-100 backdrop-blur-md rounded-full p-2.5 border border-gray-200 hover:bg-gray-100/50 transition-all z-10"
+            className="absolute top-6 right-6 text-white hover:text-gray-300 bg-white/10 backdrop-blur-md rounded-full p-2.5 border border-white/20 hover:bg-white/20 transition-all z-10"
             onClick={() => setPreviewImage(null)}
           >
             <X className="w-6 h-6" />
           </button>
 
           {/* Image counter */}
-          <div className="absolute top-6 left-6 text-gray-500 text-sm font-medium bg-gray-100 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 z-10">
+          <div className="absolute top-6 left-6 text-white/70 text-sm font-medium bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 z-10">
             {previewImage + 1} / {imageUrls.length}
           </div>
           
           {/* Previous button */}
           {previewImage > 0 && (
             <button 
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-100 backdrop-blur-md rounded-full p-3 border border-gray-200 hover:bg-gray-100/50 transition-all z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/20 hover:bg-white/20 transition-all z-10"
               onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage - 1); }}
             >
               <ChevronLeft className="w-6 h-6" />
@@ -612,7 +612,7 @@ export default function EditPropertyClient({ property, initialImages }: { proper
           {/* Next button */}
           {previewImage < imageUrls.length - 1 && (
             <button 
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-100 backdrop-blur-md rounded-full p-3 border border-gray-200 hover:bg-gray-100/50 transition-all z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/20 hover:bg-white/20 transition-all z-10"
               onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage + 1); }}
             >
               <ChevronRight className="w-6 h-6" />

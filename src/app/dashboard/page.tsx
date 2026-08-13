@@ -163,17 +163,17 @@ export default function DashboardHub() {
             transform: contentVisible ? "translateY(0)" : "translateY(30px)",
           }}
         >
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-gray-100 bg-gray-50 backdrop-blur-md artifact-shimmer"
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md artifact-shimmer"
           >
             <Sparkles className="w-4 h-4 text-indigo-400" />
-            <span className="text-sm font-medium text-gray-500">Welcome to the future of flex space</span>
+            <span className="text-sm font-medium text-white/80">Welcome to the future of flex space</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
             <span className="bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent">
               Occupyo
             </span>
           </h1>
-          <p className="text-lg text-gray-400 max-w-md mx-auto font-medium">
+          <p className="text-lg text-white/50 max-w-md mx-auto font-medium">
             What would you like to do today?
           </p>
         </div>
@@ -221,10 +221,10 @@ export default function DashboardHub() {
               <span className="absolute inset-0 rounded-2xl border-2 border-indigo-400/30 opacity-0 group-hover:opacity-100 animate-[pulseRing_2s_ease-out_infinite]" />
             </div>
 
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
               Post a Property
             </h2>
-            <p className="text-gray-400 text-base mb-8 leading-relaxed font-medium">
+            <p className="text-white/50 text-base mb-8 leading-relaxed font-medium">
               List your warehouse, office, or flex space for businesses to discover and book.
             </p>
 
@@ -270,10 +270,10 @@ export default function DashboardHub() {
               <span className="absolute inset-0 rounded-2xl border-2 border-cyan-400/30 opacity-0 group-hover:opacity-100 animate-[pulseRing_2s_ease-out_infinite]" />
             </div>
 
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
               Rent a Property
             </h2>
-            <p className="text-gray-400 text-base mb-8 leading-relaxed font-medium">
+            <p className="text-white/50 text-base mb-8 leading-relaxed font-medium">
               Find flexible warehouse, office, and industrial spaces that match your business needs.
             </p>
 
@@ -293,7 +293,7 @@ export default function DashboardHub() {
             transform: cardsVisible ? "translateY(0)" : "translateY(20px)",
           }}
         >
-          <p className="text-gray-300 text-sm font-medium">
+          <p className="text-white/30 text-sm font-medium">
             Powered by Occupyo — B2B Flex Occupancy Marketplace
           </p>
         </div>

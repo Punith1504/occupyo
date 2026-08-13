@@ -27,7 +27,7 @@ export default async function DealPipelineTracker() {
       <div className="max-w-[1400px] mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Deal Pipeline</h1>
+            <h1 className="text-3xl font-bold text-white tracking-tight">Deal Pipeline</h1>
             <p className="text-gray-400 mt-1">Track and manage CRE transactions from inquiry to closed won.</p>
           </div>
         </div>
@@ -38,8 +38,8 @@ export default async function DealPipelineTracker() {
             return (
               <div key={col.id} className="glass-panel p-4 min-w-[320px] w-[320px] flex flex-col h-[75vh]">
                 <div className="flex justify-between items-center mb-4 px-2">
-                  <h3 className="font-bold text-gray-900 tracking-wide uppercase text-sm">{col.label}</h3>
-                  <span className="bg-gray-100 text-gray-900 text-xs px-2 py-0.5 rounded-full">{columnDeals.length}</span>
+                  <h3 className="font-bold text-white tracking-wide uppercase text-sm">{col.label}</h3>
+                  <span className="bg-white/10 text-white text-xs px-2 py-0.5 rounded-full">{columnDeals.length}</span>
                 </div>
                 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
@@ -59,7 +59,7 @@ export default async function DealPipelineTracker() {
                         </div>
                         
                         {deal.loiDocumentUrl ? (
-                          <Link href={`/dashboard/deals/${deal.id}/loi`} className="neu-button px-3 py-1.5 text-xs font-bold bg-[#1e293b] text-gray-900 flex items-center gap-1 shadow-md">
+                          <Link href={`/dashboard/deals/${deal.id}/loi`} className="neu-button px-3 py-1.5 text-xs font-bold bg-[#1e293b] text-white flex items-center gap-1 shadow-md">
                             <FileSignature className="w-3 h-3" /> View LOI
                           </Link>
                         ) : (
@@ -75,7 +75,7 @@ export default async function DealPipelineTracker() {
                   ))}
                   
                   {columnDeals.length === 0 && (
-                    <div className="h-24 border-2 border-dashed border-gray-100 rounded-xl flex items-center justify-center text-gray-300 text-sm font-medium">
+                    <div className="h-24 border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center text-white/30 text-sm font-medium">
                       Drop deals here
                     </div>
                   )}

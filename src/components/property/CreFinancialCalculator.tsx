@@ -61,18 +61,18 @@ export default function CreFinancialCalculator({
   return (
     <div className="skeuo-card rounded-2xl overflow-hidden mt-10">
       <div className="bg-[#1e2532] border-b border-white/5 px-6 py-5">
-        <h3 className="text-xl font-bold text-gray-900">Interactive Pro-Forma Engine</h3>
+        <h3 className="text-xl font-bold text-white">Interactive Pro-Forma Engine</h3>
         <p className="text-sm text-gray-400 mt-1">Adjust the mechanical assumptions below to dynamically project your investment returns.</p>
       </div>
 
       <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="space-y-6">
-          <h4 className="font-semibold text-gray-900 border-b border-gray-100 pb-2">Hardware Assumptions</h4>
+          <h4 className="font-semibold text-white border-b border-white/10 pb-2">Hardware Assumptions</h4>
           
           <div>
             <label className="flex justify-between text-sm font-medium text-gray-300 mb-3">
               <span>Estimated Purchase Price</span>
-              <span className="font-bold text-teal-700">${purchasePrice.toLocaleString()}</span>
+              <span className="font-bold text-[#a1ebd6]">${purchasePrice.toLocaleString()}</span>
             </label>
             <input 
               type="range" 
@@ -88,7 +88,7 @@ export default function CreFinancialCalculator({
           <div>
             <label className="flex justify-between text-sm font-medium text-gray-300 mb-3">
               <span>Down Payment (%)</span>
-              <span className="font-bold text-teal-700">{downPaymentPct}%</span>
+              <span className="font-bold text-[#a1ebd6]">{downPaymentPct}%</span>
             </label>
             <input 
               type="range" 
@@ -136,7 +136,7 @@ export default function CreFinancialCalculator({
         </div>
 
         <div className="space-y-6">
-          <h4 className="font-semibold text-gray-900 border-b border-gray-100 pb-2">Telemetry (Year 1)</h4>
+          <h4 className="font-semibold text-white border-b border-white/10 pb-2">Telemetry (Year 1)</h4>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-[#0b0f19] p-4 rounded-xl border border-white/5 shadow-inner">
@@ -162,7 +162,7 @@ export default function CreFinancialCalculator({
         </div>
 
         <div className="lg:col-span-3 mt-6">
-          <h4 className="font-semibold text-gray-900 mb-4">5-Year Pro Forma Projection</h4>
+          <h4 className="font-semibold text-white mb-4">5-Year Pro Forma Projection</h4>
           <div className="skeuo-paper p-4 md:p-6 rounded-lg overflow-x-auto">
             <table className="w-full text-sm text-left whitespace-nowrap font-mono">
               <thead>

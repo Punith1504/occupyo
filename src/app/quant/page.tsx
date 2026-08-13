@@ -98,7 +98,7 @@ export default function QuantDashboard() {
               type="text" 
               value={ticker}
               onChange={(e) => setTicker(e.target.value.toUpperCase())}
-              className="w-full md:w-80 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all uppercase placeholder-slate-500"
+              className="w-full md:w-80 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all uppercase placeholder-slate-500"
               placeholder="ENTER TICKER (e.g. RELIANCE.NS)"
             />
             {isSearching && (
@@ -111,12 +111,12 @@ export default function QuantDashboard() {
         {data && (
           <div className="w-full overflow-hidden bg-slate-900/60 backdrop-blur-md py-4 rounded-xl border border-white/5">
             <div className="animate-marquee flex gap-12 text-sm font-semibold tracking-wider">
-              <span className="text-gray-900">TICKER: <span className="text-cyan-400">{ticker}</span></span>
-              <span className="text-gray-900">PRICE: <span className="text-cyan-400">₹{data.price}</span></span>
-              <span className="text-gray-900">1D CHANGE: <span className={data.change1D >= 0 ? "text-green-400" : "text-red-400"}>{data.change1D >= 0 ? '+' : ''}{data.change1D.toFixed(2)}%</span></span>
-              <span className="text-gray-900">1W CHANGE: <span className={data.change1W >= 0 ? "text-green-400" : "text-red-400"}>{data.change1W >= 0 ? '+' : ''}{data.change1W.toFixed(2)}%</span></span>
-              <span className="text-gray-900">RSI (14): <span className="text-purple-400">{data.metrics[0].value}</span></span>
-              <span className="text-gray-900">TREND: <span className="text-pink-400">{data.metrics[3].signal}</span></span>
+              <span className="text-white">TICKER: <span className="text-cyan-400">{ticker}</span></span>
+              <span className="text-white">PRICE: <span className="text-cyan-400">₹{data.price}</span></span>
+              <span className="text-white">1D CHANGE: <span className={data.change1D >= 0 ? "text-green-400" : "text-red-400"}>{data.change1D >= 0 ? '+' : ''}{data.change1D.toFixed(2)}%</span></span>
+              <span className="text-white">1W CHANGE: <span className={data.change1W >= 0 ? "text-green-400" : "text-red-400"}>{data.change1W >= 0 ? '+' : ''}{data.change1W.toFixed(2)}%</span></span>
+              <span className="text-white">RSI (14): <span className="text-purple-400">{data.metrics[0].value}</span></span>
+              <span className="text-white">TREND: <span className="text-pink-400">{data.metrics[3].signal}</span></span>
             </div>
           </div>
         )}
@@ -135,19 +135,19 @@ export default function QuantDashboard() {
 
         {/* Technical Evaluation Matrix */}
         <div>
-          <h2 className="text-2xl font-bold mb-6 text-gray-900 border-b border-gray-100 pb-4">Technical Evaluation Matrix</h2>
+          <h2 className="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-4">Technical Evaluation Matrix</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data?.metrics.map((metric: { name: string, value: string, signal: string, signalColor: string, rule: string }, idx: number) => (
               <div key={idx} className="glass-card rounded-2xl p-6 transition-transform hover:-translate-y-1 duration-300">
                 <h3 className="text-lg font-bold text-cyan-400 uppercase tracking-widest mb-2">{metric.name}</h3>
-                <div className="text-4xl font-extrabold text-gray-900 mb-4">{metric.value}</div>
+                <div className="text-4xl font-extrabold text-white mb-4">{metric.value}</div>
                 
                 <div className="mb-4">
                   <span className="text-slate-400 text-sm">Engine Signal: </span>
                   <span className={`font-semibold ${metric.signalColor}`}>{metric.signal}</span>
                 </div>
                 
-                <div className="border-t border-gray-100 pt-4">
+                <div className="border-t border-white/10 pt-4">
                   <span className="text-slate-300 text-sm font-semibold">Evaluation Logic:</span>
                   <p className="text-slate-400 text-sm mt-1 leading-relaxed">{metric.rule}</p>
                 </div>

@@ -14,8 +14,8 @@ export default function AboutPage() {
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header */}
-      <header className="relative z-10 p-6 border-b border-gray-100 flex items-center">
-        <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors">
+      <header className="relative z-10 p-6 border-b border-white/10 flex items-center">
+        <Link href="/" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors">
           <ArrowLeft className="w-5 h-5" />
           <span className="font-medium">Back to Home</span>
         </Link>
@@ -29,7 +29,7 @@ export default function AboutPage() {
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
               The <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Why</span> Behind Occupyo
             </h1>
-            <p className="text-xl md:text-2xl text-gray-500 leading-relaxed font-light">
+            <p className="text-xl md:text-2xl text-white/70 leading-relaxed font-light">
               We started with a simple question: Why is finding and booking commercial real estate in the 21st century still so archaic, opaque, and painful?
             </p>
           </section>
@@ -38,26 +38,26 @@ export default function AboutPage() {
           <section className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl font-semibold">The Friction</h2>
-              <p className="text-gray-500 leading-relaxed text-lg">
+              <p className="text-white/60 leading-relaxed text-lg">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
                 For decades, the commercial real estate (CRE) market has been dominated by gatekeepers, hidden fees, and months-long negotiation cycles. Whether you're a startup looking for a flex space, or a landlord trying to monetize empty square footage, the process was designed to slow you down.
               </p>
             </div>
-            <div className="h-64 rounded-[2rem] bg-gray-50 border border-gray-100 backdrop-blur-xl flex items-center justify-center">
+            <div className="h-64 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-xl flex items-center justify-center">
               {/* Placeholder for an abstract image or data visualization */}
-              <div className="text-gray-300 text-sm font-medium tracking-widest uppercase">The Old Way</div>
+              <div className="text-white/30 text-sm font-medium tracking-widest uppercase">The Old Way</div>
             </div>
           </section>
 
           {/* The Solution */}
           <section className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1 h-64 rounded-[2rem] bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-gray-100 backdrop-blur-xl flex items-center justify-center relative overflow-hidden">
+            <div className="order-2 md:order-1 h-64 rounded-[2rem] bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-white/10 backdrop-blur-xl flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:250%_250%,100%_100%] animate-[shimmer_3s_infinite]" />
-              <div className="text-gray-900 font-semibold tracking-widest uppercase z-10">The Occupyo Way</div>
+              <div className="text-white font-semibold tracking-widest uppercase z-10">The Occupyo Way</div>
             </div>
             <div className="order-1 md:order-2 space-y-6">
               <h2 className="text-3xl font-semibold">The Solution</h2>
-              <p className="text-gray-500 leading-relaxed text-lg">
+              <p className="text-white/60 leading-relaxed text-lg">
                 Occupyo is the antidote. We built an intelligent marketplace that connects ambitious companies with premium spaces instantly. We enforce transparent pricing, digitize the entire leasing process, and provide landlords with the tools to maximize their yield without the headache.
               </p>
             </div>
@@ -66,7 +66,7 @@ export default function AboutPage() {
           {/* The Vision */}
           <section className="text-center max-w-3xl mx-auto space-y-8">
             <h2 className="text-3xl font-semibold">Our Vision</h2>
-            <p className="text-xl text-gray-500 leading-relaxed">
+            <p className="text-xl text-white/80 leading-relaxed">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
               We envision a world where physical space is as liquid and accessible as cloud computing. A world where businesses can spin up a headquarters as easily as a server. That's the future we are building at Occupyo.
             </p>

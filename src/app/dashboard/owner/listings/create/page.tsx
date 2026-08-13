@@ -497,7 +497,7 @@ export default function CreateListingPage() {
               <label className="block text-sm font-medium text-gray-700 mb-3">Amenities & Features</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {["Wi-Fi", "Loading Dock", "Forklift", "HVAC", "24/7 Access", "Security Cameras", "Meeting Rooms", "Parking"].map((amenity) => (
-                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-gray-200 transition-all duration-200 active:scale-[0.98]">
+                  <label key={amenity} className="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-gray-200 transition-all duration-200 active:scale-[0.98]">
                     <input 
                       type="checkbox" 
                       className="accent-[#b4e6ff] w-4 h-4"
@@ -535,10 +535,10 @@ export default function CreateListingPage() {
               </div>
               <div className="relative">
                 <input 
-                  ref={autocompleteContainerRef as React.RefObject<HTMLInputElement>}
                   type="text"
                   placeholder="Enter a location"
-                  defaultValue={formData.address}
+                  value={formData.address}
+                  onChange={(e) => setFormData({...formData, address: e.target.value})}
                   className="w-full min-h-[52px] bg-gray-50 border border-gray-300 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] px-4 transition-all duration-300 focus:border-teal-500/50 focus:shadow-[0_0_15px_rgba(180,230,255,0.2),inset_0_2px_4px_rgba(0,0,0,0.1)] outline-none text-gray-900 placeholder-gray-400"
                 />
               </div>
@@ -635,8 +635,8 @@ export default function CreateListingPage() {
                   {imageUrls.map((url, idx) => (
                     <div 
                       key={`${url.slice(0, 30)}-${idx}`}
-                      className={`aspect-square bg-gray-50 rounded-xl border relative group overflow-hidden cursor-pointer transition-all duration-300
-                        ${dragOverIndex === idx ? 'border-teal-500 bg-teal-500/10 scale-105' : 'border-gray-100'}
+                      className={`aspect-square bg-white/5 rounded-xl border relative group overflow-hidden cursor-pointer transition-all duration-300
+                        ${dragOverIndex === idx ? 'border-teal-500 bg-teal-500/10 scale-105' : 'border-white/10'}
                         ${draggedIndex === idx ? 'opacity-40 scale-95' : 'opacity-100'}
                       `}
                       draggable
@@ -650,14 +650,14 @@ export default function CreateListingPage() {
                       <img src={url} alt={`Property photo ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       
                       {/* Drag handle */}
-                      <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity border border-gray-100 cursor-grab active:cursor-grabbing">
+                      <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 cursor-grab active:cursor-grabbing">
                         <GripVertical className="w-3 h-3 text-gray-900/70" />
                       </div>
 
                       {/* Remove button */}
                       <button 
                         onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
-                        className="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 border border-gray-100 hover:bg-red-500/20"
+                        className="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 border border-white/10 hover:bg-red-500/20"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -666,7 +666,7 @@ export default function CreateListingPage() {
                       {idx !== 0 && (
                         <button 
                           onClick={(e) => { e.stopPropagation(); setAsCover(idx); }}
-                          className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-teal-600 hover:text-gray-900 border border-gray-100 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider hover:bg-teal-500/20"
+                          className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-teal-600 hover:text-gray-900 border border-white/10 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider hover:bg-teal-500/20"
                         >
                           <Star className="w-3 h-3" /> Cover
                         </button>
@@ -705,7 +705,7 @@ export default function CreateListingPage() {
                 <p className="text-sm text-gray-500">Use our vetted, flexible occupancy agreement template. Recommended for fast onboarding.</p>
               </label>
               
-              <label className="border border-gray-300 bg-gray-50 rounded-2xl p-6 cursor-pointer hover:border-gray-300 hover:bg-gray-200 transition-colors">
+              <label className="border border-gray-300 bg-white/5 rounded-2xl p-6 cursor-pointer hover:border-white/30 hover:bg-gray-200 transition-colors">
                 <UploadCloud className="w-8 h-8 text-gray-400 mb-4" />
                 <h4 className="font-semibold text-gray-900 mb-2">Custom Agreement</h4>
                 <p className="text-sm text-gray-900/50 mb-4">Upload your own legal terms and conditions (PDF only).</p>
@@ -729,7 +729,7 @@ export default function CreateListingPage() {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between border-t border-gray-100 pt-6">
+      <div className="flex justify-between border-t border-white/10 pt-6">
         <button
           onClick={handleBack}
           disabled={currentStep === 0 || loading}
@@ -755,7 +755,7 @@ export default function CreateListingPage() {
         >
           {/* Close button */}
           <button 
-            className="absolute top-6 right-6 text-gray-900 hover:text-gray-300 bg-gray-200 backdrop-blur-md rounded-full p-2.5 border border-gray-300 hover:bg-gray-100/50 transition-all z-10"
+            className="absolute top-6 right-6 text-gray-900 hover:text-gray-300 bg-gray-200 backdrop-blur-md rounded-full p-2.5 border border-gray-300 hover:bg-white/20 transition-all z-10"
             onClick={() => setPreviewImage(null)}
           >
             <X className="w-6 h-6" />
@@ -769,7 +769,7 @@ export default function CreateListingPage() {
           {/* Previous button */}
           {previewImage > 0 && (
             <button 
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-200 backdrop-blur-md rounded-full p-3 border border-gray-300 hover:bg-gray-100/50 transition-all z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-200 backdrop-blur-md rounded-full p-3 border border-gray-300 hover:bg-white/20 transition-all z-10"
               onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage - 1); }}
             >
               <ChevronLeft className="w-6 h-6" />
@@ -779,7 +779,7 @@ export default function CreateListingPage() {
           {/* Next button */}
           {previewImage < imageUrls.length - 1 && (
             <button 
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-200 backdrop-blur-md rounded-full p-3 border border-gray-300 hover:bg-gray-100/50 transition-all z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-900 bg-gray-200 backdrop-blur-md rounded-full p-3 border border-gray-300 hover:bg-white/20 transition-all z-10"
               onClick={(e) => { e.stopPropagation(); setPreviewImage(previewImage + 1); }}
             >
               <ChevronRight className="w-6 h-6" />

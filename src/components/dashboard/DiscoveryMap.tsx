@@ -124,8 +124,8 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
 
   if (!mapboxToken) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-[#0e1626] rounded-3xl border border-gray-100 p-8 text-center">
-         <p className="text-gray-500">Map loading failed. Please check your Mapbox Access Token.</p>
+      <div className="w-full h-full flex flex-col items-center justify-center bg-[#0e1626] rounded-3xl border border-white/10 p-8 text-center">
+         <p className="text-white/60">Map loading failed. Please check your Mapbox Access Token.</p>
       </div>
     );
   }
@@ -133,21 +133,21 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
   return (
     <div className="relative w-full h-full rounded-3xl overflow-hidden border border-[var(--glass-border)] shadow-2xl">
       {isSearching && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-[#0e1626]/80 backdrop-blur-md border border-gray-100 px-4 py-2 rounded-full flex items-center gap-2 text-gray-500 text-xs font-medium shadow-lg">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-[#0e1626]/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 text-white/70 text-xs font-medium shadow-lg">
           <Loader2 className="w-3 h-3 animate-spin" /> Analyzing Spatial Data...
         </div>
       )}
 
       {/* Geospatial Intelligence Control Panel */}
-      <div className="absolute top-4 left-4 z-20 bg-[#0e1626]/90 backdrop-blur-xl border border-gray-100 p-4 rounded-2xl w-64 shadow-2xl">
-        <div className="flex items-center gap-2 mb-4 text-gray-900">
-          <Layers className="w-4 h-4 text-teal-700" />
+      <div className="absolute top-4 left-4 z-20 bg-[#0e1626]/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl w-64 shadow-2xl">
+        <div className="flex items-center gap-2 mb-4 text-white">
+          <Layers className="w-4 h-4 text-[#a1ebd6]" />
           <h4 className="font-bold text-sm text-white">Geospatial Intel</h4>
         </div>
 
         <div className="space-y-4">
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Drive-Time Isochrones</p>
+            <p className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-2">Drive-Time Isochrones</p>
             <div className="flex gap-2">
               {(['driving', 'walking', 'cycling'] as const).map(mode => (
                 <button
@@ -156,7 +156,7 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
                   className={`flex-1 flex justify-center py-2 rounded-lg border text-xs font-medium transition-colors ${
                     isochroneProfile === mode 
                       ? 'bg-[#a1ebd6] text-[#0e1626] border-[#a1ebd6]' 
-                      : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'
+                      : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
                   }`}
                 >
                   {mode === 'driving' && <Navigation2 className="w-3 h-3" />}
@@ -168,23 +168,23 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
           </div>
 
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Demographic Overlays</p>
+            <p className="text-xs text-white/50 uppercase tracking-wider font-semibold mb-2">Demographic Overlays</p>
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer">
                 <input 
                   type="checkbox" 
                   checked={showFootTraffic}
                   onChange={(e) => setShowFootTraffic(e.target.checked)}
-                  className="rounded bg-gray-800 border-gray-700 text-teal-700 focus:ring-[#a1ebd6]"
+                  className="rounded bg-white/10 border-white/20 text-[#a1ebd6] focus:ring-[#a1ebd6]"
                 />
                 Foot Traffic Heatmap
               </label>
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer">
                 <input 
                   type="checkbox" 
                   checked={showIncome}
                   onChange={(e) => setShowIncome(e.target.checked)}
-                  className="rounded bg-gray-800 border-gray-700 text-teal-700 focus:ring-[#a1ebd6]"
+                  className="rounded bg-white/10 border-white/20 text-[#a1ebd6] focus:ring-[#a1ebd6]"
                 />
                 Median Household Income
               </label>
@@ -267,30 +267,30 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
         }`}
       >
         {hoveredProperty && (
-          <div className="liquid-glass rounded-2xl overflow-hidden shadow-2xl border border-gray-800 bg-[#0e1626]/90 backdrop-blur-xl">
-            <div className="h-40 bg-gray-900 relative">
+          <div className="liquid-glass rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-[#0e1626]/90 backdrop-blur-xl">
+            <div className="h-40 bg-white/5 relative">
               {hoveredProperty.images && hoveredProperty.images[0] ? (
                 <img src={hoveredProperty.images[0].url} alt="" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Building className="w-10 h-10 text-gray-700" />
+                  <Building className="w-10 h-10 text-white/20" />
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0e1626] via-transparent to-transparent" />
             </div>
             <div className="p-4">
               <h3 className="text-white font-bold truncate text-lg">{hoveredProperty.title}</h3>
-              <p className="text-gray-400 text-xs mb-3 flex items-center gap-1 mt-1">
+              <p className="text-white/60 text-xs mb-3 flex items-center gap-1 mt-1">
                 <MapPin className="w-3 h-3" /> {hoveredProperty.sizeSqft} sqft {hoveredProperty.propertyType}
               </p>
               <div className="flex items-end justify-between mt-2">
                 <div>
-                  <p className="text-gray-500 text-[10px] uppercase tracking-wider mb-0.5">Monthly Lease</p>
-                  <p className="text-teal-400 font-bold text-xl">${hoveredProperty.pricePerMonth.toLocaleString()}</p>
+                  <p className="text-white/40 text-[10px] uppercase tracking-wider mb-0.5">Monthly Lease</p>
+                  <p className="text-[#a1ebd6] font-bold text-xl">${hoveredProperty.pricePerMonth.toLocaleString()}</p>
                 </div>
                 <Link 
                   href={`/property/${hoveredProperty.id}`}
-                  className="bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-colors"
+                  className="bg-white/10 hover:bg-white/20 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-colors"
                 >
                   View Space
                 </Link>

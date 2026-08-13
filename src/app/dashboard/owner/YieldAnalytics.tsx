@@ -15,17 +15,17 @@ export function YieldAnalytics({ data }: { data: AnalyticsData | null }) {
         <div className="absolute inset-0 bg-[#b4e6ff] opacity-[0.02] mix-blend-screen" />
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-              <Activity className="w-6 h-6 text-sky-700" />
+            <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+              <Activity className="w-6 h-6 text-[#b4e6ff]" />
               Predictive Yield Analytics
             </h2>
-            <p className="text-gray-500 text-sm max-w-lg leading-relaxed">
+            <p className="text-white/60 text-sm max-w-lg leading-relaxed">
               Unlock powerful business intelligence. Once you list your first flexible space, this dashboard will automatically generate Cap Rate estimates, Net Yield projections, and a 12-month revenue curve based on market heuristics.
             </p>
           </div>
           <div className="w-full md:w-1/3 flex gap-4 opacity-30 pointer-events-none grayscale">
-            <div className="flex-1 bg-gray-50 rounded-2xl h-24 border border-gray-100 animate-pulse" />
-            <div className="flex-1 bg-gray-50 rounded-2xl h-24 border border-gray-100 animate-pulse" style={{ animationDelay: "150ms" }} />
+            <div className="flex-1 bg-white/5 rounded-2xl h-24 border border-white/10 animate-pulse" />
+            <div className="flex-1 bg-white/5 rounded-2xl h-24 border border-white/10 animate-pulse" style={{ animationDelay: "150ms" }} />
           </div>
         </div>
       </div>
@@ -41,13 +41,13 @@ export function YieldAnalytics({ data }: { data: AnalyticsData | null }) {
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-              <Activity className="w-5 h-5 text-sky-700" />
+            <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <Activity className="w-5 h-5 text-[#b4e6ff]" />
               Portfolio Intelligence
             </h2>
-            <p className="text-gray-400 text-sm mt-1">Real-time projections based on {data.totalSqft.toLocaleString()} sqft of managed space</p>
+            <p className="text-white/50 text-sm mt-1">Real-time projections based on {data.totalSqft.toLocaleString()} sqft of managed space</p>
           </div>
-          <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-100 px-4 py-2 rounded-full text-xs text-sky-700 font-medium backdrop-blur-md">
+          <div className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-xs text-[#b4e6ff] font-medium backdrop-blur-md">
             <div className="w-2 h-2 rounded-full bg-[#b4e6ff] animate-pulse" />
             Live Market Sync
           </div>
@@ -55,12 +55,12 @@ export function YieldAnalytics({ data }: { data: AnalyticsData | null }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Gross Revenue */}
-          <div className="bg-[#0f172a]/40 border border-white/5 rounded-2xl p-5 hover:bg-gray-50 transition-colors">
+          <div className="bg-[#0f172a]/40 border border-white/5 rounded-2xl p-5 hover:bg-white/5 transition-colors">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-500 text-sm font-medium">Projected Annual Gross</p>
-              <DollarSign className="w-4 h-4 text-sky-700" />
+              <p className="text-white/60 text-sm font-medium">Projected Annual Gross</p>
+              <DollarSign className="w-4 h-4 text-[#b4e6ff]" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 tracking-tight">
+            <p className="text-3xl font-bold text-white tracking-tight">
               ${(data.projectedAnnualRevenue / 1000).toFixed(1)}k
             </p>
             <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
@@ -69,29 +69,29 @@ export function YieldAnalytics({ data }: { data: AnalyticsData | null }) {
           </div>
 
           {/* Cap Rate */}
-          <div className="bg-[#0f172a]/40 border border-white/5 rounded-2xl p-5 hover:bg-gray-50 transition-colors">
+          <div className="bg-[#0f172a]/40 border border-white/5 rounded-2xl p-5 hover:bg-white/5 transition-colors">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-500 text-sm font-medium">Estimated Cap Rate</p>
+              <p className="text-white/60 text-sm font-medium">Estimated Cap Rate</p>
               <PieChart className="w-4 h-4 text-[#cbb4ff]" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 tracking-tight">
+            <p className="text-3xl font-bold text-white tracking-tight">
               {data.capRate}%
             </p>
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-white/40 mt-2">
               Based on ${data.estimatedAssetValue > 1000000 ? (data.estimatedAssetValue / 1000000).toFixed(1) + 'M' : (data.estimatedAssetValue / 1000).toFixed(0) + 'k'} valuation
             </p>
           </div>
 
           {/* Net Yield */}
-          <div className="bg-[#0f172a]/40 border border-white/5 rounded-2xl p-5 hover:bg-gray-50 transition-colors">
+          <div className="bg-[#0f172a]/40 border border-white/5 rounded-2xl p-5 hover:bg-white/5 transition-colors">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-500 text-sm font-medium">Gross Yield</p>
-              <Activity className="w-4 h-4 text-teal-700" />
+              <p className="text-white/60 text-sm font-medium">Gross Yield</p>
+              <Activity className="w-4 h-4 text-[#a1ebd6]" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 tracking-tight">
+            <p className="text-3xl font-bold text-white tracking-tight">
               {data.netYield}%
             </p>
-            <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+            <p className="text-xs text-white/40 mt-2 flex items-center gap-1">
               <Info className="w-3 h-3" /> Before operating expenses
             </p>
           </div>

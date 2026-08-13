@@ -32,19 +32,19 @@ export function AiMatcher() {
     return (
       <div 
         onClick={() => setIsOpen(true)}
-        className="bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-2xl p-6 text-gray-900 cursor-pointer hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 relative overflow-hidden group"
+        className="bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 relative overflow-hidden group"
       >
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700"></div>
         
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-100/50 rounded-full flex items-center justify-center backdrop-blur-md">
-              <Bot className="w-6 h-6 text-gray-900" />
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+              <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-xl font-bold mb-1">AI Space Matcher</h3>
-              <p className="text-gray-500 text-sm">Find your perfect space in 30 seconds</p>
+              <p className="text-white/80 text-sm">Find your perfect space in 30 seconds</p>
             </div>
           </div>
           <div className="bg-white text-indigo-600 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 group-hover:bg-indigo-50 transition-colors">
@@ -58,12 +58,12 @@ export function AiMatcher() {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden relative">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-900 to-black p-6 flex justify-between items-center text-gray-900">
+      <div className="bg-gradient-to-r from-gray-900 to-black p-6 flex justify-between items-center text-white">
         <div className="flex items-center gap-3">
           <Sparkles className="w-5 h-5 text-cyan-400" />
           <h3 className="font-bold text-lg">Occupyo AI</h3>
         </div>
-        <button onClick={() => { setIsOpen(false); setStep(0); }} className="text-gray-400 hover:text-gray-900">
+        <button onClick={() => { setIsOpen(false); setStep(0); }} className="text-white/50 hover:text-white">
           Close
         </button>
       </div>

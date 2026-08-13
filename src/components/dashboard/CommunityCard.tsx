@@ -21,7 +21,7 @@ export function CommunityCard() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-green-900 to-black rounded-2xl p-8 border border-green-800 shadow-xl relative overflow-hidden text-gray-900 mt-8">
+    <div className="bg-gradient-to-br from-green-900 to-black rounded-2xl p-8 border border-green-800 shadow-xl relative overflow-hidden text-white mt-8">
       {/* Background patterns */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
       
@@ -63,7 +63,7 @@ export function CommunityCard() {
           <a 
             href="#" 
             onClick={(e) => { e.preventDefault(); alert("Redirecting to WhatsApp Community..."); }}
-            className="inline-flex items-center gap-2 text-[#25D366] font-semibold hover:text-gray-900 transition-colors group"
+            className="inline-flex items-center gap-2 text-[#25D366] font-semibold hover:text-white transition-colors group"
           >
             Join WhatsApp Group <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>

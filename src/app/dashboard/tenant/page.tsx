@@ -55,8 +55,8 @@ export default async function TenantDashboardOverview() {
       </div>
 
       <div className="mb-8" style={{ animation: 'staggerFadeUp 0.5s ease-out both' }}>
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome back, {user.companyName || 'Tenant'}</h1>
-        <p className="text-gray-500 mt-1">Manage your flexible workspaces and leases</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Welcome back, {user.companyName || 'Tenant'}</h1>
+        <p className="text-white/60 mt-1">Manage your flexible workspaces and leases</p>
       </div>
 
       <div className="mb-10" style={{ animation: 'staggerFadeUp 0.5s ease-out 0.1s both' }}>
@@ -65,11 +65,11 @@ export default async function TenantDashboardOverview() {
 
       {leases.length === 0 ? (
         <div className="liquid-glass p-12 text-center flex flex-col items-center justify-center mb-8 min-h-[300px]" style={{ animation: 'staggerFadeUp 0.5s ease-out 0.2s both' }}>
-          <div className="bg-gray-100 h-20 w-20 rounded-2xl border border-gray-200 flex items-center justify-center mb-6 shadow-inner">
-            <Search className="h-10 w-10 text-gray-400" />
+          <div className="bg-white/10 h-20 w-20 rounded-2xl border border-white/20 flex items-center justify-center mb-6 shadow-inner">
+            <Search className="h-10 w-10 text-white/50" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">No active leases</h3>
-          <p className="text-gray-500 mt-2 mb-8 max-w-md mx-auto">
+          <h3 className="text-xl font-semibold text-white">No active leases</h3>
+          <p className="text-white/60 mt-2 mb-8 max-w-md mx-auto">
             Ready to find your next workspace? Browse our network of premium, flexible commercial properties.
           </p>
           <Link 
@@ -80,7 +80,7 @@ export default async function TenantDashboardOverview() {
         </div>
       ) : (
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Active Leases</h2>
+          <h2 className="text-xl font-semibold text-white mb-6">Your Active Leases</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {leases.map((lease, idx) => (
               <div 
@@ -89,7 +89,7 @@ export default async function TenantDashboardOverview() {
                 style={{ animation: `staggerFadeUp 0.5s ease-out ${0.2 + idx * 0.08}s both` }}
               >
                 {/* Image Thumbnail */}
-                <div className="h-40 bg-gray-50 border-b border-[var(--glass-border)] relative overflow-hidden">
+                <div className="h-40 bg-white/5 border-b border-[var(--glass-border)] relative overflow-hidden">
                   {lease.property.images && lease.property.images.length > 0 ? (
                     <img 
                       src={lease.property.images[0].url} 
@@ -97,7 +97,7 @@ export default async function TenantDashboardOverview() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">
+                    <div className="absolute inset-0 flex items-center justify-center text-white/20">
                       <Building2 className="h-10 w-10 opacity-50" />
                     </div>
                   )}
@@ -106,21 +106,21 @@ export default async function TenantDashboardOverview() {
 
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-gray-900 truncate pr-4 text-lg">{lease.property.title}</h3>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#a1ebd6]/20 text-teal-700 border border-[#a1ebd6]/30 whitespace-nowrap">
+                    <h3 className="font-semibold text-white truncate pr-4 text-lg">{lease.property.title}</h3>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#a1ebd6]/20 text-[#a1ebd6] border border-[#a1ebd6]/30 whitespace-nowrap">
                       {lease.status}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 mb-4 truncate">{lease.property.address}</p>
+                  <p className="text-sm text-white/60 mb-4 truncate">{lease.property.address}</p>
                   
-                  <div className="flex items-center gap-2 text-sm text-sky-700 mb-4 bg-sky-50 p-2.5 rounded-lg border border-sky-100">
+                  <div className="flex items-center gap-2 text-sm text-[#b4e6ff] mb-4 bg-[#b4e6ff]/10 p-2.5 rounded-lg border border-[#b4e6ff]/20">
                     <Calendar className="h-4 w-4" />
                     <span className="font-medium">{new Date(lease.startDate).toLocaleDateString()} - {new Date(lease.endDate).toLocaleDateString()}</span>
                   </div>
                 </div>
-                <div className="bg-gray-50 px-5 py-4 border-t border-gray-100 flex justify-between items-center backdrop-blur-md">
-                  <span className="text-sm font-semibold text-gray-900">${lease.totalAmount.toLocaleString()} <span className="text-gray-400 font-normal">total</span></span>
-                  <Link href={`/dashboard/tenant/leases/${lease.id}`} className="text-sm font-medium text-teal-700 hover:text-gray-900 transition-colors flex items-center gap-1 group/link">
+                <div className="bg-black/20 px-5 py-4 border-t border-white/10 flex justify-between items-center backdrop-blur-md">
+                  <span className="text-sm font-semibold text-white">${lease.totalAmount.toLocaleString()} <span className="text-white/50 font-normal">total</span></span>
+                  <Link href={`/dashboard/tenant/leases/${lease.id}`} className="text-sm font-medium text-[#a1ebd6] hover:text-white transition-colors flex items-center gap-1 group/link">
                     View Details <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
                   </Link>
                 </div>
@@ -134,14 +134,14 @@ export default async function TenantDashboardOverview() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style={{ animation: 'staggerFadeUp 0.5s ease-out 0.4s both' }}>
         <div className="glass-card p-8 flex flex-col justify-between group">
           <div>
-            <div className="h-14 w-14 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner">
-              <Building2 className="h-7 w-7 text-teal-700" />
+            <div className="h-14 w-14 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+              <Building2 className="h-7 w-7 text-[#a1ebd6]" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Search Properties</h3>
-            <p className="text-gray-500 mb-8 max-w-sm">Find exactly what you need in our extensive marketplace.</p>
+            <h3 className="text-xl font-semibold text-white mb-2">Search Properties</h3>
+            <p className="text-white/60 mb-8 max-w-sm">Find exactly what you need in our extensive marketplace.</p>
           </div>
           <div className="mt-8 text-center">
-          <Link href="/search" className="glass-button-secondary !text-gray-900 !border-gray-300 hover:!bg-gray-100 inline-flex w-max flex items-center gap-2 group/btn">
+          <Link href="/search" className="glass-button-secondary inline-flex w-max flex items-center gap-2 group/btn">
             View All Properties <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -149,15 +149,15 @@ export default async function TenantDashboardOverview() {
         
         <div className="glass-card p-8 flex flex-col justify-between group">
           <div>
-            <div className="h-14 w-14 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner">
-              <FileText className="h-7 w-7 text-sky-700" />
+            <div className="h-14 w-14 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+              <FileText className="h-7 w-7 text-[#b4e6ff]" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Post a Space Request</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">Post a Space Request</h3>
           {/* eslint-disable-next-line react/no-unescaped-entities */}
           {/* eslint-disable-next-line react/no-unescaped-entities */}
-            <p className="text-gray-500 mb-8 max-w-sm">Can't find what you're looking for? Let owners bid on your request.</p>
+            <p className="text-white/60 mb-8 max-w-sm">Can't find what you're looking for? Let owners bid on your request.</p>
           </div>
-          <Link href="/dashboard/tenant/requests/new" className="glass-button-secondary !text-gray-900 !border-gray-300 hover:!bg-gray-100 inline-flex w-max flex items-center gap-2 group/btn">
+          <Link href="/dashboard/tenant/requests/new" className="glass-button-secondary inline-flex w-max flex items-center gap-2 group/btn">
             Create request <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </Link>
         </div>
