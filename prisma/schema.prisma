@@ -9,83 +9,250 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(cuid())
-  clerkUserId      String         @unique
-  role             Role?
-  email            String         @unique
-  companyName      String?
-  einVerified      Boolean        @default(false)
-  coiUploaded      Boolean        @default(false)
-  phone            String?
-  createdAt        DateTime       @default(now())
-  referralCode     String?        @unique
-  referredBy       String?
+  id          String   @id @default(cuid())
+  clerkUserId String   @unique @map("clerkId")
+  email       String   @unique
+  firstName   String?
+  lastName    String?
+  phone       String?
+  avatarUrl   String?
+  role        Role?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  companyName String?
+  einVerified Boolean @default(false)
+  coiUploaded Boolean @default(false)
+
+  properties       Property[]
+  leases           Booking[]
+  stripeAccount    StripeAccount?
+  favorites        Favorite[]
+  notifications    Notification[]
   activityLogs     ActivityLog[]
   brokerDeals      Deal[]         @relation("BrokerDeals")
   tenantDeals      Deal[]         @relation("TenantDeals")
-  leases           Lease[]
   receivedMessages Message[]      @relation("ReceivedMessages")
   sentMessages     Message[]      @relation("SentMessages")
-  properties       Property[]
   spaceRequests    SpaceRequest[]
 }
 
+model StripeAccount {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  stripeAccountId  String   @unique
+  onboardingStatus String   @default("PENDING")
+  chargesEnabled   Boolean  @default(false)
+  payoutsEnabled   Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Property {
-  id             String                    @id @default(cuid())
-  ownerId        String
-  title          String
-  description    String
-  propertyType   PropertyType
-  sizeSqft       Int
-  pricePerMonth  Float
-  address        String
-  lat            Float?
-  lng            Float?
-  amenities      Json                      @default("[]")
-  status         String                    @default("AVAILABLE")
-  createdAt      DateTime                  @default(now())
-  durationUnit   String                    @default("MONTHS")
-  maxDuration    Int                       @default(12)
-  minDuration    Int                       @default(1)
-  pricePerDay    Float?
-  pricePerHour   Float?
+  id            String       @id @default(cuid())
+  ownerId       String
+  title         String
+  slug          String       @unique @default(cuid())
+  description   String
+  propertyType  PropertyType
+  sizeSqft      Int
+  pricePerMonth Float
+
+  status    PropertyStatus @default(AVAILABLE) // Temporarily default to AVAILABLE to fix TS
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  durationUnit String @default("MONTHS")
+  maxDuration  Int    @default(12)
+  minDuration  Int    @default(1)
+
+  pricePerDay  Float?
+  pricePerHour Float?
+
+  isExternal Boolean @default(false)
+  sourceUrl  String?
+
   embedding      Unsupported("vector")?
-  isExternal     Boolean                   @default(false)
-  sourceUrl      String?
-  location       Unsupported("geography")?
   imageEmbedding Unsupported("vector")?
-  capRate        Float?
-  leaseType      String?
-  noi            Float?
-  activityLogs   ActivityLog[]
-  deals          Deal[]
-  images         Image[]
-  leases         Lease[]
-  owner          User                      @relation(fields: [ownerId], references: [id])
-  suites         Suite[]
+
+  // PostGIS location
+  location Unsupported("geography")?
+
+  owner             User              @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  addressModel      Address?
+  images            Media[]
+  propertyAmenities PropertyAmenity[]
+  availabilities    Availability[]
+  leases            Booking[]
+  favorites         Favorite[]
+  deals             Deal[]
+  suites            Suite[]
+  activityLogs      ActivityLog[]
+
+  // Legacy / TS Compilation fields (mapped/kept temporarily)
+  address   String?
+  lat       Float?
+  lng       Float?
+  capRate   Float?
+  leaseType String?
+  noi       Float?
+  amenities Json    @default("[]")
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([propertyType])
+  @@index([slug])
 }
 
-model Image {
-  id         String   @id @default(cuid())
+model Address {
+  id               String  @id @default(cuid())
+  propertyId       String  @unique
+  formattedAddress String
+  addressLine1     String?
+  addressLine2     String?
+  city             String?
+  state            String?
+  postalCode       String?
+  country          String?
+  latitude         Float?
+  longitude        Float?
+  placeId          String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  propertyId   String
+  url          String
+  publicId     String?
+  resourceType String   @default("IMAGE") // IMAGE, VIDEO
+  mimeType     String?
+  width        Int?
+  height       Int?
+  duration     Float?
+  sortOrder    Int      @default(0)
+  isCover      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  isHero Boolean @default(false)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("Image")
+}
+
+model Amenity {
+  id         String            @id @default(cuid())
+  name       String            @unique
+  category   String?
+  icon       String?
+  properties PropertyAmenity[]
+}
+
+model PropertyAmenity {
   propertyId String
-  url        String
-  isHero     Boolean  @default(false)
-  property   Property @relation(fields: [propertyId], references: [id])
+  amenityId  String
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity  Amenity  @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, amenityId])
 }
 
-model Lease {
-  id              String      @id @default(cuid())
-  propertyId      String
-  tenantId        String
-  startDate       DateTime
-  endDate         DateTime
-  totalAmount     Float
-  status          LeaseStatus @default(PENDING)
+model Availability {
+  id         String             @id @default(cuid())
+  propertyId String
+  startDate  DateTime
+  endDate    DateTime
+  status     AvailabilityStatus @default(AVAILABLE)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([startDate, endDate])
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  propertyId String
+  tenantId   String
+  startDate  DateTime
+  endDate    DateTime
+  status     BookingStatus @default(PENDING)
+
+  pricingMode String @default("MONTHLY") // MONTHLY, DAILY, HOURLY
+  subtotal    Float  @default(0)
+  platformFee Float  @default(0)
+  total       Float  @default(0)
+  currency    String @default("USD")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  tenant   User     @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  payment  Payment?
+
+  // Legacy mappings for TS
+  totalAmount     Float          @default(0)
+  bookingType     String         @default("MONTHLY")
   stripePaymentId String?
-  createdAt       DateTime    @default(now())
-  bookingType     String      @default("MONTHLY")
-  property        Property    @relation(fields: [propertyId], references: [id])
-  tenant          User        @relation(fields: [tenantId], references: [id])
+
+  @@index([propertyId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([startDate, endDate])
+  @@map("Lease")
+}
+
+model Payment {
+  id                      String        @id @default(cuid())
+  bookingId               String        @unique
+  stripeCheckoutSessionId String?       @unique
+  stripePaymentIntentId   String?       @unique
+  stripeChargeId          String?       @unique
+  status                  PaymentStatus @default(UNPAID)
+  amount                  Float
+  currency                String        @default("USD")
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  @@index([bookingId])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+  @@index([propertyId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model SpaceRequest {
@@ -181,14 +348,45 @@ enum PropertyType {
   WAREHOUSE
   FLEX
   OFFICE
+  STORAGE
+  INDUSTRIAL
+  RETAIL
+  OTHER
 }
 
-enum LeaseStatus {
-  PENDING
-  APPROVED
+enum PropertyStatus {
+  DRAFT
+  PUBLISHED
+  PAUSED
+  ARCHIVED
+  AVAILABLE
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  BLOCKED
+  UNAVAILABLE
+}
+
+enum BookingStatus {
   ACTIVE
-  COMPLETED
+  APPROVED
+  PENDING
+  PAYMENT_PENDING
+  CONFIRMED
   REJECTED
+  CANCELLED
+  COMPLETED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PROCESSING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
 }
 
 enum DealStatus {
@@ -197,4 +395,12 @@ enum DealStatus {
   LOI_SUBMITTED
   LEASE_SIGNED
   CLOSED
+}
+
+enum LeaseStatus {
+  PENDING
+  APPROVED
+  ACTIVE
+  COMPLETED
+  REJECTED
 }

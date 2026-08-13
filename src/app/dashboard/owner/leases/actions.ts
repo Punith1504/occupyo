@@ -20,7 +20,7 @@ export async function updateLeaseStatus(leaseId: string, status: "APPROVED" | "R
   }
 
   // Verify the lease belongs to a property owned by this user
-  const lease = await prisma.lease.findUnique({
+  const lease = await prisma.booking.findUnique({
     where: { id: leaseId },
     include: { property: true }
   });
@@ -30,9 +30,18 @@ export async function updateLeaseStatus(leaseId: string, status: "APPROVED" | "R
   }
 
   try {
-    await prisma.lease.update({
+    await prisma.booking.update({
       where: { id: leaseId },
       data: { status }
+    });
+
+    await prisma.notification.create({
+      data: {
+        userId: lease.tenantId,
+        type: "BOOKING_UPDATE",
+        title: "Booking Request Update",
+        message: `Your booking request for ${lease.property.title} was ${status.toLowerCase()}.`,
+      }
     });
 
     revalidatePath("/dashboard/owner/leases");

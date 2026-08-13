@@ -60,7 +60,7 @@ export async function createLeaseRequest(data: {
   }
 
   try {
-    const lease = await prisma.lease.create({
+    const lease = await prisma.booking.create({
       data: {
         propertyId: property.id,
         tenantId: user.id,
@@ -69,6 +69,15 @@ export async function createLeaseRequest(data: {
         totalAmount: totalAmount,
         bookingType: data.bookingType,
         status: "PENDING",
+      }
+    });
+
+    await prisma.notification.create({
+      data: {
+        userId: property.ownerId,
+        type: "BOOKING_REQUEST",
+        title: "New Booking Request",
+        message: `${user.firstName || 'A tenant'} requested to book ${property.title}.`,
       }
     });
 

@@ -50,7 +50,7 @@ export async function createPropertyListing(data: PropertyData) {
         lat: data.lat,
         lng: data.lng,
         amenities: data.amenities ?? [],
-        status: data.status ?? "AVAILABLE",
+        status: (data.status as any) ?? "AVAILABLE",
         sourceUrl: data.sourceUrl,
       }
     });

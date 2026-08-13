@@ -52,9 +52,17 @@ export function DiscoveryMap({ initialProperties, onPropertiesUpdate }: Discover
     if (!mapRef.current) return;
     setIsSearching(true);
     
-    const bounds = mapRef.current.getMap().getBounds();
-    const ne = bounds.getNorthEast();
-    const sw = bounds.getSouthWest();
+    const map = mapRef.current.getMap();
+    if (!map) return;
+    
+    const bounds = map.getBounds();
+    const ne = bounds ? bounds.getNorthEast() : null;
+    const sw = bounds ? bounds.getSouthWest() : null;
+    
+    if (!ne || !sw) {
+      setIsSearching(false);
+      return;
+    }
     
     try {
       const res = await fetch(`/api/properties/search?neLat=${ne.lat}&neLng=${ne.lng}&swLat=${sw.lat}&swLng=${sw.lng}`);

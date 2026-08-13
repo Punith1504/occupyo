@@ -102,7 +102,7 @@ export async function GET() {
     }
 
     // Wipe mock properties for this user
-    await prisma.image.deleteMany({ where: { property: { ownerId: owner.id } } });
+    await prisma.media.deleteMany({ where: { property: { ownerId: owner.id } } });
     await prisma.property.deleteMany({ where: { ownerId: owner.id } });
 
     // Seed
@@ -110,12 +110,12 @@ export async function GET() {
       const { images, ...data } = prop;
       const createdProp = await prisma.property.create({
         data: {
-          ...data,
+          ...(data as any),
           ownerId: owner.id,
         }
       });
       for (const img of images) {
-        await prisma.image.create({
+        await prisma.media.create({
           data: {
             propertyId: createdProp.id,
             url: img.url,

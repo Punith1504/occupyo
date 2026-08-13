@@ -34,13 +34,46 @@ export async function POST(req: Request) {
     }
 
     try {
-      await prisma.lease.update({
+      const lease = await prisma.booking.update({
         where: { id: leaseId },
         data: {
           status: "ACTIVE",
           stripePaymentId: session.id,
         },
+        include: { property: true }
       });
+      
+      await prisma.payment.create({
+        data: {
+          bookingId: leaseId,
+          stripeCheckoutSessionId: event.data.object.id,
+          stripePaymentIntentId: session.id,
+          status: "PAID",
+          amount: session.amount_received / 100,
+          currency: session.currency.toUpperCase(),
+        }
+      });
+
+      // Notify Owner
+      await prisma.notification.create({
+        data: {
+          userId: lease.property.ownerId,
+          type: "PAYMENT_RECEIVED",
+          title: "Payment Received",
+          message: `The security deposit for ${lease.property.title} has been paid. The lease is now ACTIVE.`,
+        }
+      });
+
+      // Notify Tenant
+      await prisma.notification.create({
+        data: {
+          userId: lease.tenantId,
+          type: "PAYMENT_RECEIVED",
+          title: "Payment Successful",
+          message: `Your payment for ${lease.property.title} was successful. The lease is now ACTIVE.`,
+        }
+      });
+      
       console.log(`[STRIPE_WEBHOOK] Lease ${leaseId} set to ACTIVE`);
       
       // Fire and forget logging

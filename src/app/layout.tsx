@@ -44,7 +44,7 @@ export default function RootLayout({
         lang="en"
         className={`h-full antialiased ${inter.variable}`}
       >
-        <body className="min-h-full flex flex-col bg-[#FAFAF7] text-[var(--foreground)] font-[var(--font-inter)]">
+        <body className="min-h-full flex flex-col bg-background text-foreground font-[var(--font-inter)]">
           <TelemetryTracker />
           <Navbar />
           <div className="flex-1 flex flex-col h-full w-full">

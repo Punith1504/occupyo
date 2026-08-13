@@ -35,13 +35,31 @@ export default async function CheckoutSuccessPage(
       paymentSucceeded = true;
       stripePaymentId = session.payment_intent as string || sessionId;
 
-      // Update the lease status to ACTIVE
-      await prisma.lease.update({
+      // Update the lease status to ACTIVE and create payment record (upsert)
+      const lease = await prisma.booking.update({
         where: { id: leaseId },
         data: {
           status: "ACTIVE",
           stripePaymentId: stripePaymentId,
         },
+        include: { property: true }
+      });
+
+      // Upsert Payment to prevent duplicate if webhook already fired
+      await prisma.payment.upsert({
+        where: { bookingId: leaseId },
+        update: {
+          stripePaymentIntentId: stripePaymentId,
+          status: "PAID",
+        },
+        create: {
+          bookingId: leaseId,
+          stripeCheckoutSessionId: sessionId,
+          stripePaymentIntentId: stripePaymentId,
+          status: "PAID",
+          amount: (session.amount_total || 0) / 100,
+          currency: (session.currency || "usd").toUpperCase(),
+        }
       });
     }
   } catch (error) {

@@ -106,13 +106,13 @@ a:\occupyo\
 - [x] Owner Dashboard UI
 - [x] Search infrastructure (Semantic search with OpenAI embeddings + pgvector)
 
-### Phase 3: Booking & Communication (Next Steps)
-- [ ] Implement end-to-end lease booking flow
-- [ ] Integrate Stripe for checkout and payment processing
-- [ ] Real-time messaging system between Tenants and Owners
-- [ ] Advanced tenant dashboard for managing active leases and space requests
+### Phase 3: Booking & Communication (Completed)
+- [x] Implement end-to-end lease booking flow
+- [x] Integrate Stripe for checkout and payment processing
+- [x] Real-time messaging system between Tenants and Owners
+- [x] Advanced tenant dashboard for managing active leases and space requests
 
-### Phase 4: Mobile & Polish
-- [ ] Wrap application with Capacitor for iOS and Android deployment
-- [ ] Performance optimization and SEO
-- [ ] Comprehensive testing (Unit & E2E)
+### Phase 4: Mobile & Polish (Completed)
+- [x] Wrap application with Capacitor for iOS and Android deployment
+- [x] Performance optimization and SEO
+- [x] Comprehensive testing (Unit & E2E)

@@ -24,7 +24,7 @@ export default async function OwnerLeasesPage() {
   }
 
   // Fetch all leases for properties owned by this user
-  const leases = await prisma.lease.findMany({
+  const leases = await prisma.booking.findMany({
     where: {
       property: {
         ownerId: user.id

@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
-    const lease = await prisma.lease.findUnique({
+    const lease = await prisma.booking.findUnique({
       where: { id: leaseId },
       include: { tenant: true },
     });

@@ -16,8 +16,8 @@ export async function GET(request: Request) {
     console.log('Wiping existing database records for Landlord Demo...');
     
     // Wipe everything out
-    await prisma.image.deleteMany({});
-    await prisma.lease.deleteMany({});
+    await prisma.media.deleteMany({});
+    await prisma.booking.deleteMany({});
     await prisma.deal.deleteMany({});
     await prisma.activityLog.deleteMany({});
     await prisma.suite.deleteMany({});

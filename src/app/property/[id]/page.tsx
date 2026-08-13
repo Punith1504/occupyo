@@ -9,6 +9,42 @@ import CreFinancialCalculator from "@/components/property/CreFinancialCalculator
 
 export const dynamic = "force-dynamic";
 
+import { Metadata } from "next";
+
+export async function generateMetadata(
+  props: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+  const params = await props.params;
+  const property = await prisma.property.findUnique({
+    where: { id: params.id },
+    include: { images: true }
+  });
+
+  if (!property) {
+    return {
+      title: "Property Not Found | Occupyo",
+    };
+  }
+
+  const imageUrl = property.images[0]?.url || "https://occupyo.com/og-image.jpg";
+
+  return {
+    title: `${property.title} - Occupyo`,
+    description: property.description?.substring(0, 160) || `Rent ${property.title} in ${property.address}`,
+    openGraph: {
+      title: property.title,
+      description: property.description?.substring(0, 160) || "",
+      images: [imageUrl],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: property.title,
+      description: property.description?.substring(0, 160) || "",
+      images: [imageUrl],
+    }
+  };
+}
+
 export default async function PropertyPage(
   props: {
     params: Promise<{ id: string }>;
@@ -209,7 +245,7 @@ export default async function PropertyPage(
                    loading="lazy" 
                    allowFullScreen 
                    referrerPolicy="no-referrer-when-downgrade" 
-                   src={`https://www.google.com/maps?q=${encodeURIComponent(property.address)}&output=embed`}
+                   src={`https://www.google.com/maps?q=${encodeURIComponent(property.address || '')}&output=embed`}
                  ></iframe>
                </div>
             </div>

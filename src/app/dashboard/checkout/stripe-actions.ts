@@ -18,7 +18,7 @@ export async function createStripeCheckoutSession(leaseId: string) {
     const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
     if (!user) return { success: false, error: "User not found" };
 
-    const lease = await prisma.lease.findUnique({ 
+    const lease = await prisma.booking.findUnique({ 
       where: { id: leaseId },
       include: { property: true }
     });
@@ -34,7 +34,7 @@ export async function createStripeCheckoutSession(leaseId: string) {
     const origin = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
 
     // 2% platform fee
-    const amount = lease.property.pricePerMonth;
+    const amount = lease.totalAmount || lease.property.pricePerMonth;
     const totalAmount = Math.round(amount * 1.02 * 100); // Stripe expects cents
 
     const session = await stripe.checkout.sessions.create({
@@ -44,8 +44,8 @@ export async function createStripeCheckoutSession(leaseId: string) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `Security Deposit: ${lease.property.title}`,
-              description: "First month's rent + 2% platform fee",
+              name: `Booking Deposit: ${lease.property.title}`,
+              description: `Booking total + 2% platform fee`,
             },
             unit_amount: totalAmount,
           },

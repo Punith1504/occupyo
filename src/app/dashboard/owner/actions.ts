@@ -146,13 +146,13 @@ export async function updatePropertyAction(
     // Handle images if provided
     if (data.imageUrls) {
       // Delete existing images
-      await prisma.image.deleteMany({
+      await prisma.media.deleteMany({
         where: { propertyId: propertyId },
       });
 
       // Create new images in the updated order
       if (data.imageUrls.length > 0) {
-        await prisma.image.createMany({
+        await prisma.media.createMany({
           data: data.imageUrls.map((url, index) => ({
             url,
             propertyId: propertyId,
@@ -195,13 +195,13 @@ export async function updatePropertyImagesAction(propertyId: string, imageUrls: 
     }
 
     // Delete existing images
-    await prisma.image.deleteMany({
+    await prisma.media.deleteMany({
       where: { propertyId: propertyId },
     });
 
     // Create new images in the updated order
     if (imageUrls.length > 0) {
-      await prisma.image.createMany({
+      await prisma.media.createMany({
         data: imageUrls.map((url, index) => ({
           url,
           propertyId: propertyId,

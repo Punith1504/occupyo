@@ -21,9 +21,9 @@ export async function sendMessage(receiverId: string, content: string) {
       }
     });
 
-    // Broadcast over Pusher
-    const channelName = `presence-chat-${[user.id, receiverId].sort().join("-")}`;
-    await pusherServer.trigger(channelName, "new_message", { message });
+    // For MVP we are using polling, so no need to broadcast via Pusher
+    // const channelName = `presence-chat-${[user.id, receiverId].sort().join("-")}`;
+    // await pusherServer.trigger(channelName, "new_message", { message });
 
     return { success: true, messageId: message.id };
   } catch (error) {

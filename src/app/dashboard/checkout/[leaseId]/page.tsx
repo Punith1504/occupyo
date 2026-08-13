@@ -19,7 +19,7 @@ export default async function CheckoutPage(
   const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
   if (!user) redirect("/onboarding");
 
-  const lease = await prisma.lease.findUnique({
+  const lease = await prisma.booking.findUnique({
     where: { id: params.leaseId },
     include: {
       property: true,

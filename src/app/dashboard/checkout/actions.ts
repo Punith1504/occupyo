@@ -11,7 +11,7 @@ export async function processMockPayment(leaseId: string) {
     const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
     if (!user) return { success: false, error: "User not found" };
 
-    const lease = await prisma.lease.findUnique({ where: { id: leaseId } });
+    const lease = await prisma.booking.findUnique({ where: { id: leaseId } });
     if (!lease) return { success: false, error: "Lease not found" };
 
     if (lease.tenantId !== user.id) {
@@ -26,7 +26,7 @@ export async function processMockPayment(leaseId: string) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Update lease status and add mock payment ID
-    await prisma.lease.update({
+    await prisma.booking.update({
       where: { id: leaseId },
       data: {
         status: "ACTIVE",
