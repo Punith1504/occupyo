@@ -1,151 +1,37 @@
-import { prisma } from "@/lib/prisma";
-import { Building2, Store, Factory, Briefcase, Users, HeartPulse } from "lucide-react";
-import Link from "next/link";
-import AiSearchBar from "@/components/search/AiSearchBar";
-import { TrustSignals } from "@/components/home/TrustSignals";
-import { Testimonials } from "@/components/home/Testimonials";
-import { PropertyCard } from "@/components/search/PropertyCard";
-import { HeroCarousel } from "@/components/home/HeroCarousel";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import React from 'react';
+import Header from '@/components/layout/Header';
+import MarketSearch from '@/components/dashboard/MarketSearch';
 
-export const dynamic = "force-dynamic";
-
-export default async function Home() {
-  let properties: any[] = [];
-  let dbError: string | null = null;
-  try {
-    properties = await prisma.property.findMany({
-      where: { status: "AVAILABLE" },
-      include: {
-        images: {
-          orderBy: { isHero: 'desc' }
-        }
-      },
-      take: 12,
-    });
-  } catch (error: any) {
-    console.error("Homepage DB error:", error.message);
-    dbError = error.message;
-  }
-
+export default function TenantDiscoveryPage() {
   return (
-    <div className="flex flex-col font-sans bg-[#FAFAF7]">
-
-      {/* 2. Massive Hero Image Banner with Central Search Widget */}
-      <div className="relative w-full h-auto min-h-[45vh] md:min-h-[85vh] flex flex-col items-center justify-center overflow-hidden pt-4 pb-6 md:py-16">
-        <HeroCarousel />
-
-        <div className="relative z-10 text-center px-4 w-full mb-2 md:mb-16 mt-1 md:mt-8 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-[10px] md:text-sm font-semibold mb-4 md:mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400"></span>
-            </span>
-            Next Generation Commercial Real Estate
-          </div>
-          
-          <h1 className="text-[2rem] leading-tight sm:text-5xl md:text-6xl lg:text-8xl font-extrabold mb-2 md:mb-6 tracking-tight text-white drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]">
-            The <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]">Intelligent</span><br className="hidden md:block"/> CRE Marketplace
-          </h1>
-          
-          <p className="text-gray-100 text-sm sm:text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)] px-2">
-            Discover the perfect space for your business with AI-powered matching and premium flex occupancy.
-          </p>
-        </div>
-
-        {/* The Central Pristine Glass Widget */}
-        <div className="relative z-10 w-full max-w-6xl px-4 md:px-8 md:mt-8">
-          <div className="bg-white/60 backdrop-blur-3xl rounded-2xl md:rounded-[32px] p-3 md:p-14 lg:p-20 flex flex-col border border-white shadow-2xl shadow-teal-900/5 relative overflow-hidden ring-1 ring-black/5">
-            {/* Subtle inner highlight for true glass feel */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent pointer-events-none rounded-2xl md:rounded-[32px]"></div>
-            
-            {/* Tabs - Match uploaded image style */}
-            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-10 w-full md:w-fit border border-gray-200 bg-white/60 backdrop-blur-md rounded-3xl md:rounded-full px-2 py-2 md:px-10 md:py-4 mb-2 md:mb-8 shadow-sm relative z-20 min-h-[44px]">
-              <Link href="/" className="flex flex-col items-center gap-1 cursor-pointer min-h-[44px] justify-center">
-                <span className="text-gray-900 font-bold text-xs md:text-base tracking-wide whitespace-nowrap drop-shadow-sm">Rent Space</span>
-                <div className="w-full h-[3px] bg-teal-500 rounded-full shadow-[0_0_8px_rgba(20,184,166,0.4)] mt-[2px]"></div>
-              </Link>
-              <Link href="/dashboard/owner" className="flex flex-col justify-center text-gray-500 font-medium text-xs md:text-base whitespace-nowrap hover:text-gray-900 transition-colors pb-[5px] min-h-[44px]">Post Space</Link>
-              <Link href="/enterprise" className="flex flex-col justify-center text-gray-500 font-medium text-xs md:text-base whitespace-nowrap hover:text-gray-900 transition-colors pb-[5px] min-h-[44px]">Enterprise Solutions</Link>
-            </div>
-
-            {/* Property Types - Minimalist Icons */}
-            <div className="flex items-center justify-start md:justify-start gap-4 md:gap-12 w-full mt-2 md:mt-8 mb-3 md:mb-10 overflow-x-auto pb-1 relative z-20 scrollbar-hide snap-x snap-mandatory">
-              <Link href="/search?type=OFFICE" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
-                <Building2 className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Office</span>
-              </Link>
-              <Link href="/search?type=RETAIL" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
-                <Store className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Retail</span>
-              </Link>
-              <Link href="/search?type=INDUSTRIAL" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
-                <Factory className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Industrial</span>
-              </Link>
-              <Link href="/search?type=FLEX" className="flex flex-col items-center gap-3 cursor-pointer group snap-center min-w-[60px]">
-                <Briefcase className="w-8 h-8 md:w-10 md:h-10 text-gray-500 group-hover:text-teal-600 transition-all duration-300 group-hover:-translate-y-1" strokeWidth={1.5} />
-                <span className="text-gray-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group-hover:text-teal-600 transition-colors drop-shadow-sm">Flex</span>
-              </Link>
-            </div>
-
-            {/* AI Search Bar */}
-            <div className="w-full relative z-30">
-              <AiSearchBar />
-            </div>
-
+    <div className="min-h-screen bg-slate-50/50 flex flex-col">
+      <Header />
+      
+      <main className="flex-1 flex flex-col">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden bg-white border-b border-slate-200">
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+              Find your next commercial <br className="hidden md:block"/> space, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">intelligently.</span>
+            </h1>
+            <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-500 mb-10">
+              Stop endlessly filtering through outdated directories. Tell us exactly what you need in natural language, and our AI will instantly match you with verified broker inventory.
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* 3. Featured Properties Section */}
-      <div className="w-full py-8 md:py-32 px-4 sm:px-6 lg:px-12 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-12 md:mb-20">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight drop-shadow-sm">Featured Spaces</h2>
-            <Link href="/search" className="text-teal-600 font-semibold hover:text-teal-800 flex items-center gap-1 transition-colors text-lg">
-              View All <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </div>
-          
-          {properties.length === 0 ? (
-            <div className="text-center py-24 bg-white/60 border border-gray-200 rounded-3xl shadow-sm backdrop-blur-md">
-              <Building2 className="mx-auto h-16 w-16 text-gray-300" />
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">No properties</h3>
-              <p className="mt-2 text-base text-gray-500">Check back later for new listings.</p>
-              {dbError && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm max-w-xl mx-auto overflow-auto text-left">
-                  <p className="font-bold mb-1">Database Error:</p>
-                  <pre className="whitespace-pre-wrap">{dbError}</pre>
-                </div>
-              )}
-            </div>
-          ) : (
-            <ErrorBoundary>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {properties.map((property, index) => {
-                  // Make the first item and the 6th item span 2 columns to create a dynamic masonry/bento layout
-                  const isHorizontal = index === 0 || index === 5;
-                  return (
-                    <div key={property.id} className={isHorizontal ? "col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2" : "col-span-1"}>
-                      <PropertyCard property={property as any} variant="home" isHorizontal={isHorizontal} />
-                    </div>
-                  );
-                })}
-              </div>
-            </ErrorBoundary>
-          )}
+        {/* Search App Area */}
+        <div className="flex-1 py-12 px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+          <MarketSearch />
         </div>
-      </div>
-
-      {/* 4. Trust Signals & Testimonials */}
-      <div className="w-full border-t border-gray-200 py-12 md:py-16 px-4 bg-white/40 backdrop-blur-md">
-        <TrustSignals />
-      </div>
-
-      <div className="w-full py-12 md:py-16 bg-[#FAFAF7]">
-        <Testimonials />
-      </div>
+      </main>
+      
+      <footer className="bg-white border-t border-slate-200 py-8 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">
+          &copy; {new Date().getFullYear()} Occupyo Technologies. Enterprise CRE Intelligence.
+        </div>
+      </footer>
     </div>
   );
 }
