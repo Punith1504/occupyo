@@ -4,15 +4,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from typing import List, Optional
+from pydantic import BaseModel
 import hmac
 import hashlib
 
 from twilio.request_validator import RequestValidator
 
 from ...core.config import settings
-from ...models.schemas import Base, ListingCreate, ListingResponse, Listing, Broker
-from ...services.ingestion import IngestionService
-from ...services.matcher import MatcherService
+from ...models.schemas import Base, Broker
 from ...services.notifications import NotificationService
 from ...core.logging import logger
 
@@ -29,111 +28,7 @@ def get_db():
     finally:
         db.close()
 
-# --- Listing Management ---
 
-@router.post("/listings/", response_model=ListingResponse)
-def create_listing(listing: ListingCreate, broker_id: str, db: Session = Depends(get_db)):
-    """Creates a new property listing."""
-    broker = db.query(Broker).filter(Broker.id == broker_id).first()
-    if not broker:
-        broker = Broker(id=broker_id, first_name="Test", last_name="Broker", email=f"{broker_id}@test.com", is_verified=True)
-        db.add(broker)
-        db.commit()
-
-    new_listing = Listing(**listing.model_dump(), broker_id=broker_id)
-    db.add(new_listing)
-    db.commit()
-    db.refresh(new_listing)
-    return new_listing
-
-@router.get("/listings/", response_model=List[ListingResponse])
-def get_listings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """Retrieves all listings."""
-    listings = db.query(Listing).offset(skip).limit(limit).all()
-    return listings
-
-# --- Ingestion Webhooks ---
-
-from pydantic import BaseModel
-class WebhookPayload(BaseModel):
-    source: str
-    content: str
-
-@router.post("/webhooks/ingest")
-def receive_lead_webhook(payload: WebhookPayload, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    """
-    Webhook endpoint to receive raw data from scraping workers or APIs.
-    Dispatches to background tasks for LLM extraction and vector matching.
-    """
-    background_tasks.add_task(process_lead_task, payload.content, payload.source, db)
-    return {"status": "accepted", "message": "Lead queued for processing"}
-
-def process_lead_task(content: str, source: str, db: Session):
-    """Background task to extract intent, generate embeddings, match, and notify."""
-    try:
-        ingestion_service = IngestionService(db)
-        lead = ingestion_service.process_raw_lead(content, source)
-        
-        if not lead:
-            return
-            
-        matcher_service = MatcherService(db)
-        matches = matcher_service.find_matches_for_lead(lead.id, limit=3)
-        
-        notification_service = NotificationService()
-        for match in matches:
-            broker = db.query(Broker).filter(Broker.id == match.broker_id).first()
-            if broker and broker.is_verified and broker.phone:
-                lead_details = {
-                    "property_type": lead.property_type,
-                    "target_city": lead.target_city,
-                    "min_sqft": lead.min_square_footage,
-                    "max_sqft": lead.max_square_footage
-                }
-                notification_service.notify_broker_of_match(broker.phone, broker.first_name, lead_details)
-                
-    except Exception as e:
-        logger.error(f"Error processing lead task: {e}")
-
-class MatchRequest(BaseModel):
-    query: str
-    source: str = "direct"
-
-class MatchResponse(BaseModel):
-    id: int
-    match_score: float
-    listing: ListingResponse
-
-@router.post("/demand/match", response_model=List[MatchResponse])
-def demand_match(request: MatchRequest, db: Session = Depends(get_db)):
-    """
-    Synchronous endpoint for real-time frontend search.
-    Extracts intent, finds matches, and returns them immediately.
-    """
-    try:
-        ingestion_service = IngestionService(db)
-        lead = ingestion_service.process_raw_lead(request.query, request.source)
-        
-        if not lead:
-            raise HTTPException(status_code=400, detail="Failed to extract intent from query")
-            
-        matcher_service = MatcherService(db)
-        matches = matcher_service.find_matches_for_lead(lead.id, limit=5)
-        
-        results = []
-        for match in matches:
-            listing = db.query(Listing).filter(Listing.id == match.listing_id).first()
-            if listing:
-                results.append({
-                    "id": match.id,
-                    "match_score": match.match_score,
-                    "listing": listing
-                })
-                
-        return results
-    except Exception as e:
-        logger.error(f"Error in demand match: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 # --- Lead Outreach Pipeline ---
