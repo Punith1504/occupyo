@@ -10,6 +10,8 @@ const serverEnvSchema = z.object({
   OPENAI_API_KEY: z.string().min(1).optional(),
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
+  PUSHER_APP_ID: z.string().min(1),
+  PUSHER_SECRET: z.string().min(1),
 });
 
 const clientEnvSchema = z.object({
@@ -23,6 +25,8 @@ const clientEnvSchema = z.object({
   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),
   NEXT_PUBLIC_CLOUDINARY_API_KEY: z.string().min(1).optional(),
+  NEXT_PUBLIC_PUSHER_KEY: z.string().min(1),
+  NEXT_PUBLIC_PUSHER_CLUSTER: z.string().min(1),
 });
 
 // We only validate server envs on the server side to prevent exposing client to errors about server keys
@@ -37,6 +41,8 @@ const serverEnv = typeof window === "undefined"
       OPENAI_API_KEY: process.env.OPENAI_API_KEY,
       UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
       UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+      PUSHER_APP_ID: process.env.PUSHER_APP_ID,
+      PUSHER_SECRET: process.env.PUSHER_SECRET,
     }) 
   : {} as z.infer<typeof serverEnvSchema>;
 
@@ -51,6 +57,8 @@ const clientEnv = clientEnvSchema.parse({
   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   NEXT_PUBLIC_CLOUDINARY_API_KEY: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
+  NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
 });
 
 export const env = {
