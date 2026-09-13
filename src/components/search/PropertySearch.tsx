@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { matchDemand, ingestLead, MatchResult } from '@/lib/api/occupyo';
+import { ingestLead } from '@/lib/api/occupyo';
 import { Search, Loader2, Building2, MapPin, Ruler, CheckCircle2, Send } from 'lucide-react';
 
 export default function PropertySearch() {
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState<MatchResult[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalInput, setModalInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,10 +20,20 @@ export default function PropertySearch() {
       if (query.trim().length > 10) {
         setIsSearching(true);
         try {
-          const matches = await matchDemand({ query, source: 'frontend_search' });
-          setResults(matches);
+          const res = await fetch('/api/semantic-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, radiusMiles: 10 })
+          });
+          const data = await res.json();
+          if (data.success) {
+            setResults(data.properties);
+          } else {
+            setResults([]);
+          }
         } catch (e) {
-          console.error("Search failed");
+          console.error("Search failed", e);
+          setResults([]);
         } finally {
           setIsSearching(false);
         }
@@ -108,33 +118,37 @@ export default function PropertySearch() {
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center gap-3">
                     <h2 className="text-xl font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                      {match.listing.title}
+                      {match.title}
                     </h2>
-                    <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full border border-green-200">
-                      <CheckCircle2 className="w-3 h-3" />
-                      Verified Broker
-                    </span>
+                    {match.isExternal ? null : (
+                      <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full border border-green-200">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Verified Broker
+                      </span>
+                    )}
                   </div>
                   
                   <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
                     <div className="flex items-center gap-1.5">
                       <Building2 className="w-4 h-4 text-slate-400" />
-                      {match.listing.property_type}
+                      {match.propertyType}
                     </div>
                     <div className="flex items-center gap-1.5">
                       <MapPin className="w-4 h-4 text-slate-400" />
-                      {match.listing.sub_market}, {match.listing.city}
+                      {match.address}
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Ruler className="w-4 h-4 text-slate-400" />
-                      {match.listing.square_footage.toLocaleString()} SQFT
-                    </div>
+                    {match.sizeSqft && (
+                      <div className="flex items-center gap-1.5">
+                        <Ruler className="w-4 h-4 text-slate-400" />
+                        {match.sizeSqft.toLocaleString()} SQFT
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex flex-col items-end justify-center">
                   <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                    {Math.round(match.match_score * 100)}%
+                    {Math.round(match.similarity * 100)}%
                   </div>
                   <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Match Score

@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { matchDemand, MatchResult } from '@/lib/api/occupyo';
 import { Search, Loader2, Building2, MapPin, Ruler, CheckCircle2, Send, DollarSign } from 'lucide-react';
 import DemandIntakeModal from '../demand/DemandIntakeModal';
 
 export default function MarketSearch() {
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState<MatchResult[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,13 +19,23 @@ export default function MarketSearch() {
         setIsSearching(true);
         setError(null);
         
-        const res = await matchDemand({ query, source: 'frontend_search' });
-        
-        if (res.error) {
-          setError(res.error);
+        try {
+          const res = await fetch('/api/semantic-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, radiusMiles: 10 })
+          });
+          const data = await res.json();
+          
+          if (!res.ok || data.error) {
+            setError(data.error || "Failed to fetch matches");
+            setResults([]);
+          } else if (data.success) {
+            setResults(data.properties);
+          }
+        } catch (err: any) {
+          setError(err.message || "Failed to fetch matches");
           setResults([]);
-        } else if (res.data) {
-          setResults(res.data);
         }
         
         setIsSearching(false);
@@ -109,12 +118,12 @@ export default function MarketSearch() {
 
               <div className="relative flex flex-col md:flex-row justify-between gap-6">
                 
-                {match.listing.image_url && (
+                {match.images && match.images.length > 0 && (
                   <div className="md:w-48 h-32 md:h-auto flex-shrink-0 rounded-xl overflow-hidden relative border border-slate-200">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
-                      src={match.listing.image_url} 
-                      alt={match.listing.title}
+                      src={match.images.find((img: any) => img.isHero)?.url || match.images[0].url} 
+                      alt={match.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
@@ -123,9 +132,9 @@ export default function MarketSearch() {
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center gap-3 flex-wrap">
                     <h2 className="text-xl font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors">
-                      {match.listing.title}
+                      {match.title}
                     </h2>
-                    {match.listing.is_active && (
+                    {match.isExternal ? null : (
                       <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-200/60">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         Verified Broker
@@ -134,26 +143,28 @@ export default function MarketSearch() {
                   </div>
                   
                   <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed max-w-2xl">
-                    {match.listing.description}
+                    {match.description}
                   </p>
                   
                   <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-slate-600 pt-1">
                     <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
                       <Building2 className="w-4 h-4 text-indigo-500" />
-                      {match.listing.property_type}
+                      {match.propertyType}
                     </div>
                     <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
                       <MapPin className="w-4 h-4 text-indigo-500" />
-                      {match.listing.sub_market}, {match.listing.city}
+                      {match.address}
                     </div>
-                    <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                      <Ruler className="w-4 h-4 text-indigo-500" />
-                      {match.listing.square_footage.toLocaleString()} SQFT
-                    </div>
-                    {match.listing.price_per_sf && (
+                    {match.sizeSqft && (
+                      <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                        <Ruler className="w-4 h-4 text-indigo-500" />
+                        {match.sizeSqft.toLocaleString()} SQFT
+                      </div>
+                    )}
+                    {match.pricePerMonth && match.sizeSqft && (
                       <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
                         <DollarSign className="w-4 h-4 text-indigo-500" />
-                        ${match.listing.price_per_sf}/sqft
+                        ${Math.round((match.pricePerMonth * 12) / match.sizeSqft)}/sqft/yr
                       </div>
                     )}
                   </div>
@@ -161,7 +172,7 @@ export default function MarketSearch() {
 
                 <div className="flex flex-col items-start md:items-end justify-center min-w-[120px] pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
                   <div className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-indigo-600 to-violet-600 drop-shadow-sm">
-                    {Math.round(match.match_score * 100)}%
+                    {Math.round(match.similarity * 100)}%
                   </div>
                   <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                     Semantic Match

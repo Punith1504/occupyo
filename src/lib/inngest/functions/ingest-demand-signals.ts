@@ -20,8 +20,7 @@ const MOCK_MN_PERMITS = [
 ];
 
 export const ingestDemandSignals = inngest.createFunction(
-  { id: "ingest-demand-signals" },
-  { cron: "0 2 * * *" }, // Run daily at 2am
+  { id: "ingest-demand-signals", triggers: [{ cron: "0 2 * * *" }] },
   async ({ step }) => {
     // 1. Fetch raw data from public API
     const rawData = await step.run("fetch-mn-permits", async () => {
