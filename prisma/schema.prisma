@@ -273,6 +273,20 @@ model SpaceRequest {
   broker            User?        @relation("BrokerClaims", fields: [claimedByBrokerId], references: [id])
 }
 
+model ExternalLeadSignal {
+  id                   String   @id @default(cuid())
+  source               String
+  rawText              String
+  propertyType         String?
+  location             String?
+  size                 String?
+  budgetOrTimeline     String?
+  contactInfo          String?
+  extractionConfidence Float?
+  status               String   @default("UNVERIFIED")
+  createdAt            DateTime @default(now())
+}
+
 model Message {
   id         String   @id @default(cuid())
   content    String

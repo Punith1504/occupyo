@@ -34,7 +34,8 @@ model User {
   tenantDeals      Deal[]         @relation("TenantDeals")
   receivedMessages Message[]      @relation("ReceivedMessages")
   sentMessages     Message[]      @relation("SentMessages")
-  spaceRequests    SpaceRequest[]
+  spaceRequests    SpaceRequest[] @relation("TenantSpaceRequests")
+  claimedRequests  SpaceRequest[] @relation("BrokerClaims")
 }
 
 model StripeAccount {
@@ -256,17 +257,20 @@ model Notification {
 }
 
 model SpaceRequest {
-  id             String       @id @default(cuid())
-  tenantId       String
-  requiredType   PropertyType
-  minSqft        Int
-  maxBudget      Float
-  durationMonths Int
-  city           String
-  description    String?
-  status         String       @default("OPEN")
-  createdAt      DateTime     @default(now())
-  tenant         User         @relation(fields: [tenantId], references: [id])
+  id                String       @id @default(cuid())
+  tenantId          String
+  claimedByBrokerId String?
+  requiredType      PropertyType
+  minSqft           Int
+  maxBudget         Float
+  durationMonths    Int
+  city              String
+  description       String?
+  status            String       @default("OPEN")
+  createdAt         DateTime     @default(now())
+  
+  tenant            User         @relation("TenantSpaceRequests", fields: [tenantId], references: [id])
+  broker            User?        @relation("BrokerClaims", fields: [claimedByBrokerId], references: [id])
 }
 
 model Message {
