@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { MapPin, DollarSign, Calendar, Mail, User, MessageSquare } from "lucide-react";
+import { MapPin, DollarSign, Calendar, Mail, User, MessageSquare, Target, Zap } from "lucide-react";
 import Link from "next/link";
+import { ClaimLeadButton } from "./ClaimLeadButton";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,33 @@ export default async function OwnerSpaceRequestsPage() {
   // Fetch all open space requests
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let requests: any[] = [];
+  // Fetch broker's existing properties and deals to calculate match score
+  const brokerId = user.id;
+  const [brokerProperties, brokerDeals] = await Promise.all([
+    prisma.property.findMany({ 
+      where: { ownerId: brokerId }, 
+      select: { addressModel: { select: { city: true } } } 
+    }),
+    prisma.deal.findMany({ 
+      where: { brokerId: brokerId }, 
+      include: { property: { select: { addressModel: { select: { city: true } } } } } 
+    })
+  ]);
+
+  const brokerCities = new Set<string>();
+  brokerProperties.forEach(p => {
+    if (p.addressModel?.city) brokerCities.add(p.addressModel.city.toLowerCase());
+  });
+  brokerDeals.forEach(d => {
+    if (d.property?.addressModel?.city) brokerCities.add(d.property.addressModel.city.toLowerCase());
+  });
+
   try {
-    requests = await prisma.spaceRequest.findMany({
-      where: { status: "OPEN" },
+    const rawRequests = await prisma.spaceRequest.findMany({
+      where: { 
+        status: "OPEN",
+        claimedByBrokerId: null 
+      },
       include: {
         tenant: {
           select: { companyName: true, email: true }
@@ -36,6 +61,32 @@ export default async function OwnerSpaceRequestsPage() {
       },
       orderBy: { createdAt: 'desc' }
     });
+
+    requests = rawRequests.map(req => {
+      let intentScore = 0;
+      
+      // Intent score: completeness (description > 20 chars)
+      if (req.description && req.description.length > 20) intentScore += 30;
+      
+      // Intent score: realistic budget (e.g., maxBudget / minSqft >= 0.5 per month)
+      if (req.minSqft > 0 && (req.maxBudget / req.minSqft) >= 0.5) intentScore += 40;
+      
+      // Intent score: duration >= 12 months
+      if (req.durationMonths >= 12) intentScore += 30;
+
+      let matchScore = 0;
+      // Match score: city overlap
+      if (req.city && brokerCities.has(req.city.toLowerCase())) {
+        matchScore += 100;
+      }
+
+      return {
+        ...req,
+        intentScore,
+        matchScore,
+        totalScore: intentScore + matchScore
+      };
+    }).sort((a, b) => b.totalScore - a.totalScore);
   } catch (error) {
     console.error("Error fetching open space requests:", error);
   }
@@ -64,7 +115,14 @@ export default async function OwnerSpaceRequestsPage() {
                     Posted {new Date(req.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Looking For Space</span>
+                <div className="flex flex-col items-end gap-1">
+                  <div className="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-2 py-1 rounded-md text-xs font-semibold">
+                    <Zap className="w-3.5 h-3.5" /> Intent: {req.intentScore}/100
+                  </div>
+                  <div className="flex items-center gap-1.5 text-purple-600 bg-purple-50 px-2 py-1 rounded-md text-xs font-semibold">
+                    <Target className="w-3.5 h-3.5" /> Match: {req.matchScore}/100
+                  </div>
+                </div>
               </div>
               
               <div className="flex-1 space-y-4 mb-6">
@@ -114,13 +172,9 @@ export default async function OwnerSpaceRequestsPage() {
                     </div>
                     <span className="font-medium text-gray-900 text-sm">{req.tenant.companyName || 'Verified Tenant'}</span>
                   </div>
-                  <Link 
-                    href={`/dashboard/messages/${req.tenantId}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    Message
-                  </Link>
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <ClaimLeadButton requestId={req.id} />
+                  </div>
                 </div>
               </div>
             </div>
