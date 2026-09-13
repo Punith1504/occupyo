@@ -18,6 +18,7 @@ export const generateEmbeddings = inngest.createFunction(
     const property = await step.run("fetch-property", async () => {
       const p = await prisma.property.findUnique({
         where: { id },
+        include: { images: true }
       });
       if (!p) throw new Error(`Property ${id} not found`);
       return p;
@@ -38,19 +39,19 @@ export const generateEmbeddings = inngest.createFunction(
     });
 
     // 3. Generate Vision Embedding (if an image exists)
-    // Assuming the property has a sourceUrl or an image attached we want to embed.
-    // Wait, the schema has `sourceUrl`. If there is an array of images, we'd pick the first.
-    // For now, if there's no specific image field on property, we'll use `sourceUrl` as a proxy if it's an image, or we might need to skip if not available.
-    // Let's assume we can fetch an image if available. The prompt says "Generate ... vision embeddings for property images".
-    // I will use sourceUrl for now.
     let imageEmbeddingString: string | null = null;
-    if (property.sourceUrl && property.sourceUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+    
+    // Check for hero image first, otherwise fallback to first image, otherwise fallback to sourceUrl (for external listings)
+    const heroImage = property.images?.find((img: any) => img.isHero) || property.images?.[0];
+    const imageUrlToEmbed = heroImage?.url || property.sourceUrl;
+    
+    if (imageUrlToEmbed && imageUrlToEmbed.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
       imageEmbeddingString = await step.run("generate-vision-embedding", async () => {
         try {
-          const vector = await generateImageEmbedding(property.sourceUrl!);
+          const vector = await generateImageEmbedding(imageUrlToEmbed);
           return `[${vector.join(',')}]`;
         } catch (error) {
-          console.warn("Failed to generate image embedding for URL:", property.sourceUrl, error);
+          console.warn("Failed to generate image embedding for URL:", imageUrlToEmbed, error);
           return null;
         }
       });

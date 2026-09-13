@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { PropertyType } from "@prisma/client";
 import { trackEvent } from "@/lib/activity-logger";
+import { inngest } from "@/lib/inngest/client";
 export async function createPropertyAction(data: {
   title: string;
   description: string;
@@ -71,6 +72,12 @@ export async function createPropertyAction(data: {
       title: "New Property Listed",
       description: `Successfully published ${data.title} (${data.sizeSqft} sqft).`,
       metadata: { propertyType: data.propertyType, pricePerMonth: data.pricePerMonth }
+    });
+
+    // Dispatch to Inngest for async durable execution of Vector Generation (Text & Vision)
+    await inngest.send({
+      name: "property.created",
+      data: { id: property.id }
     });
 
     return { success: true, propertyId: property.id };
