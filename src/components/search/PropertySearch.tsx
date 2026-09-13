@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ingestLead } from '@/lib/api/occupyo';
+import { ingestAnonymousLead } from '@/app/actions/lead';
 import { Search, Loader2, Building2, MapPin, Ruler, CheckCircle2, Send } from 'lucide-react';
 
 export default function PropertySearch() {
@@ -49,16 +49,23 @@ export default function PropertySearch() {
     if (!modalInput.trim()) return;
     
     setIsSubmitting(true);
-    const res = await ingestLead({ source: 'frontend_modal', content: modalInput });
-    setIsSubmitting(false);
-    
-    if (res.status === 'accepted') {
-      setSubmitSuccess(true);
-      setTimeout(() => {
-        setShowModal(false);
-        setSubmitSuccess(false);
-        setModalInput('');
-      }, 2000);
+    try {
+      const res = await ingestAnonymousLead(modalInput);
+      if (res.status === 'accepted') {
+        setSubmitSuccess(true);
+        setTimeout(() => {
+          setShowModal(false);
+          setSubmitSuccess(false);
+          setModalInput('');
+        }, 2000);
+      } else {
+        alert(res.message || "Failed to submit lead");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
