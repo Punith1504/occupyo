@@ -144,18 +144,18 @@ class OutreachRequest(BaseModel):
     location: str
     property_type: str
 
-@router.post("/outreach/trigger")
-def trigger_outreach(request: OutreachRequest, background_tasks: BackgroundTasks):
+@router.post("/outreach/space-request")
+def trigger_space_request_outreach(request: OutreachRequest, background_tasks: BackgroundTasks):
     """
-    Triggers the automated outreach loop for external demand signals.
+    Triggers the automated voice outreach loop for consented SpaceRequest submitters.
     """
     if str(getattr(settings, "ENABLE_AUTO_OUTREACH", "false")).lower() != "true":
         return {"status": "skipped", "message": "Auto-outreach is disabled via feature flag."}
 
-    background_tasks.add_task(process_outreach_task, request)
-    return {"status": "accepted", "message": "Outreach queued"}
+    background_tasks.add_task(process_space_request_outreach_task, request)
+    return {"status": "accepted", "message": "SpaceRequest outreach queued"}
 
-def process_outreach_task(req: OutreachRequest):
+def process_space_request_outreach_task(req: OutreachRequest):
     try:
         notification_service = NotificationService()
         lead_details = {
@@ -163,9 +163,29 @@ def process_outreach_task(req: OutreachRequest):
             "location": req.location,
             "propertyType": req.property_type
         }
-        notification_service.trigger_lead_outreach_voice(req.contact_phone, lead_details)
+        notification_service.trigger_space_request_voice(req.contact_phone, lead_details)
     except Exception as e:
-        logger.error(f"Error processing outreach task: {e}")
+        logger.error(f"Error processing space request outreach task: {e}")
+
+@router.post("/outreach/opt-in-sms")
+def trigger_opt_in_sms(request: OutreachRequest, background_tasks: BackgroundTasks):
+    """
+    Sends an opt-in SMS to unverified external leads.
+    """
+    background_tasks.add_task(process_opt_in_sms_task, request)
+    return {"status": "accepted", "message": "Opt-in SMS queued"}
+
+def process_opt_in_sms_task(req: OutreachRequest):
+    try:
+        notification_service = NotificationService()
+        lead_details = {
+            "source": req.source,
+            "location": req.location,
+            "propertyType": req.property_type
+        }
+        notification_service.send_opt_in_sms(req.contact_phone, lead_details)
+    except Exception as e:
+        logger.error(f"Error processing opt-in SMS task: {e}")
 
 
 # --- Telephony Webhooks (Twilio & WhatsApp) ---

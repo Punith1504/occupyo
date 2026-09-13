@@ -82,14 +82,14 @@ export const ingestDemandSignals = inngest.createFunction(
         });
       });
 
-      // 4. Trigger Outreach loop (Phase 3)
-      await step.run("trigger-outreach", async () => {
+      // 4. Send Opt-in SMS (Phase 3 - Consent path)
+      await step.run("send-opt-in", async () => {
         for (const signal of extractedSignals) {
           if (signal.contactInfo) {
             try {
               // Python backend is typically running on port 8000 locally or mapped in prod
               const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8000";
-              const res = await fetch(`${backendUrl}/api/v1/outreach/trigger`, {
+              const res = await fetch(`${backendUrl}/api/v1/outreach/opt-in-sms`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -100,9 +100,9 @@ export const ingestDemandSignals = inngest.createFunction(
                 })
               });
               const result = await res.json();
-              console.log(`Outreach triggered for ${signal.contactInfo}:`, result);
+              console.log(`Opt-in SMS triggered for ${signal.contactInfo}:`, result);
             } catch (err) {
-              console.error(`Failed to trigger outreach for ${signal.contactInfo}:`, err);
+              console.error(`Failed to trigger opt-in SMS for ${signal.contactInfo}:`, err);
             }
           }
         }

@@ -44,20 +44,21 @@ class NotificationService:
             print(f"Failed to send WhatsApp: {e}")
             return False
 
-    def trigger_voice_alert(self, to_number: str, lead_details: dict) -> bool:
+    def trigger_voice_alert(self, to_number: str, lead_details: dict) -> str:
         """
         Triggers an outbound Twilio Programmable Voice call with an interactive TwiML IVR.
         """
         if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
             print(f"Mock Twilio Voice Call to {to_number}")
-            return True
+            return "mocked"
             
         try:
             # We host a webhook endpoint that provides the TwiML instructions when the call connects
             # For this example, we use a mock URL or build TwiML directly
             twiml = f"""
             <Response>
-                <Say>Hello, Occupy Oh has a high intent match for your listing.</Say>
+                <Say>Hello, this is Occupyo's automated assistant.</Say>
+                <Say>We have a high intent match for your listing.</Say>
                 <Say>A tenant is looking for {lead_details.get('min_sqft')} square feet of {lead_details.get('property_type')} space in {lead_details.get('target_city')}.</Say>
                 <Gather numDigits="1" action="/api/v1/webhooks/twilio/voice/gather" method="POST">
                     <Say>Press 1 to claim this lead, or press 2 to ignore.</Say>
@@ -71,30 +72,31 @@ class NotificationService:
                 from_=settings.TWILIO_PHONE_NUMBER
             )
             print(f"Twilio Call initiated: {call.sid}")
-            return True
+            return "success"
         except Exception as e:
             print(f"Failed to initiate Twilio Call: {e}")
-            return False
+            return "failed"
 
-    def trigger_lead_outreach_voice(self, to_number: str, lead_details: dict) -> bool:
+    def trigger_space_request_voice(self, to_number: str, lead_details: dict) -> str:
         """
-        Outreach loop to contact external leads automatically using Twilio Voice.
+        Outreach loop to contact SpaceRequest submitters (consented users).
         """
         if not getattr(settings, "ENABLE_AUTO_OUTREACH", "false").lower() == "true":
             print(f"Auto-outreach is disabled by feature flag. Skipping call to {to_number}.")
-            return False
+            return "failed"
 
         if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
-            print(f"Mock Twilio Outreach Call to lead at {to_number}")
-            return True
+            print(f"Mock Twilio SpaceRequest Call to lead at {to_number}")
+            return "mocked"
             
         try:
             twiml = f"""
             <Response>
-                <Say>Hello from Occupy Oh. We saw your recent {lead_details.get('source', 'filing')} in {lead_details.get('location', 'the area')}.</Say>
-                <Say>If you are looking for {lead_details.get('propertyType', 'commercial')} space, we can match you with verified brokers instantly.</Say>
+                <Say>Hello, this is Occupyo's automated assistant.</Say>
+                <Say>We have found potential matches for your recent space request in {lead_details.get('location', 'the area')}.</Say>
+                <Say>To speak with a verified broker instantly, please press 1. To decline, press 2.</Say>
                 <Gather numDigits="1" action="/api/v1/webhooks/twilio/voice/lead-gather" method="POST">
-                    <Say>Press 1 to speak with a broker now, or press 2 to decline.</Say>
+                    <Say>Press 1 to connect, or press 2 to decline.</Say>
                 </Gather>
             </Response>
             """
@@ -104,11 +106,31 @@ class NotificationService:
                 to=to_number,
                 from_=settings.TWILIO_PHONE_NUMBER
             )
-            print(f"Twilio Lead Outreach Call initiated: {call.sid}")
-            return True
+            print(f"Twilio SpaceRequest Call initiated: {call.sid}")
+            return "success"
         except Exception as e:
-            print(f"Failed to initiate Twilio Lead Outreach Call: {e}")
-            return False
+            print(f"Failed to initiate Twilio SpaceRequest Call: {e}")
+            return "failed"
+
+    def send_opt_in_sms(self, to_number: str, lead_details: dict) -> str:
+        """
+        Sends an opt-in SMS to unverified external leads.
+        """
+        if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
+            print(f"Mock Twilio SMS to {to_number}: Reply YES to talk to a broker")
+            return "mocked"
+            
+        try:
+            message = self.twilio_client.messages.create(
+                body=f"Hi, Occupyo here. We saw your recent {lead_details.get('source', 'filing')} in {lead_details.get('location', 'the area')}. Reply YES to talk to a broker about finding {lead_details.get('propertyType', 'commercial')} space.",
+                from_=settings.TWILIO_PHONE_NUMBER,
+                to=to_number
+            )
+            print(f"Opt-in SMS sent: {message.sid}")
+            return "success"
+        except Exception as e:
+            print(f"Failed to send Opt-in SMS: {e}")
+            return "failed"
 
     def notify_broker_of_match(self, broker_phone: str, broker_name: str, lead_details: dict) -> bool:
         """
@@ -128,4 +150,4 @@ class NotificationService:
         # Trigger voice alert as well
         voice_success = self.trigger_voice_alert(broker_phone, lead_details)
         
-        return whatsapp_success and voice_success
+        return whatsapp_success and (voice_success in ("success", "mocked"))

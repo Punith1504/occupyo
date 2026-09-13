@@ -274,7 +274,7 @@ model SpaceRequest {
 }
 
 model ExternalLeadSignal {
-  id                   String   @id @default(cuid())
+  id                   String    @id @default(cuid())
   source               String
   rawText              String
   propertyType         String?
@@ -283,8 +283,9 @@ model ExternalLeadSignal {
   budgetOrTimeline     String?
   contactInfo          String?
   extractionConfidence Float?
-  status               String   @default("UNVERIFIED")
-  createdAt            DateTime @default(now())
+  status               String    @default("UNVERIFIED")
+  optedInAt            DateTime?
+  createdAt            DateTime  @default(now())
 }
 
 model Message {
