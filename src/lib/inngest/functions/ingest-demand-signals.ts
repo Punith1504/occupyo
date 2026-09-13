@@ -81,6 +81,32 @@ export const ingestDemandSignals = inngest.createFunction(
           data: extractedSignals
         });
       });
+
+      // 4. Trigger Outreach loop (Phase 3)
+      await step.run("trigger-outreach", async () => {
+        for (const signal of extractedSignals) {
+          if (signal.contactInfo) {
+            try {
+              // Python backend is typically running on port 8000 locally or mapped in prod
+              const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8000";
+              const res = await fetch(`${backendUrl}/api/v1/outreach/trigger`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  contact_phone: signal.contactInfo,
+                  source: signal.source,
+                  location: signal.location,
+                  property_type: signal.propertyType
+                })
+              });
+              const result = await res.json();
+              console.log(`Outreach triggered for ${signal.contactInfo}:`, result);
+            } catch (err) {
+              console.error(`Failed to trigger outreach for ${signal.contactInfo}:`, err);
+            }
+          }
+        }
+      });
     }
 
     return { processed: extractedSignals.length };

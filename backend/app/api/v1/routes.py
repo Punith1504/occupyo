@@ -136,6 +136,38 @@ def demand_match(request: MatchRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# --- Lead Outreach Pipeline ---
+
+class OutreachRequest(BaseModel):
+    contact_phone: str
+    source: str
+    location: str
+    property_type: str
+
+@router.post("/outreach/trigger")
+def trigger_outreach(request: OutreachRequest, background_tasks: BackgroundTasks):
+    """
+    Triggers the automated outreach loop for external demand signals.
+    """
+    if str(getattr(settings, "ENABLE_AUTO_OUTREACH", "false")).lower() != "true":
+        return {"status": "skipped", "message": "Auto-outreach is disabled via feature flag."}
+
+    background_tasks.add_task(process_outreach_task, request)
+    return {"status": "accepted", "message": "Outreach queued"}
+
+def process_outreach_task(req: OutreachRequest):
+    try:
+        notification_service = NotificationService()
+        lead_details = {
+            "source": req.source,
+            "location": req.location,
+            "propertyType": req.property_type
+        }
+        notification_service.trigger_lead_outreach_voice(req.contact_phone, lead_details)
+    except Exception as e:
+        logger.error(f"Error processing outreach task: {e}")
+
+
 # --- Telephony Webhooks (Twilio & WhatsApp) ---
 
 async def validate_twilio_request(request: Request, x_twilio_signature: str = Header(None)):
@@ -182,6 +214,38 @@ async def twilio_voice_gather(
         </Response>
         """
         logger.info("Broker ignored lead via Voice IVR.")
+        
+    return PlainTextResponse(content=twiml, media_type="application/xml")
+
+@router.post("/webhooks/twilio/voice/lead-gather", response_class=PlainTextResponse)
+async def twilio_voice_lead_gather(
+    request: Request, 
+    Digits: str = Form(None),
+    x_twilio_signature: str = Header(None, alias="X-Twilio-Signature")
+):
+    """
+    Interactive Voice Response (IVR) callback for external leads.
+    """
+    # Validate Signature
+    await validate_twilio_request(request, x_twilio_signature)
+    
+    if Digits == "1":
+        twiml = """
+        <Response>
+            <Say>Great! A verified broker from Occupy Oh will reach out to you shortly to help you find the perfect space.</Say>
+            <Hangup/>
+        </Response>
+        """
+        logger.info("External lead opted in via Voice IVR.")
+        # Future: notify a broker here!
+    else:
+        twiml = """
+        <Response>
+            <Say>Thank you. We have removed you from our contact list. Have a great day.</Say>
+            <Hangup/>
+        </Response>
+        """
+        logger.info("External lead declined via Voice IVR.")
         
     return PlainTextResponse(content=twiml, media_type="application/xml")
 

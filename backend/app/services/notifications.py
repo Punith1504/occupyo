@@ -76,6 +76,40 @@ class NotificationService:
             print(f"Failed to initiate Twilio Call: {e}")
             return False
 
+    def trigger_lead_outreach_voice(self, to_number: str, lead_details: dict) -> bool:
+        """
+        Outreach loop to contact external leads automatically using Twilio Voice.
+        """
+        if not getattr(settings, "ENABLE_AUTO_OUTREACH", "false").lower() == "true":
+            print(f"Auto-outreach is disabled by feature flag. Skipping call to {to_number}.")
+            return False
+
+        if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
+            print(f"Mock Twilio Outreach Call to lead at {to_number}")
+            return True
+            
+        try:
+            twiml = f"""
+            <Response>
+                <Say>Hello from Occupy Oh. We saw your recent {lead_details.get('source', 'filing')} in {lead_details.get('location', 'the area')}.</Say>
+                <Say>If you are looking for {lead_details.get('propertyType', 'commercial')} space, we can match you with verified brokers instantly.</Say>
+                <Gather numDigits="1" action="/api/v1/webhooks/twilio/voice/lead-gather" method="POST">
+                    <Say>Press 1 to speak with a broker now, or press 2 to decline.</Say>
+                </Gather>
+            </Response>
+            """
+            
+            call = self.twilio_client.calls.create(
+                twiml=twiml,
+                to=to_number,
+                from_=settings.TWILIO_PHONE_NUMBER
+            )
+            print(f"Twilio Lead Outreach Call initiated: {call.sid}")
+            return True
+        except Exception as e:
+            print(f"Failed to initiate Twilio Lead Outreach Call: {e}")
+            return False
+
     def notify_broker_of_match(self, broker_phone: str, broker_name: str, lead_details: dict) -> bool:
         """
         Constructs and sends a compliance-checked WhatsApp message to a verified broker,
