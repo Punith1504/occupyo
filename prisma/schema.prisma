@@ -274,18 +274,20 @@ model SpaceRequest {
 }
 
 model ExternalLeadSignal {
-  id                   String    @id @default(cuid())
-  source               String
-  rawText              String
-  propertyType         String?
-  location             String?
+  id                   String    @id @default(uuid())
+  source               String    
+  rawText              String    @db.Text
+  propertyType         String    
+  location             String
   size                 String?
   budgetOrTimeline     String?
   contactInfo          String?
-  extractionConfidence Float?
   status               String    @default("UNVERIFIED")
-  optedInAt            DateTime?
+  extractionConfidence Float?
+  optedInAt            DateTime? // Explicit consent timestamp for Phase 3 voice outreach
+  contentHash          String?   @unique // Dedup mechanism
   createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model Message {

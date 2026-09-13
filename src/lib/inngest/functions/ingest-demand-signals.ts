@@ -1,6 +1,7 @@
 import { inngest } from "@/lib/inngest/client";
 import { prisma } from "@/lib/prisma";
 import OpenAI from "openai";
+import crypto from 'crypto';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -64,7 +65,8 @@ export const ingestDemandSignals = inngest.createFunction(
             budgetOrTimeline: extracted.budgetOrTimeline || null,
             contactInfo: extracted.contactInfo || null,
             extractionConfidence: 0.95, // mock confidence
-            status: "UNVERIFIED"
+            status: "UNVERIFIED",
+            contentHash: crypto.createHash('sha256').update(`MN_PUBLIC_PERMITS:${rawText}`).digest('hex')
           });
         } catch (error) {
           console.error("Failed to extract signal:", error);
@@ -77,7 +79,8 @@ export const ingestDemandSignals = inngest.createFunction(
     if (extractedSignals.length > 0) {
       await step.run("save-signals", async () => {
         await prisma.externalLeadSignal.createMany({
-          data: extractedSignals
+          data: extractedSignals,
+          skipDuplicates: true
         });
       });
 

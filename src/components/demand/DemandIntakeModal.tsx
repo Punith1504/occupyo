@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ingestLead } from '@/lib/api/occupyo';
+import { ingestAnonymousLead } from '@/app/actions/lead';
 import { Loader2, CheckCircle2, Send, X } from 'lucide-react';
 
 interface DemandIntakeModalProps {
@@ -21,29 +21,24 @@ export default function DemandIntakeModal({ isOpen, onClose }: DemandIntakeModal
     setStatus('processing');
     setErrorMessage('');
     
-    const res = await ingestLead({ source: 'frontend_modal', content: modalInput });
-    
-    if (res.error || !res.data) {
-      setStatus('error');
-      setErrorMessage(res.error || 'Something went wrong.');
-      return;
-    }
-
-    if (res.data.status === 'accepted') {
-      setStatus('success');
-      setTimeout(() => {
-        onClose();
-        // Reset state after closing animation
+    try {
+      const res = await ingestAnonymousLead(modalInput);
+      
+      if (res.status === 'accepted') {
+        setStatus('success');
         setTimeout(() => {
+          onClose();
           setStatus('idle');
           setModalInput('');
-        }, 300);
-      }, 2500);
-    } else {
+        }, 2000);
+      } else {
+        setStatus('error');
+        setErrorMessage(res.message || 'Submission rejected.');
+      }
+    } catch (e: any) {
       setStatus('error');
-      setErrorMessage(res.data.message || 'Submission rejected.');
+      setErrorMessage(e.message || 'Something went wrong.');
     }
-  };
 
   return (
     <AnimatePresence>
