@@ -152,21 +152,21 @@ export async function updatePropertyAction(
 
     // Handle images if provided
     if (data.imageUrls) {
-      // Delete existing images
-      await prisma.media.deleteMany({
+      const deletePromise = prisma.media.deleteMany({
         where: { propertyId: propertyId },
       });
 
-      // Create new images in the updated order
       if (data.imageUrls.length > 0) {
-        await prisma.media.createMany({
+        const createPromise = prisma.media.createMany({
           data: data.imageUrls.map((url, index) => ({
             url,
             propertyId: propertyId,
-            // The first image in the array is the hero (based on drag-and-drop order)
             isHero: index === 0, 
           })),
         });
+        await prisma.$transaction([deletePromise, createPromise]);
+      } else {
+        await prisma.$transaction([deletePromise]);
       }
     }
 
@@ -201,20 +201,21 @@ export async function updatePropertyImagesAction(propertyId: string, imageUrls: 
       return { success: false, error: "Property not found or unauthorized" };
     }
 
-    // Delete existing images
-    await prisma.media.deleteMany({
+    const deletePromise = prisma.media.deleteMany({
       where: { propertyId: propertyId },
     });
 
-    // Create new images in the updated order
     if (imageUrls.length > 0) {
-      await prisma.media.createMany({
+      const createPromise = prisma.media.createMany({
         data: imageUrls.map((url, index) => ({
           url,
           propertyId: propertyId,
           isHero: index === 0, 
         })),
       });
+      await prisma.$transaction([deletePromise, createPromise]);
+    } else {
+      await prisma.$transaction([deletePromise]);
     }
 
     return { success: true };
