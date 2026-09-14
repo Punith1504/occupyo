@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
     const lease = await prisma.booking.findUnique({
       where: { id: leaseId },
-      include: { tenant: true },
+      include: { tenant: true, property: true },
     });
 
     if (!lease) {
@@ -34,8 +34,10 @@ export async function POST(req: Request) {
       return new NextResponse("Lease is not approved yet", { status: 400 });
     }
 
-    // Convert totalAmount to cents for Stripe
-    const amountInCents = Math.round(lease.totalAmount * 100);
+    // Convert totalAmount to cents for Stripe, including the 2% platform fee
+    const baseAmount = lease.totalAmount || lease.property.pricePerMonth;
+    const amountWithFee = baseAmount * 1.02;
+    const amountInCents = Math.round(amountWithFee * 100);
 
     // Create PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
@@ -44,6 +46,7 @@ export async function POST(req: Request) {
       metadata: {
         leaseId: lease.id,
         tenantId: lease.tenant.id,
+        propertyId: lease.propertyId,
       },
       // In a real application, you might also want to set automatic_payment_methods
       automatic_payment_methods: {

@@ -44,7 +44,7 @@ function CheckoutInnerForm({ amount, leaseId }: { amount: number, leaseId: strin
     const { error: confirmError } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/dashboard/tenant/leases`,
+        return_url: `${window.location.origin}/dashboard/checkout/success?payment_intent={PAYMENT_INTENT_ID}&lease_id=${leaseId}`,
       },
     });
 
