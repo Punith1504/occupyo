@@ -84,31 +84,22 @@ export const ingestDemandSignals = inngest.createFunction(
         });
       });
 
-      // 4. Send Opt-in SMS (Phase 3 - Consent path)
-      await step.run("send-opt-in", async () => {
-        for (const signal of extractedSignals) {
-          if (signal.contactInfo) {
-            try {
-              // Python backend is typically running on port 8000 locally or mapped in prod
-              const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8000";
-              const res = await fetch(`${backendUrl}/api/v1/outreach/opt-in-sms`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  contact_phone: signal.contactInfo,
-                  source: signal.source,
-                  location: signal.location,
-                  property_type: signal.propertyType
-                })
-              });
-              const result = await res.json();
-              console.log(`Opt-in SMS triggered for ${signal.contactInfo}:`, result);
-            } catch (err) {
-              console.error(`Failed to trigger opt-in SMS for ${signal.contactInfo}:`, err);
-            }
+      // 4. Fan-out Opt-in SMS (Phase 3 - Consent path)
+      const eventsToDispatch = extractedSignals
+        .filter((signal: any) => signal.contactInfo)
+        .map((signal: any) => ({
+          name: "lead.opt.in.send",
+          data: {
+            contactInfo: signal.contactInfo,
+            source: signal.source,
+            location: signal.location,
+            propertyType: signal.propertyType
           }
-        }
-      });
+        }));
+
+      if (eventsToDispatch.length > 0) {
+        await step.sendEvent("fan-out-opt-in", eventsToDispatch);
+      }
     }
 
     return { processed: extractedSignals.length };

@@ -12,6 +12,10 @@ const openai = new OpenAI({
 export const generateEmbeddings = inngest.createFunction(
   { id: "generate-embeddings", triggers: [{ event: "property.created" }] },
   async ({ event, step }) => {
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "dummy_key_for_build") {
+      throw new Error("Missing valid OPENAI_API_KEY. Cannot generate embeddings.");
+    }
+    
     const { id } = (event.data || {}) as { id: string };
 
     // 1. Fetch the property
@@ -51,8 +55,8 @@ export const generateEmbeddings = inngest.createFunction(
           const vector = await generateImageEmbedding(imageUrlToEmbed);
           return `[${vector.join(',')}]`;
         } catch (error) {
-          console.warn("Failed to generate image embedding for URL:", imageUrlToEmbed, error);
-          return null;
+          console.error("Failed to generate image embedding for URL:", imageUrlToEmbed, error);
+          throw new Error(`Failed to generate vision embedding: ${error instanceof Error ? error.message : String(error)}`);
         }
       });
     }

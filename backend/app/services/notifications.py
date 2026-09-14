@@ -16,8 +16,7 @@ class NotificationService:
         Requires WHATSAPP_API_TOKEN and WHATSAPP_PHONE_ID.
         """
         if not settings.WHATSAPP_API_TOKEN or not settings.WHATSAPP_PHONE_ID:
-            print(f"Mock WhatsApp Alert to {to_number}: {message}")
-            return True
+            raise ValueError(f"Missing WHATSAPP_API_TOKEN or WHATSAPP_PHONE_ID in environment.")
             
         url = f"https://graph.facebook.com/v19.0/{settings.WHATSAPP_PHONE_ID}/messages"
         headers = {
@@ -49,8 +48,7 @@ class NotificationService:
         Triggers an outbound Twilio Programmable Voice call with an interactive TwiML IVR.
         """
         if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
-            print(f"Mock Twilio Voice Call to {to_number}")
-            return "mocked"
+            raise ValueError(f"Missing TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, or TWILIO_PHONE_NUMBER.")
             
         try:
             # We host a webhook endpoint that provides the TwiML instructions when the call connects
@@ -86,8 +84,7 @@ class NotificationService:
             return "failed"
 
         if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
-            print(f"Mock Twilio SpaceRequest Call to lead at {to_number}")
-            return "mocked"
+            raise ValueError(f"Missing TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, or TWILIO_PHONE_NUMBER.")
             
         try:
             twiml = f"""
@@ -117,8 +114,7 @@ class NotificationService:
         Sends an opt-in SMS to unverified external leads.
         """
         if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
-            print(f"Mock Twilio SMS to {to_number}: Reply YES to talk to a broker")
-            return "mocked"
+            raise ValueError(f"Missing TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, or TWILIO_PHONE_NUMBER.")
             
         try:
             message = self.twilio_client.messages.create(
@@ -145,9 +141,17 @@ class NotificationService:
             f"Reply 'CLAIM' to review full details and connect."
         )
         
-        whatsapp_success = self.send_whatsapp_alert(broker_phone, message)
+        whatsapp_success = False
+        try:
+            whatsapp_success = self.send_whatsapp_alert(broker_phone, message)
+        except ValueError as e:
+            print(e)
         
         # Trigger voice alert as well
-        voice_success = self.trigger_voice_alert(broker_phone, lead_details)
+        voice_success = "failed"
+        try:
+            voice_success = self.trigger_voice_alert(broker_phone, lead_details)
+        except ValueError as e:
+            print(e)
         
         return whatsapp_success and (voice_success in ("success", "mocked"))
