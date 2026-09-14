@@ -36,6 +36,8 @@ model User {
   sentMessages     Message[]      @relation("SentMessages")
   spaceRequests    SpaceRequest[] @relation("TenantSpaceRequests")
   claimedRequests  SpaceRequest[] @relation("BrokerClaims")
+  brokerProfile    BrokerProfile?
+  reviewsGiven     BrokerReview[] @relation("ReviewsGiven")
 }
 
 model StripeAccount {
@@ -337,6 +339,7 @@ model Deal {
   broker          User?      @relation("BrokerDeals", fields: [brokerId], references: [id])
   property        Property   @relation(fields: [propertyId], references: [id])
   tenant          User       @relation("TenantDeals", fields: [tenantId], references: [id])
+  review          BrokerReview?
 }
 
 model Suite {
@@ -356,6 +359,40 @@ model spatial_ref_sys {
   auth_srid Int?
   srtext    String? @db.VarChar(2048)
   proj4text String? @db.VarChar(2048)
+}
+
+model BrokerProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  serviceAreas      String[] // Cities/markets the broker serves
+  specializations   String[] // PropertyType values they focus on
+  avgResponseTimeMs Int      @default(0) // Rolling average response time in ms
+  totalDealsWon     Int      @default(0)
+  totalDealsClosed  Int      @default(0)
+  totalLeadsClaimed Int      @default(0)
+  score             Float    @default(0) // Composite lead score [0-1]
+  updatedAt         DateTime @updatedAt
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews BrokerReview[]
+
+  @@index([score(sort: Desc)])
+}
+
+model BrokerReview {
+  id              String   @id @default(cuid())
+  brokerProfileId String
+  reviewerId      String
+  dealId          String   @unique // One review per deal
+  rating          Int      // 1-5
+  comment         String?
+  createdAt       DateTime @default(now())
+
+  brokerProfile BrokerProfile @relation(fields: [brokerProfileId], references: [id], onDelete: Cascade)
+  reviewer      User          @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  deal          Deal          @relation(fields: [dealId], references: [id])
+
+  @@index([brokerProfileId])
 }
 
 enum Role {

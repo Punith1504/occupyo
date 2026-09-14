@@ -31,13 +31,13 @@ export default function LeadClaimCard({ lead, onClaim, onIgnore }: LeadClaimCard
 
   const handleClaim = (type: 'direct' | 'handoff' | 'tour') => {
     setActionState('claiming');
-    // Simulate API call for claiming
+    if (onClaim) {
+      onClaim(lead.id);
+    }
+    // Show success state after a brief moment for UX
     setTimeout(() => {
       setActionState('success');
-      if (onClaim) {
-        setTimeout(() => onClaim(lead.id), 1000);
-      }
-    }, 1200);
+    }, 800);
   };
 
   return (
