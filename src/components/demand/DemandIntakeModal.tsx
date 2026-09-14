@@ -39,6 +39,7 @@ export default function DemandIntakeModal({ isOpen, onClose }: DemandIntakeModal
       setStatus('error');
       setErrorMessage(e.message || 'Something went wrong.');
     }
+  };
 
   return (
     <AnimatePresence>

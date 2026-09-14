@@ -1,8 +1,7 @@
 import { inngest } from "@/lib/inngest/client";
 
 export const sendOptInSms = inngest.createFunction(
-  { id: "send-opt-in-sms" },
-  { event: "lead.opt.in.send" },
+  { id: "send-opt-in-sms", triggers: [{ event: "lead.opt.in.send" }] },
   async ({ event, step }) => {
     const { contactInfo, source, location, propertyType } = event.data;
 
