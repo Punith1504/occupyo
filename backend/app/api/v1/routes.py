@@ -8,6 +8,8 @@ from pydantic import BaseModel
 import hmac
 import hashlib
 
+import os
+from openai import OpenAI
 from twilio.request_validator import RequestValidator
 
 from ...core.config import settings
@@ -16,6 +18,11 @@ from ...services.notifications import NotificationService
 from ...core.logging import logger
 
 router = APIRouter()
+
+# In-memory store for conversation histories keyed by CallSid
+# In production, use Redis or PostgreSQL to persist this state.
+conversation_state: dict = {}
+
 
 # Dependency for DB session (In a real app, this goes to a dedicated db.py module)
 engine = create_engine(settings.DATABASE_URL)
@@ -162,6 +169,64 @@ async def twilio_voice_lead_gather(
         """
         logger.info("External lead declined via Voice IVR.")
         
+    return PlainTextResponse(content=twiml, media_type="application/xml")
+
+
+@router.post("/webhooks/twilio/voice/conversational-gather", response_class=PlainTextResponse)
+async def twilio_voice_conversational_gather(
+    request: Request,
+    CallSid: str = Form(None),
+    SpeechResult: str = Form(None),
+    x_twilio_signature: str = Header(None, alias="X-Twilio-Signature")
+):
+    """
+    Conversational AI Webhook using OpenAI and Twilio Gather.
+    """
+    await validate_twilio_request(request, x_twilio_signature)
+    
+    if not CallSid:
+        return PlainTextResponse(content="<Response><Hangup/></Response>", media_type="application/xml")
+        
+    # Initialize state if new call
+    if CallSid not in conversation_state:
+        conversation_state[CallSid] = [
+            {"role": "system", "content": "You are a helpful, concise AI assistant for Occupyo, a commercial real estate platform. Keep your answers brief (1-2 sentences max) since this is a voice call. You are calling to help them find a commercial space based on a request they submitted."}
+        ]
+        
+    if SpeechResult:
+        conversation_state[CallSid].append({"role": "user", "content": SpeechResult})
+        logger.info(f"[{CallSid}] User: {SpeechResult}")
+        
+    # Check if they want to end the call
+    if SpeechResult and any(word in SpeechResult.lower() for word in ["goodbye", "bye", "hang up", "stop", "no thanks"]):
+        del conversation_state[CallSid]
+        twiml = "<Response><Say>Thank you for using Occupyo. Goodbye!</Say><Hangup/></Response>"
+        return PlainTextResponse(content=twiml, media_type="application/xml")
+
+    # Generate response
+    try:
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "dummy"))
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=conversation_state[CallSid],
+            max_tokens=100
+        )
+        ai_text = response.choices[0].message.content
+        conversation_state[CallSid].append({"role": "assistant", "content": ai_text})
+        logger.info(f"[{CallSid}] AI: {ai_text}")
+    except Exception as e:
+        logger.error(f"OpenAI error: {e}")
+        ai_text = "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later."
+        
+    # Escape quotes for XML
+    ai_text_safe = ai_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    
+    twiml = f"""
+    <Response>
+        <Say>{ai_text_safe}</Say>
+        <Gather input="speech" action="/api/v1/webhooks/twilio/voice/conversational-gather" speechTimeout="auto" />
+    </Response>
+    """
     return PlainTextResponse(content=twiml, media_type="application/xml")
 
 

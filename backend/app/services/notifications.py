@@ -79,22 +79,20 @@ class NotificationService:
         """
         Outreach loop to contact SpaceRequest submitters (consented users).
         """
-        if not getattr(settings, "ENABLE_AUTO_OUTREACH", "false").lower() == "true":
-            print(f"Auto-outreach is disabled by feature flag. Skipping call to {to_number}.")
+        if not getattr(settings, "ENABLE_AI_VOICE_AGENT", "false").lower() == "true":
+            print(f"AI Voice Agent is disabled by feature flag. Skipping call to {to_number}.")
             return "failed"
 
         if not self.twilio_client or not settings.TWILIO_PHONE_NUMBER:
             raise ValueError(f"Missing TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, or TWILIO_PHONE_NUMBER.")
             
         try:
+            location = lead_details.get('location', 'the area')
             twiml = f"""
             <Response>
-                <Say>Hello, this is Occupyo's automated assistant.</Say>
-                <Say>We have found potential matches for your recent space request in {lead_details.get('location', 'the area')}.</Say>
-                <Say>To speak with a verified broker instantly, please press 1. To decline, press 2.</Say>
-                <Gather numDigits="1" action="/api/v1/webhooks/twilio/voice/lead-gather" method="POST">
-                    <Say>Press 1 to connect, or press 2 to decline.</Say>
-                </Gather>
+                <Say>Hello, this is an automated AI assistant calling from Occupyo.</Say>
+                <Say>I'm calling about your recent space request in {location}. How can I help you today?</Say>
+                <Gather input="speech" action="/api/v1/webhooks/twilio/voice/conversational-gather" speechTimeout="auto" />
             </Response>
             """
             
